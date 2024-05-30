@@ -1,0 +1,8 @@
+name: file_uploader_workspace
+repository: TODO
+
+sdkPath: .fvm/flutter_sdk
+
+packages:
+  - "file_uploader"
+  - "plugins/*"
