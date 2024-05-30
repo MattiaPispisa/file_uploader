@@ -1,14 +1,17 @@
 part of 'file_upload_controller.dart';
 
 class _FileUploadController implements FileUploadController {
-  const _FileUploadController({required this.handler});
+  const _FileUploadController({
+    required this.handler,
+    this.logger,
+  });
 
   final FileUploadHandler handler;
+  final FileUploaderLogger? logger;
 
   @override
   Future<void> upload({
     ProgressCallback? onProgress,
-    UploadErrorCallback? onError,
   }) {
     return handler.upload();
   }
@@ -16,7 +19,6 @@ class _FileUploadController implements FileUploadController {
   @override
   Future<void> retry({
     ProgressCallback? onProgress,
-    UploadErrorCallback? onError,
   }) {
     return handler.upload();
   }

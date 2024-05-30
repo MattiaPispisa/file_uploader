@@ -1,23 +1,27 @@
 part of 'file_upload_controller.dart';
 
 class _RestorableChunkedFileUploadController implements FileUploadController {
-  _RestorableChunkedFileUploadController({required this.handler});
+  _RestorableChunkedFileUploadController({
+    required this.handler,
+    this.logger,
+  });
 
   final RestorableChunkedFileUploadHandler handler;
+  final FileUploaderLogger? logger;
   FileUploadPresentationResponse? _presentationResponse;
 
   @override
   Future<void> upload({
     ProgressCallback? onProgress,
-    UploadErrorCallback? onError,
   }) async {
     _presentationResponse = await handler.present();
 
     await _chunksIterator(
       handler.file,
       chunkSize: handler.chunkSize,
-      chunkCallback: (chunk) =>
-          handler.uploadChunk(_presentationResponse!, chunk),
+      chunkCallback: (chunk, i) {
+        return handler.uploadChunk(_presentationResponse!, chunk);
+      },
     );
 
     return;
@@ -26,7 +30,6 @@ class _RestorableChunkedFileUploadController implements FileUploadController {
   @override
   Future<void> retry({
     ProgressCallback? onProgress,
-    UploadErrorCallback? onError,
   }) async {
     _presentationResponse ??= await handler.present();
     final status = await handler.status(_presentationResponse!);
@@ -35,8 +38,9 @@ class _RestorableChunkedFileUploadController implements FileUploadController {
       handler.file,
       chunkSize: handler.chunkSize,
       startFrom: status.nextChunkOffset,
-      chunkCallback: (chunk) =>
-          handler.uploadChunk(_presentationResponse!, chunk),
+      chunkCallback: (chunk, i) {
+        return handler.uploadChunk(_presentationResponse!, chunk);
+      },
     );
 
     return;

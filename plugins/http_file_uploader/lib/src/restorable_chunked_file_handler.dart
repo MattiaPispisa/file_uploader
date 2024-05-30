@@ -35,7 +35,7 @@ class HttpRestorableChunkedFileHandler
   final StatusPathCallback statusPath;
 
   final Map<String, String>? presentHeaders;
-  final ChunkHeadersCallback? chunkHeaders;
+  final RestorableChunkHeadersCallback? chunkHeaders;
   final StatusHeadersCallback? statusHeaders;
 
   final String? presentBody;
@@ -61,15 +61,15 @@ class HttpRestorableChunkedFileHandler
   Future<void> uploadChunk(
     FileUploadPresentationResponse presentation,
     FileChunk chunk,
-  ) {
+  ) async {
     return _client
-        .sendUnStream(
+        .sendChunk(
           method: chunkMethod,
           path: chunkPath(presentation),
-          body: chunkBody,
+          chunk: chunk,
           headers: chunkHeaders?.call(presentation, chunk),
         )
-        .then((_) => {});
+        .then((value) => {});
   }
 
   @override
@@ -87,7 +87,7 @@ class HttpRestorableChunkedFileHandler
   }
 }
 
-typedef ChunkHeadersCallback = Map<String, String> Function(
+typedef RestorableChunkHeadersCallback = Map<String, String> Function(
   FileUploadPresentationResponse presentation,
   FileChunk chunk,
 );
