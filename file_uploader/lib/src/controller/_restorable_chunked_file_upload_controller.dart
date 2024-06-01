@@ -15,12 +15,21 @@ class _RestorableChunkedFileUploadController implements FileUploadController {
     ProgressCallback? onProgress,
   }) async {
     _presentationResponse = await handler.present();
+    final size = await handler.file.length();
+    var count = 0;
 
     await _chunksIterator(
       handler.file,
       chunkSize: handler.chunkSize,
       chunkCallback: (chunk, i) {
-        return handler.uploadChunk(_presentationResponse!, chunk);
+        return handler.uploadChunk(
+          _presentationResponse!,
+          chunk,
+          onProgress: (chunkCount, _) {
+            count += chunkCount;
+            onProgress?.call(count, size);
+          },
+        );
       },
     );
 

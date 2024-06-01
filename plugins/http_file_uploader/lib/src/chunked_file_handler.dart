@@ -22,14 +22,16 @@ class HttpChunkedFileHandler extends ChunkedFileUploadHandler {
 
   @override
   Future<void> uploadChunk(
-    FileChunk chunk,
-  ) async {
+    FileChunk chunk, {
+    ProgressCallback? onProgress,
+  }) async {
     return _client
         .sendChunk(
           method: method,
           path: path,
           chunk: chunk,
           headers: headers?.call(chunk),
+          onProgress: onProgress,
         )
         .then((value) => {});
   }

@@ -13,7 +13,7 @@ class _FileUploadController implements FileUploadController {
   Future<void> upload({
     ProgressCallback? onProgress,
   }) {
-    return handler.upload();
+    return handler.upload(onProgress: onProgress);
   }
 
   @override

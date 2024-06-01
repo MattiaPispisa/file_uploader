@@ -9,5 +9,8 @@ abstract class ChunkedFileUploadHandler extends IFileUploadHandler {
 
   final int? chunkSize;
 
-  Future<void> uploadChunk(FileChunk chunk);
+  Future<void> uploadChunk(
+    FileChunk chunk, {
+    ProgressCallback? onProgress,
+  });
 }

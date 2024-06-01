@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:file_uploader/file_uploader.dart';
 import 'package:http/http.dart' as http;
 
@@ -24,6 +28,7 @@ extension HttpExtension on http.Client {
     required String path,
     required FileChunk chunk,
     Map<String, String>? headers,
+    void Function(int count, int total)? onProgress,
   }) {
     final uri = Uri.parse(path);
     final request = http.MultipartRequest(method, uri);
@@ -40,6 +45,41 @@ extension HttpExtension on http.Client {
       ),
     );
 
-    return send(request).then(http.Response.fromStream);
+    return send(request).then((streamResponse) async {
+      final completer = Completer<Uint8List>();
+      final sink = ByteConversionSink.withCallback(
+        (bytes) => completer.complete(
+          Uint8List.fromList(bytes),
+        ),
+      );
+
+      var count = 0;
+      final length = streamResponse.contentLength;
+
+      streamResponse.stream.listen(
+        (sendedChunk) {
+          count += sendedChunk.length;
+          sink.add(sendedChunk);
+
+          if (length != null) {
+            onProgress?.call(count, length);
+          }
+        },
+        onError: completer.completeError,
+        onDone: sink.close,
+        cancelOnError: true,
+      );
+
+      final body = await completer.future;
+      return http.Response.bytes(
+        body,
+        streamResponse.statusCode,
+        request: streamResponse.request,
+        headers: streamResponse.headers,
+        isRedirect: streamResponse.isRedirect,
+        persistentConnection: streamResponse.persistentConnection,
+        reasonPhrase: streamResponse.reasonPhrase,
+      );
+    });
   }
 }

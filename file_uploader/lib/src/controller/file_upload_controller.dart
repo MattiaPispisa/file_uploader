@@ -10,8 +10,6 @@ part '_chunked_file_upload_controller.dart';
 part '_file_upload_controller.dart';
 part '_restorable_chunked_file_upload_controller.dart';
 
-typedef ProgressCallback = void Function(int progress, int total);
-
 abstract class FileUploadController {
   factory FileUploadController(
     IFileUploadHandler handler, {
@@ -48,17 +46,24 @@ Future<void> _chunksIterator(
   int startFrom = 0,
 }) async {
   final effectiveFileSize = await file.length();
-  final effectiveChunksCount = math.min(
+  final effectiveChunksSize = math.min(
     effectiveFileSize,
     chunkSize ?? defaultChunkSize,
   );
-  int getChunkStart(int chunkIndex) => chunkIndex * effectiveChunksCount;
+  final chunkCount = effectiveFileSize ~/ effectiveChunksSize;
+
+  int getChunkStart(int chunkIndex) => chunkIndex * effectiveChunksSize;
 
   int getChunkEnd(int chunkIndex) =>
-      math.min((chunkIndex + 1) * effectiveFileSize, effectiveChunksCount);
+      math.min((chunkIndex + 1) * effectiveChunksSize, effectiveFileSize);
 
-  for (var i = 0; i < effectiveChunksCount; i++) {
-    if (startFrom >= i) {
+  await Future.forEach(
+    List.generate(chunkCount, (i) => i),
+    (i) async {
+      if (startFrom > i) {
+        return;
+      }
+
       await chunkCallback(
         FileChunk(
           file: file,
@@ -67,8 +72,8 @@ Future<void> _chunksIterator(
         ),
         i,
       );
-    }
-  }
+    },
+  );
 
   return;
 }

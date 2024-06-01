@@ -12,8 +12,9 @@ abstract class RestorableChunkedFileUploadHandler extends IFileUploadHandler {
   Future<FileUploadPresentationResponse> present();
   Future<void> uploadChunk(
     FileUploadPresentationResponse presentation,
-    FileChunk chunk,
-  );
+    FileChunk chunk, {
+    ProgressCallback? onProgress,
+  });
   Future<FileUploadStatusResponse> status(
     FileUploadPresentationResponse presentation,
   );

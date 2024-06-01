@@ -60,14 +60,16 @@ class HttpRestorableChunkedFileHandler
   @override
   Future<void> uploadChunk(
     FileUploadPresentationResponse presentation,
-    FileChunk chunk,
-  ) async {
+    FileChunk chunk, {
+    ProgressCallback? onProgress,
+  }) async {
     return _client
         .sendChunk(
           method: chunkMethod,
           path: chunkPath(presentation),
           chunk: chunk,
           headers: chunkHeaders?.call(presentation, chunk),
+          onProgress: onProgress,
         )
         .then((value) => {});
   }
@@ -102,5 +104,9 @@ typedef StatusPathCallback = String Function(
   FileUploadPresentationResponse presentation,
 );
 
-typedef PresentParser = FileUploadPresentationResponse Function(http.Response);
-typedef StatusParser = FileUploadStatusResponse Function(http.Response);
+typedef PresentParser = FileUploadPresentationResponse Function(
+  http.Response response,
+);
+typedef StatusParser = FileUploadStatusResponse Function(
+  http.Response response,
+);
