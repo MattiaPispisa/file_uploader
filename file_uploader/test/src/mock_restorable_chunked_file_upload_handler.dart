@@ -20,11 +20,11 @@ class MockRestorableChunkedFileUploadHandler
 
   int get total => presentationCount + statusCount + chunkCount;
 
-  final Future<FileUploadPresentationResponse> Function()? presentationFn;
-  final Future<FileUploadStatusResponse> Function(
+  Future<FileUploadPresentationResponse> Function()? presentationFn;
+  Future<FileUploadStatusResponse> Function(
     FileUploadPresentationResponse presentation,
   )? statusFn;
-  final Future<void> Function(
+  Future<void> Function(
     FileUploadPresentationResponse presentation,
     FileChunk chunk,
   )? chunkFn;

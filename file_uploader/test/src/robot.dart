@@ -36,6 +36,15 @@ class Robot {
     );
   }
 
+  Future<void> expectRetry() async {
+    await _controller.retry();
+
+    expect(
+      () {},
+      returnsNormally,
+    );
+  }
+
   Future<void> expectUploadError<T>() async {
     await expectLater(
       _controller.upload(),

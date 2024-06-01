@@ -13,11 +13,24 @@ import 'robot.dart';
 
 void main() {
   group('configuration', () {
-    test('should set default chunk size', () {
+    test('should set default chunk size', () async {
       const size = 1027;
       setDefaultChunkSize(size);
 
       expect(defaultChunkSize, size);
+
+      late MockRestorableChunkedFileUploadHandler handler;
+
+      final r = Robot()
+        ..createFile(length: size + 100)
+        ..createController((file) {
+          return handler = MockRestorableChunkedFileUploadHandler(
+            file: file,
+          );
+        });
+
+      await r.expectUpload();
+      expect(handler.chunkCount, 2);
     });
   });
   group(
@@ -40,7 +53,7 @@ void main() {
         expect(handler.chunkCount, 3);
       });
 
-      test('should stop on upload', () async {
+      test('should stop on upload, continue in retry', () async {
         const size = 1024 * 1027;
         late MockRestorableChunkedFileUploadHandler handler;
 
@@ -66,7 +79,18 @@ void main() {
 
         await r.expectUploadError<Exception>();
         expect(handler.chunkCount, 2);
+        expect(handler.statusCount, 0);
+        expect(handler.presentationCount, 1);
+
+        handler.chunkFn = (_, __) => Future.value();
+
+        await r.expectRetry();
+        expect(handler.chunkCount, 3);
+        expect(handler.presentationCount, 1);
+        expect(handler.statusCount, 1);
       });
+
+      test('should retry everything', () {});
     },
   );
 }

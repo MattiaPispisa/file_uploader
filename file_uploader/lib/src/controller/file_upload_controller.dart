@@ -50,7 +50,7 @@ Future<void> _chunksIterator(
     effectiveFileSize,
     chunkSize ?? defaultChunkSize,
   );
-  final chunkCount = effectiveFileSize ~/ effectiveChunksSize;
+  final chunkCount = (effectiveFileSize / effectiveChunksSize).ceil();
 
   int getChunkStart(int chunkIndex) => chunkIndex * effectiveChunksSize;
 
