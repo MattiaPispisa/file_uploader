@@ -1,0 +1,14 @@
+name: example
+description: A Very Good Project created by Very Good CLI.
+version: 0.1.0+1
+publish_to: none
+
+environment:
+  sdk: "^3.3.0"
+
+dependencies:
+  file_uploader:
+    path: ../../../file_uploader
+  http_file_uploader:
+    path: ../
+  http: ^1.0.0

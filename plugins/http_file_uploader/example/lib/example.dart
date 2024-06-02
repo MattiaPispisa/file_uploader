@@ -1,20 +1,6 @@
-# Http File Uploader
+import 'dart:convert';
+import 'dart:io';
 
-A [File_Uploader] plugin to handle the file upload using [http](https://pub.dev/packages/http) package.
-
-## Features
-
-- use `HttpFileHandler` to handle a file upload;
-- use `HttpChunkedFileHandler` to handle a file upload in chunk;
-- use `HttpRestorableChunkedFileHandler` to handle a file upload in chunk with the capability to restore the upload.
-
-## Usage
-
-1. Create a new instance of `HttpFileHandler`, `HttpChunkedFileHandler` or `HttpRestorableChunkedFileHandler`.
-2. Create a `FileUploadController` with the created handler
-3. Call `controller.upload`
-
-```dart
 import 'package:file_uploader/file_uploader.dart';
 import 'package:http_file_uploader/http_file_uploader.dart';
 import 'package:http/http.dart';
@@ -58,5 +44,3 @@ main() async {
   final controller = FileUploadController(restorableHandler);
   await controller.upload();
 }
-
-```

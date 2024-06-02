@@ -4,14 +4,13 @@ version: 0.1.0+1
 publish_to: none
 
 environment:
-  sdk: "^3.3.0"
+  sdk: ">=2.18.0 <4.0.0"
 
 dependencies:
   file_uploader:
     path: ../../file_uploader
-  http:
+  http: any
 
 dev_dependencies:
-  mocktail: ^1.0.3
   test: ^1.25.2
   very_good_analysis: ^5.1.0
