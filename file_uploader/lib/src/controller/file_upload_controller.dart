@@ -2,15 +2,22 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:file_uploader/file_uploader.dart';
-import 'package:file_uploader/src/config.dart';
-import 'package:file_uploader/src/entity/entity.dart';
-import 'package:file_uploader/src/handler/handler.dart';
 
 part '_chunked_file_upload_controller.dart';
 part '_file_upload_controller.dart';
 part '_restorable_chunked_file_upload_controller.dart';
 
+/// Create a [FileUploadController] by passing a concrete implementation of
+/// [FileUploadHandler]; [ChunkedFileUploadHandler];
+/// [RestorableChunkedFileUploadHandler] as the handler.
+///
+/// The [FileUploadController] will have the capabilities to
+/// upload a file ([FileUploadController.upload])
+/// and retry the upload ([FileUploadController.retry]).
 abstract class FileUploadController {
+  /// [handler]
+  ///
+  /// [logger] a logger report info/errors about upload behavior
   factory FileUploadController(
     IFileUploadHandler handler, {
     FileUploaderLogger? logger,
@@ -31,9 +38,16 @@ abstract class FileUploadController {
     throw Exception('unexpected handler ${handler.runtimeType}');
   }
 
+  /// upload the file
+  ///
+  /// use [onProgress] to check the upload progress
   Future<void> upload({
     ProgressCallback? onProgress,
   });
+
+  /// retry the file upload
+  ///
+  /// use [onProgress] to check the upload progress
   Future<void> retry({
     ProgressCallback? onProgress,
   });
@@ -45,7 +59,10 @@ Future<void> _chunksIterator(
   required Future<void> Function(FileChunk chunk, int index) chunkCallback,
   int startFrom = 0,
 }) async {
+  // file size
   final effectiveFileSize = await file.length();
+
+  // calculate info for chunk iteration
   final effectiveChunksSize = math.min(
     effectiveFileSize,
     chunkSize ?? defaultChunkSize,
@@ -54,12 +71,14 @@ Future<void> _chunksIterator(
 
   int getChunkStart(int chunkIndex) => chunkIndex * effectiveChunksSize;
 
+  // min is used for the last chunk if shorter than chunkSize
   int getChunkEnd(int chunkIndex) =>
       math.min((chunkIndex + 1) * effectiveChunksSize, effectiveFileSize);
 
   await Future.forEach(
     List.generate(chunkCount, (i) => i),
     (i) async {
+      /// to skip file chunk. used on retry callback
       if (startFrom > i) {
         return;
       }

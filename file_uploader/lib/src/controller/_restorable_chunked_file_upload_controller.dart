@@ -40,15 +40,27 @@ class _RestorableChunkedFileUploadController implements FileUploadController {
   Future<void> retry({
     ProgressCallback? onProgress,
   }) async {
+    // retrieve the presentation if was successfully fired
     _presentationResponse ??= await handler.present();
     final status = await handler.status(_presentationResponse!);
 
+    final size = await handler.file.length();
+    final count = math.max(status.nextChunkOffset - 1, 0) *
+        (handler.chunkSize ?? defaultChunkSize);
+
+    // use [status.nextChunkOffset] to skip already uploaded chunks
     await _chunksIterator(
       handler.file,
       chunkSize: handler.chunkSize,
       startFrom: status.nextChunkOffset,
       chunkCallback: (chunk, i) {
-        return handler.uploadChunk(_presentationResponse!, chunk);
+        return handler.uploadChunk(
+          _presentationResponse!,
+          chunk,
+          onProgress: (chunkCount, _) {
+            onProgress?.call(count, size);
+          },
+        );
       },
     );
 
