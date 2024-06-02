@@ -13,6 +13,7 @@ class _FileUploadController implements FileUploadController {
   Future<void> upload({
     ProgressCallback? onProgress,
   }) {
+    logger?.info('uploading file ${handler.file.path}');
     return handler.upload(onProgress: onProgress);
   }
 
@@ -20,6 +21,7 @@ class _FileUploadController implements FileUploadController {
   Future<void> retry({
     ProgressCallback? onProgress,
   }) {
+    logger?.info('retry file ${handler.file.path}');
     return handler.upload();
   }
 }

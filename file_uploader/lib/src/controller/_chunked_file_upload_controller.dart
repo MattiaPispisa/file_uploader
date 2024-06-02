@@ -13,6 +13,8 @@ class _ChunkedFileUploadController implements FileUploadController {
   Future<void> upload({
     ProgressCallback? onProgress,
   }) async {
+    logger?.info('uploading file ${handler.file.path}');
+
     final size = await handler.file.length();
     var count = 0;
 
@@ -20,6 +22,8 @@ class _ChunkedFileUploadController implements FileUploadController {
       handler.file,
       chunkSize: handler.chunkSize,
       chunkCallback: (chunk, i) {
+        logger?.info('uploading chunk $i');
+
         return handler.uploadChunk(
           chunk,
           onProgress: (chunkCount, _) {
@@ -37,10 +41,14 @@ class _ChunkedFileUploadController implements FileUploadController {
   Future<void> retry({
     ProgressCallback? onProgress,
   }) async {
+    logger?.info('retry file ${handler.file.path}');
+
     await _chunksIterator(
       handler.file,
       chunkSize: handler.chunkSize,
       chunkCallback: (chunk, i) {
+        logger?.info('uploading chunk $i');
+
         return handler.uploadChunk(chunk);
       },
     );

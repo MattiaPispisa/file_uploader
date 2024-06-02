@@ -14,6 +14,8 @@ class _RestorableChunkedFileUploadController implements FileUploadController {
   Future<void> upload({
     ProgressCallback? onProgress,
   }) async {
+    logger?.info('uploading file ${handler.file.path}');
+
     _presentationResponse = await handler.present();
     final size = await handler.file.length();
     var count = 0;
@@ -22,6 +24,8 @@ class _RestorableChunkedFileUploadController implements FileUploadController {
       handler.file,
       chunkSize: handler.chunkSize,
       chunkCallback: (chunk, i) {
+        logger?.info('uploading chunk $i');
+
         return handler.uploadChunk(
           _presentationResponse!,
           chunk,
@@ -40,6 +44,8 @@ class _RestorableChunkedFileUploadController implements FileUploadController {
   Future<void> retry({
     ProgressCallback? onProgress,
   }) async {
+    logger?.info('retry file ${handler.file.path}');
+
     // retrieve the presentation if was successfully fired
     _presentationResponse ??= await handler.present();
     final status = await handler.status(_presentationResponse!);
@@ -54,6 +60,8 @@ class _RestorableChunkedFileUploadController implements FileUploadController {
       chunkSize: handler.chunkSize,
       startFrom: status.nextChunkOffset,
       chunkCallback: (chunk, i) {
+        logger?.info('uploading chunk $i');
+
         return handler.uploadChunk(
           _presentationResponse!,
           chunk,

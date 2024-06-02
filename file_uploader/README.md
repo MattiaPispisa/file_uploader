@@ -55,5 +55,7 @@ Create a `FileUploadController` by passing a concrete implementation of `FileUpl
 
 ## Next features
 
+- [] more logs
 - [] dio plugin
 - [] flutter widgets to handle the file upload ui
+
