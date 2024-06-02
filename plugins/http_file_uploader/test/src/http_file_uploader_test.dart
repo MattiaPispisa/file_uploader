@@ -1,8 +1,6 @@
 import 'package:file_uploader/file_uploader.dart';
 import 'package:http/http.dart';
 import 'package:http_file_uploader/http_file_uploader.dart';
-import 'package:http_file_uploader/src/chunked_file_handler.dart';
-import 'package:http_file_uploader/src/file_handler.dart';
 import 'package:test/test.dart';
 
 import 'robot.dart';
@@ -100,7 +98,7 @@ void main() {
             presentPath: 'presentation',
             presentParser: (response) =>
                 const FileUploadPresentationResponse(id: 'custom_id'),
-            chunkPath: (presentation) => 'chunks/${presentation.id}',
+            chunkPath: (presentation, _) => 'chunks/${presentation.id}',
             statusPath: (presentation) => 'status/${presentation.id}',
             statusParser: (response) =>
                 const FileUploadStatusResponse(nextChunkOffset: 1),

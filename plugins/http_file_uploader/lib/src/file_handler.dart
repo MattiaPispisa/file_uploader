@@ -2,7 +2,11 @@ import 'package:file_uploader/file_uploader.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_file_uploader/src/http_ext.dart';
 
+/// [HttpFileHandler] handle the file upload using the [http.Client]
 class HttpFileHandler extends FileUploadHandler {
+  /// [client] used to upload the file
+  ///
+  /// [path], [method], [headers], [body] are [http.Client.send] parameters
   const HttpFileHandler({
     required http.Client client,
     required super.file,
@@ -14,9 +18,16 @@ class HttpFileHandler extends FileUploadHandler {
 
   final http.Client _client;
 
+  /// [http.Client.send] `method`, default to `POST`
   final String method;
+
+  /// [http.Client.send] `path`
   final String path;
+
+  /// [http.Client.send] `headers`
   final Map<String, String>? headers;
+
+  /// [http.Client.send] `body`
   final String? body;
 
   @override

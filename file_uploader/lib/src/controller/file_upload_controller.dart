@@ -7,13 +7,55 @@ part '_chunked_file_upload_controller.dart';
 part '_file_upload_controller.dart';
 part '_restorable_chunked_file_upload_controller.dart';
 
+/// ## How to use
 /// Create a [FileUploadController] by passing a concrete implementation of
-/// [FileUploadHandler]; [ChunkedFileUploadHandler];
+/// [FileUploadHandler]; [ChunkedFileUploadHandler] or
 /// [RestorableChunkedFileUploadHandler] as the handler.
 ///
 /// The [FileUploadController] will have the capabilities to
 /// upload a file ([FileUploadController.upload])
 /// and retry the upload ([FileUploadController.retry]).
+///
+/// ## Example
+///
+/// ```dart
+/// // a concrete `RestorableChunkedFileUploadHandler` that with [client]
+/// // handle implement the file upload methods
+/// class RemoteRestorableChunkedFileUploadHandler
+///    extends RestorableChunkedFileUploadHandler {
+///  RemoteRestorableChunkedFileUploadHandler({
+///    required super.file,
+///    this.client,
+///    super.chunkSize,
+///  });
+///
+///  // an imaginary client that handle:
+///  // present, status, uploadChunk
+///  final client;
+///
+///  @override
+///  Future<FileUploadPresentationResponse> present() async {
+///    return client.presentOnBackend();
+///  }
+///
+///  @override
+///  Future<FileUploadStatusResponse> status(
+///    FileUploadPresentationResponse presentation,
+///  ) async {
+///    return client.getBackendStatus(presentation);
+///  }
+///
+///  @override
+///  Future<void> uploadChunk(
+///    FileUploadPresentationResponse presentation,
+///    FileChunk chunk, {
+///    ProgressCallback? onProgress,
+///  }) async {
+///    return client.sendChunkToBackend(presentation, chunk);
+///  }
+///}
+///```
+
 abstract class FileUploadController {
   /// [handler]
   ///

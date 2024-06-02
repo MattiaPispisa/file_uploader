@@ -12,9 +12,9 @@ This library provides the capability to:
 
 File uploader can be used with various libraries for making HTTP requests, such as http, dio, or others, offering a consistent and straightforward interface for uploading files without needing to change the code based on the underlying library used.
 
-## Plugins
+## [Plugins](https://github.com/MattiaPispisa/file_uploader/tree/main/plugins)
 
-- [http_file_uploader]() This plugin allows you to implement file uploads using the http library.
+- [http_file_uploader](https://github.com/MattiaPispisa/file_uploader/tree/main/plugins/http_file_uploader) This plugin allows you to implement file uploads using the http library.
 
 ## Extensions
 

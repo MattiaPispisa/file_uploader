@@ -1,15 +1,8 @@
 // ignore_for_file: prefer_const_constructors
-import 'dart:io';
-
 import 'package:file_uploader/file_uploader.dart';
 import 'package:test/test.dart';
-
 import 'mock_restorable_chunked_file_upload_handler.dart';
 import 'robot.dart';
-
-// TODO: test da fare:
-// - il tipo del runtype costruito deve essere corretto rispetto l'handler dato
-// - la funzione di suiddivisione in chunks deve essere corretta
 
 void main() {
   group('configuration', () {

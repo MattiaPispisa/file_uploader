@@ -5,7 +5,16 @@ import 'dart:typed_data';
 import 'package:file_uploader/file_uploader.dart';
 import 'package:http/http.dart' as http;
 
+/// An extension of the [http.Client] with methods used by every handlers
+/// to execute file upload methods.
+///
+/// Contains:
+///
+/// - [sendUnStream]
+/// - [sendChunk]
 extension HttpExtension on http.Client {
+  /// wrap around [http.Client.send] to send request unStream with
+  /// optional parameters
   Future<http.Response> sendUnStream({
     required String method,
     required String path,
@@ -23,6 +32,8 @@ extension HttpExtension on http.Client {
     return send(request).then(http.Response.fromStream);
   }
 
+  /// wrap around [http.Client.send] to send [http.MultipartRequest]
+  /// exposing [onProgress] callback
   Future<http.Response> sendChunk({
     required String method,
     required String path,
