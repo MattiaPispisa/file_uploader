@@ -34,7 +34,7 @@ It is possible to extend:
 
 ### Support restorable chunked file upload
 
-To implement a restorable file, the following functionalities need to be supported:
+To implement a restorable file server, the following functionalities need to be supported:
 
 - An API to present the file; before uploading the chunks, the file is presented and needs an id. This id will be used as a reference for chunk uploads;
 - An API that, given the presentation id, allows requesting the file's state. The file's state will return the offset of the next chunk to be sent. This is needed to support retrying from the last unsent chunk.
@@ -53,9 +53,14 @@ setDefaultChunkSize(1024)
 
 Create a `FileUploadController` by passing a concrete implementation of `FileUploadHandler`, `ChunkedFileUploadHandler`, or `RestorableChunkedFileUploadHandler` as the handler. The controller will have the capabilities to upload a file and retry the upload.
 
+## Example
+
+In the [example](https://github.com/MattiaPispisa/file_uploader/blob/main/file_uploader/example/lib/main.dart), there is an implementation of `RestorableChunkedFileUploadHandler` handler that sends chunks to a mock server (`InMemoryBackend`).
+
+Other examples are provided in the tests to ensure the correct functionality of the library.
+
 ## Next features
 
 - [] more logs
 - [] dio plugin
 - [] flutter widgets to handle the file upload ui
-
