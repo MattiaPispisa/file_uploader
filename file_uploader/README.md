@@ -1,62 +1,59 @@
 # File Uploader
 
-[![style: very good analysis][very_good_analysis_badge]][very_good_analysis_link]
-[![Powered by Mason](https://img.shields.io/endpoint?url=https%3A%2F%2Ftinyurl.com%2Fmason-badge)](https://github.com/felangel/mason)
-[![License: MIT][license_badge]][license_link]
+This Dart package provides a **file upload functionality that is implementation-agnostic**.
 
-A Very Good Project created by Very Good CLI.
+## Features
 
-## Installation 💻
+This library provides the capability to:
 
-**❗ In order to start using File Uploader you must have the [Dart SDK][dart_install_link] installed on your machine.**
+- [√] upload a complete file;
+- [√] upload a file in chunks;
+- [√] upload a file in chunks with the ability to pause and resume the upload from where it left off (restorable chunks file upload).
 
-Install via `dart pub add`:
+File uploader can be used with various libraries for making HTTP requests, such as http, dio, or others, offering a consistent and straightforward interface for uploading files without needing to change the code based on the underlying library used.
 
-```sh
-dart pub add file_uploader
+## Plugins
+
+- [http_file_uploader]() This plugin allows you to implement file uploads using the http library.
+
+## Extensions
+
+If a plugin is not yet available or the existing plugins do not meet your needs, you can create your own implementation of file upload.
+
+## File Uploader APIs
+
+### Upload implementations
+
+It is possible to extend:
+
+- `FileUploadHandler` to implement the upload of an entire file;
+- `ChunkedFileUploadHandler` to implement chunked file upload;
+- `RestorableChunkedFileUploadHandler` to implement a restorable chunked upload.
+
+**The plugins already do this, so before creating your own implementation, check if a plugin already meets your needs.**
+
+### Support restorable chunked file upload
+
+To implement a restorable file, the following functionalities need to be supported:
+
+- An API to present the file; before uploading the chunks, the file is presented and needs an id. This id will be used as a reference for chunk uploads;
+- An API that, given the presentation id, allows requesting the file's state. The file's state will return the offset of the next chunk to be sent. This is needed to support retrying from the last unsent chunk.
+
+### Configuration
+
+A global configuration is available to set default values for the entire system.
+
+Currently, it is possible to set a default chunk size.
+
+```dart
+setDefaultChunkSize(1024)
 ```
 
----
+## How to use
 
-## Continuous Integration 🤖
+Create a `FileUploadController` by passing a concrete implementation of `FileUploadHandler`, `ChunkedFileUploadHandler`, or `RestorableChunkedFileUploadHandler` as the handler. The controller will have the capabilities to upload a file and retry the upload.
 
-File Uploader comes with a built-in [GitHub Actions workflow][github_actions_link] powered by [Very Good Workflows][very_good_workflows_link] but you can also add your preferred CI/CD solution.
+## Next features
 
-Out of the box, on each pull request and push, the CI `formats`, `lints`, and `tests` the code. This ensures the code remains consistent and behaves correctly as you add functionality or make changes. The project uses [Very Good Analysis][very_good_analysis_link] for a strict set of analysis options used by our team. Code coverage is enforced using the [Very Good Workflows][very_good_coverage_link].
-
----
-
-## Running Tests 🧪
-
-To run all unit tests:
-
-```sh
-dart pub global activate coverage 1.2.0
-dart test --coverage=coverage
-dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info
-```
-
-To view the generated coverage report you can use [lcov](https://github.com/linux-test-project/lcov).
-
-```sh
-# Generate Coverage Report
-genhtml coverage/lcov.info -o coverage/
-
-# Open Coverage Report
-open coverage/index.html
-```
-
-[dart_install_link]: https://dart.dev/get-dart
-[github_actions_link]: https://docs.github.com/en/actions/learn-github-actions
-[license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
-[license_link]: https://opensource.org/licenses/MIT
-[logo_black]: https://raw.githubusercontent.com/VGVentures/very_good_brand/main/styles/README/vgv_logo_black.png#gh-light-mode-only
-[logo_white]: https://raw.githubusercontent.com/VGVentures/very_good_brand/main/styles/README/vgv_logo_white.png#gh-dark-mode-only
-[mason_link]: https://github.com/felangel/mason
-[very_good_analysis_badge]: https://img.shields.io/badge/style-very_good_analysis-B22C89.svg
-[very_good_analysis_link]: https://pub.dev/packages/very_good_analysis
-[very_good_coverage_link]: https://github.com/marketplace/actions/very-good-coverage
-[very_good_ventures_link]: https://verygood.ventures
-[very_good_ventures_link_light]: https://verygood.ventures#gh-light-mode-only
-[very_good_ventures_link_dark]: https://verygood.ventures#gh-dark-mode-only
-[very_good_workflows_link]: https://github.com/VeryGoodOpenSource/very_good_workflows
+- [] dio plugin
+- [] flutter widgets to handle the file upload ui
