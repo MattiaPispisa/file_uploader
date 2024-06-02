@@ -6,9 +6,9 @@ This Dart package provides a **file upload functionality that is implementation-
 
 This library provides the capability to:
 
-- [√] upload a complete file;
-- [√] upload a file in chunks;
-- [√] upload a file in chunks with the ability to pause and resume the upload from where it left off (restorable chunks file upload).
+- ☑ upload a complete file;
+- ☑ upload a file in chunks;
+- ☑ upload a file in chunks with the ability to pause and resume the upload from where it left off (restorable chunks file upload).
 
 File uploader can be used with various libraries for making HTTP requests, such as http, dio, or others, offering a consistent and straightforward interface for uploading files without needing to change the code based on the underlying library used.
 
