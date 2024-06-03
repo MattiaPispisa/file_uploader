@@ -1,6 +1,7 @@
 name: file_uploader_workspace
-publish_to: "none"
-repository: TODO
+homepage: https://mattiapispisa.github.io/
+repository: https://github.com/MattiaPispisa/file_uploader
+topics: [file, upload, chunks, retry]
 
 environment:
   sdk: ">=2.18.0 <4.0.0"

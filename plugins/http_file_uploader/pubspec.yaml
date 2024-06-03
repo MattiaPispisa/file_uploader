@@ -1,7 +1,9 @@
 name: http_file_uploader
-description: A Very Good Project created by Very Good CLI.
+description: A File_Uploader plugin to handle the file upload using http package. Provides the capability to upload file in chunks handling the retry.
 version: 0.1.0+1
-publish_to: none
+homepage: https://mattiapispisa.github.io/
+repository: https://github.com/MattiaPispisa/file_uploader
+topics: [file, upload, chunks, retry]
 
 environment:
   sdk: ">=2.18.0 <4.0.0"

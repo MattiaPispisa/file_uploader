@@ -1,5 +1,5 @@
 name: file_uploader_workspace
-repository: TODO
+repository: https://github.com/MattiaPispisa/file_uploader
 
 sdkPath: .fvm/flutter_sdk
 
