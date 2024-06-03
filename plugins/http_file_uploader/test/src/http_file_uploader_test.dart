@@ -25,8 +25,7 @@ void main() {
             ),
           );
         await robot.expectUpload();
-        await robot.expectRetry();
-        expect(requestCount, 2);
+        expect(requestCount, 1);
       },
     );
   });
@@ -50,11 +49,8 @@ void main() {
           );
         });
 
-      await robot.expectUpload();
-      expect(requestCount, 2);
-
       await robot.expectRetry();
-      expect(requestCount, 4);
+      expect(requestCount, 2);
     });
   });
 

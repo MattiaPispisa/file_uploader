@@ -1,30 +1,33 @@
 part of 'file_upload_controller.dart';
 
-class _ChunkedFileUploadController implements FileUploadController {
-  const _ChunkedFileUploadController({
-    required this.handler,
-    this.logger,
-  });
+class _ChunkedFileUploadController extends FileUploadController {
+  _ChunkedFileUploadController({
+    required ChunkedFileUploadHandler handler,
+    FileUploaderLogger? logger,
+  })  : _handler = handler,
+        _logger = logger,
+        super._();
 
-  final ChunkedFileUploadHandler handler;
-  final FileUploaderLogger? logger;
+  final ChunkedFileUploadHandler _handler;
+  final FileUploaderLogger? _logger;
 
   @override
-  Future<void> upload({
+  Future<FileUploadResult> upload({
     ProgressCallback? onProgress,
   }) async {
-    logger?.info('uploading file ${handler.file.path}');
+    _ensureNotUploaded();
+    _logger?.info('uploading file ${_handler.file.path}');
 
-    final size = await handler.file.length();
+    final size = await _handler.file.length();
     var count = 0;
 
     await _chunksIterator(
-      handler.file,
-      chunkSize: handler.chunkSize,
+      _handler.file,
+      chunkSize: _handler.chunkSize,
       chunkCallback: (chunk, i) {
-        logger?.info('uploading chunk $i');
+        _logger?.info('uploading chunk $i');
 
-        return handler.uploadChunk(
+        return _handler.uploadChunk(
           chunk,
           onProgress: (chunkCount, _) {
             count += chunkCount;
@@ -34,25 +37,36 @@ class _ChunkedFileUploadController implements FileUploadController {
       },
     );
 
-    return;
+    _setUploaded();
+
+    return FileUploadResult(
+      file: _handler.file,
+      id: _generateUniqueId(),
+    );
   }
 
   @override
-  Future<void> retry({
+  Future<FileUploadResult> retry({
     ProgressCallback? onProgress,
   }) async {
-    logger?.info('retry file ${handler.file.path}');
+    _ensureNotUploaded();
+    _logger?.info('retry file ${_handler.file.path}');
 
     await _chunksIterator(
-      handler.file,
-      chunkSize: handler.chunkSize,
+      _handler.file,
+      chunkSize: _handler.chunkSize,
       chunkCallback: (chunk, i) {
-        logger?.info('uploading chunk $i');
+        _logger?.info('uploading chunk $i');
 
-        return handler.uploadChunk(chunk);
+        return _handler.uploadChunk(chunk);
       },
     );
 
-    return;
+    _setUploaded();
+
+    return FileUploadResult(
+      file: _handler.file,
+      id: _generateUniqueId(),
+    );
   }
 }

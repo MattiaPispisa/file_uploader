@@ -1,32 +1,35 @@
 part of 'file_upload_controller.dart';
 
-class _RestorableChunkedFileUploadController implements FileUploadController {
+class _RestorableChunkedFileUploadController extends FileUploadController {
   _RestorableChunkedFileUploadController({
-    required this.handler,
-    this.logger,
-  });
+    required RestorableChunkedFileUploadHandler handler,
+    FileUploaderLogger? logger,
+  })  : _handler = handler,
+        _logger = logger,
+        super._();
 
-  final RestorableChunkedFileUploadHandler handler;
-  final FileUploaderLogger? logger;
+  final RestorableChunkedFileUploadHandler _handler;
+  final FileUploaderLogger? _logger;
   FileUploadPresentationResponse? _presentationResponse;
 
   @override
-  Future<void> upload({
+  Future<FileUploadResult> upload({
     ProgressCallback? onProgress,
   }) async {
-    logger?.info('uploading file ${handler.file.path}');
+    _ensureNotUploaded();
+    _logger?.info('uploading file ${_handler.file.path}');
 
-    _presentationResponse = await handler.present();
-    final size = await handler.file.length();
+    _presentationResponse = await _handler.present();
+    final size = await _handler.file.length();
     var count = 0;
 
     await _chunksIterator(
-      handler.file,
-      chunkSize: handler.chunkSize,
+      _handler.file,
+      chunkSize: _handler.chunkSize,
       chunkCallback: (chunk, i) {
-        logger?.info('uploading chunk $i');
+        _logger?.info('uploading chunk $i');
 
-        return handler.uploadChunk(
+        return _handler.uploadChunk(
           _presentationResponse!,
           chunk,
           onProgress: (chunkCount, _) {
@@ -37,32 +40,38 @@ class _RestorableChunkedFileUploadController implements FileUploadController {
       },
     );
 
-    return;
+    _setUploaded();
+
+    return FileUploadResult(
+      file: _handler.file,
+      id: _presentationResponse!.id,
+    );
   }
 
   @override
-  Future<void> retry({
+  Future<FileUploadResult> retry({
     ProgressCallback? onProgress,
   }) async {
-    logger?.info('retry file ${handler.file.path}');
+    _ensureNotUploaded();
+    _logger?.info('retry file ${_handler.file.path}');
 
     // retrieve the presentation if was successfully fired
-    _presentationResponse ??= await handler.present();
-    final status = await handler.status(_presentationResponse!);
+    _presentationResponse ??= await _handler.present();
+    final status = await _handler.status(_presentationResponse!);
 
-    final size = await handler.file.length();
+    final size = await _handler.file.length();
     final count = math.max(status.nextChunkOffset - 1, 0) *
-        (handler.chunkSize ?? defaultChunkSize);
+        (_handler.chunkSize ?? defaultChunkSize);
 
     // use [status.nextChunkOffset] to skip already uploaded chunks
     await _chunksIterator(
-      handler.file,
-      chunkSize: handler.chunkSize,
+      _handler.file,
+      chunkSize: _handler.chunkSize,
       startFrom: status.nextChunkOffset,
       chunkCallback: (chunk, i) {
-        logger?.info('uploading chunk $i');
+        _logger?.info('uploading chunk $i');
 
-        return handler.uploadChunk(
+        return _handler.uploadChunk(
           _presentationResponse!,
           chunk,
           onProgress: (chunkCount, _) {
@@ -72,6 +81,11 @@ class _RestorableChunkedFileUploadController implements FileUploadController {
       },
     );
 
-    return;
+    _setUploaded();
+
+    return FileUploadResult(
+      file: _handler.file,
+      id: _presentationResponse!.id,
+    );
   }
 }

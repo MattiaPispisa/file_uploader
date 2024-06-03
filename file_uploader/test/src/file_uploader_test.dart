@@ -43,7 +43,7 @@ void main() {
           });
 
         await r.expectUpload();
-        expect(handler.chunkCount, 3);
+        expect(handler.chunkCount, 4);
       });
 
       test('should stop on upload, continue in retry', () async {
@@ -78,9 +78,10 @@ void main() {
         handler.chunkFn = (_, __) => Future.value();
 
         await r.expectRetry();
-        expect(handler.chunkCount, 3);
+        expect(handler.chunkCount, 4);
         expect(handler.presentationCount, 1);
         expect(handler.statusCount, 1);
+        expect(handler.total, 6);
       });
 
       test('should retry everything', () {});

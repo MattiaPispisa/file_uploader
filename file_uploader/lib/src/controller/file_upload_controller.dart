@@ -59,7 +59,7 @@ part '_restorable_chunked_file_upload_controller.dart';
 abstract class FileUploadController {
   /// [handler]
   ///
-  /// [logger] a logger report info/errors about upload behavior
+  /// [logger] a logger report info/warning/errors about upload behavior
   factory FileUploadController(
     IFileUploadHandler handler, {
     FileUploaderLogger? logger,
@@ -77,20 +77,35 @@ abstract class FileUploadController {
       );
     }
 
-    throw Exception('unexpected handler ${handler.runtimeType}');
+    throw UnexpectedHandlerException(handler: handler);
+  }
+
+  FileUploadController._();
+
+  bool _uploaded = false;
+
+  /// set the file as uploaded
+  void _setUploaded() => _uploaded = true;
+
+  /// check if file is not uploaded
+  void _ensureNotUploaded() {
+    if (!_uploaded) {
+      return;
+    }
+    throw const FileAlreadyUploadedException();
   }
 
   /// upload the file
   ///
   /// use [onProgress] to check the upload progress
-  Future<void> upload({
+  Future<FileUploadResult> upload({
     ProgressCallback? onProgress,
   });
 
   /// retry the file upload
   ///
   /// use [onProgress] to check the upload progress
-  Future<void> retry({
+  Future<FileUploadResult> retry({
     ProgressCallback? onProgress,
   });
 }
@@ -137,4 +152,12 @@ Future<void> _chunksIterator(
   );
 
   return;
+}
+
+/// now + a random int
+String _generateUniqueId() {
+  final random = math.Random();
+  final timestamp = DateTime.now().millisecondsSinceEpoch;
+  final randomValue = random.nextInt(100000);
+  return '$timestamp$randomValue';
 }

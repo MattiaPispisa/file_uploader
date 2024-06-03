@@ -1,27 +1,43 @@
 part of 'file_upload_controller.dart';
 
-class _FileUploadController implements FileUploadController {
-  const _FileUploadController({
-    required this.handler,
-    this.logger,
-  });
+class _FileUploadController extends FileUploadController {
+  _FileUploadController({
+    required FileUploadHandler handler,
+    FileUploaderLogger? logger,
+  })  : _handler = handler,
+        _logger = logger,
+        super._();
 
-  final FileUploadHandler handler;
-  final FileUploaderLogger? logger;
+  final FileUploadHandler _handler;
+  final FileUploaderLogger? _logger;
 
   @override
-  Future<void> upload({
+  Future<FileUploadResult> upload({
     ProgressCallback? onProgress,
-  }) {
-    logger?.info('uploading file ${handler.file.path}');
-    return handler.upload(onProgress: onProgress);
+  }) async {
+    _ensureNotUploaded();
+    _logger?.info('uploading file ${_handler.file.path}');
+    await _handler.upload(onProgress: onProgress);
+    _setUploaded();
+
+    return FileUploadResult(
+      file: _handler.file,
+      id: _generateUniqueId(),
+    );
   }
 
   @override
-  Future<void> retry({
+  Future<FileUploadResult> retry({
     ProgressCallback? onProgress,
-  }) {
-    logger?.info('retry file ${handler.file.path}');
-    return handler.upload();
+  }) async {
+    _ensureNotUploaded();
+    _logger?.info('retry file ${_handler.file.path}');
+    await _handler.upload();
+    _setUploaded();
+
+    return FileUploadResult(
+      file: _handler.file,
+      id: _generateUniqueId(),
+    );
   }
 }
