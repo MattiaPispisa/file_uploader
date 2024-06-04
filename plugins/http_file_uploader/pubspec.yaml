@@ -1,17 +1,16 @@
 name: http_file_uploader
-description: A File_Uploader plugin to handle the file upload using http package. Provides the capability to upload file in chunks handling the retry.
-version: 0.1.0+1
+description: A File_Uploader plugin to handle the file upload using http package. Provides the capability to upload a file in chunks with built-in retry handling.
+version: 1.0.0
 homepage: https://mattiapispisa.github.io/
 repository: https://github.com/MattiaPispisa/file_uploader
-topics: [file, upload, chunks, retry]
+topics: [http, file, upload, chunks, retry]
 
 environment:
   sdk: ">=2.18.0 <4.0.0"
 
 dependencies:
-  file_uploader:
-    path: ../../file_uploader
-  http: any
+  en_file_uploader: ^1.0.0
+  http: ^1.0.0
 
 dev_dependencies:
   test: ^1.25.2

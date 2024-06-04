@@ -1,4 +1,4 @@
-import 'package:file_uploader/file_uploader.dart';
+import 'package:en_file_uploader/en_file_uploader.dart';
 
 /// [FileUploadHandler] handle the upload of an entire file
 abstract class FileUploadHandler extends IFileUploadHandler {

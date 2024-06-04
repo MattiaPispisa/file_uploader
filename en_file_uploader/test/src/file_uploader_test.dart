@@ -1,5 +1,4 @@
-// ignore_for_file: prefer_const_constructors
-import 'package:file_uploader/file_uploader.dart';
+import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:test/test.dart';
 import 'mock_restorable_chunked_file_upload_handler.dart';
 import 'robot.dart';
@@ -64,7 +63,7 @@ void main() {
               },
               statusFn: (presentation) {
                 return Future.value(
-                  FileUploadStatusResponse(nextChunkOffset: 2),
+                  const FileUploadStatusResponse(nextChunkOffset: 2),
                 );
               },
             );

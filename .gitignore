@@ -1,3 +1,10 @@
+pubspec_overrides.yaml
+
+# Melos
+**/.melos_package
+.melos_packages
+melos_overrides.yaml
 
 # FVM Version Cache
 .fvm/
+.fvmrc

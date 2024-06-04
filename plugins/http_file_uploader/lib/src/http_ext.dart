@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:file_uploader/file_uploader.dart';
+import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:http/http.dart' as http;
 
 /// An extension of the [http.Client] with methods used by every handlers

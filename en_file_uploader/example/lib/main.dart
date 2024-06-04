@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:file_uploader/file_uploader.dart';
+import 'package:en_file_uploader/en_file_uploader.dart';
 
 final backend = InMemoryBackend();
 

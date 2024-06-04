@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:file_uploader/file_uploader.dart';
+import 'package:en_file_uploader/en_file_uploader.dart';
 
 /// the response of a file uploaded
 class FileUploadResult {

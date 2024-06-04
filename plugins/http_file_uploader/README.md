@@ -15,7 +15,7 @@ A [File_Uploader] plugin to handle the file upload using [http](https://pub.dev/
 3. Call `controller.upload`
 
 ```dart
-import 'package:file_uploader/file_uploader.dart';
+import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:http_file_uploader/http_file_uploader.dart';
 import 'package:http/http.dart';
 

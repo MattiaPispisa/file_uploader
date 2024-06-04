@@ -4,5 +4,5 @@ repository: https://github.com/MattiaPispisa/file_uploader
 sdkPath: .fvm/flutter_sdk
 
 packages:
-  - "file_uploader"
+  - "en_file_uploader"
   - "plugins/*"

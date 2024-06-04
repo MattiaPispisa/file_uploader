@@ -7,8 +7,7 @@ environment:
   sdk: "^3.3.0"
 
 dependencies:
-  file_uploader:
-    path: ../../../file_uploader
+  en_file_uploader: ^1.0.0
   http_file_uploader:
     path: ../
   http: ^1.0.0

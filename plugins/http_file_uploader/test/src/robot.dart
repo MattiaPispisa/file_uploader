@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:file_uploader/file_uploader.dart';
+import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:http/http.dart';
 import 'package:http/testing.dart';
 import 'package:test/expect.dart';

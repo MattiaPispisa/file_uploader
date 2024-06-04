@@ -1,4 +1,4 @@
-import 'package:file_uploader/file_uploader.dart';
+import 'package:en_file_uploader/en_file_uploader.dart';
 
 /// [RestorableChunkedFileUploadHandler] handle the file upload in chunk with
 /// the capability to retry the upload from the last chunk sent.

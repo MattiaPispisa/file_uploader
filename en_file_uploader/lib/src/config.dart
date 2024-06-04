@@ -1,5 +1,5 @@
 import 'dart:math' as math;
-import 'package:file_uploader/file_uploader.dart';
+import 'package:en_file_uploader/en_file_uploader.dart';
 
 /// contains every global option for file upload
 class _FileUploaderConfiguration {
