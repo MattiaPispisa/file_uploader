@@ -7,9 +7,12 @@ import 'package:http/http.dart';
 
 main() async {
   final client = Client();
-  final file = File("fake_file");
+  final tempDir = Directory.systemTemp.createTempSync();
+  final file = File('${tempDir.path}/file.txt')..writeAsStringSync("hi");
 
-  final baseRequestPath = "my-server";
+  final baseRequestPath = "my-request";
+
+  final headers = {"Authorization": "Bearer XXX"};
 
   final restorableHandler = HttpRestorableChunkedFileHandler(
     client: client,
@@ -17,30 +20,49 @@ main() async {
     presentMethod: "POST",
     chunkMethod: "PATCH",
     statusMethod: "HEAD",
-    presentPath: "$baseRequestPath/upload/presentation",
-    chunkPath: (presentation, _) =>
-        "$baseRequestPath/upload/${presentation.id}/chunk",
-    statusPath: (presentation) =>
-        "$baseRequestPath/upload/${presentation.id}/status",
+    presentPath: "$baseRequestPath",
+    chunkPath: (presentation, _) => "$baseRequestPath&patch=${presentation.id}",
+    statusPath: (presentation) => "$baseRequestPath&status=${presentation.id}",
     presentHeaders: {
-      "size": file.lengthSync().toString(),
+      "Upload-Length": file.lengthSync().toString(),
+      ...headers,
     },
     chunkHeaders: (presentation, chunk) {
-      return {
-        "from": chunk.start.toString(),
-        "end": chunk.end.toString(),
-      };
+      return headers;
     },
     statusHeaders: null,
     presentParser: (response) =>
-        FileUploadPresentationResponse(id: jsonDecode(response.body)),
+        FileUploadPresentationResponse(id: response.body),
     statusParser: (response) =>
         FileUploadStatusResponse(nextChunkOffset: jsonDecode(response.body)),
     chunkSize: 1024 * 1024, // 1mb
-    presentBody: null, chunkBody: null,
+    presentBody: null,
+    chunkBody: null,
     statusBody: null,
   );
 
-  final controller = FileUploadController(restorableHandler);
+  final controller = FileUploadController(
+    restorableHandler,
+    logger: PrintLogger(),
+  );
   await controller.upload();
+
+  print("done!");
+}
+
+class PrintLogger implements FileUploaderLogger {
+  @override
+  void error(String message, error, stackTrace) {
+    print(message);
+  }
+
+  @override
+  void info(String message) {
+    print(message);
+  }
+
+  @override
+  void warning(String message) {
+    print(message);
+  }
 }
