@@ -2,7 +2,7 @@
 
 ## Core
 
-- [file_uploader](https://github.com/MattiaPispisa/file_uploader/tree/main/file_uploader): core library that handle file upload.
+- [en_file_uploader](https://github.com/MattiaPispisa/file_uploader/tree/main/en_file_uploader): core library that handle file upload.
 
 ## [Plugins](https://github.com/MattiaPispisa/file_uploader/tree/main/plugins)
 
