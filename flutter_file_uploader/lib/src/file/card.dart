@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_file_uploader/src/_constants.dart';
 
 class FileCard extends StatelessWidget {
   const FileCard({
     super.key,
-    this.progress = 0.0,
     required this.content,
+    required this.semantic,
+    this.progress = 0.0,
     this.retryIcon = Icons.rotate_left_rounded,
     this.removeIcon = Icons.delete,
-    required this.semantic,
     this.borderRadius,
     this.elevation,
     this.onRemove,
@@ -47,7 +48,7 @@ class FileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = borderRadius ?? BorderRadius.circular(4);
+    final radius = borderRadius ?? BorderRadius.circular(kFileUploaderRadius);
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: radius),
