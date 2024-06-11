@@ -84,6 +84,10 @@ abstract class FileUploadController {
 
   bool _uploaded = false;
 
+  /// return `true` if the file has already been uploaded.
+  /// A file that has been uploaded cannot be uploaded again.
+  bool get uploaded => _uploaded;
+
   /// set the file as uploaded
   void _setUploaded() => _uploaded = true;
 

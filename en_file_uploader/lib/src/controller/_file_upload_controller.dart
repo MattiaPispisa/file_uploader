@@ -17,8 +17,12 @@ class _FileUploadController extends FileUploadController {
   }) async {
     _ensureNotUploaded();
     _logger?.info('uploading file ${_handler.file.path}');
+    final size = await _handler.file.length();
+
     await _handler.upload(onProgress: onProgress);
+
     _setUploaded();
+    onProgress?.call(size, size);
 
     return FileUploadResult(
       file: _handler.file,
@@ -32,8 +36,12 @@ class _FileUploadController extends FileUploadController {
   }) async {
     _ensureNotUploaded();
     _logger?.info('retry file ${_handler.file.path}');
+    final size = await _handler.file.length();
+
     await _handler.upload();
+
     _setUploaded();
+    onProgress?.call(size, size);
 
     return FileUploadResult(
       file: _handler.file,

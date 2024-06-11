@@ -1,7 +1,7 @@
 import 'dart:io';
+import 'dart:math';
 
-import 'package:http/http.dart';
-import 'package:http_file_uploader/http_file_uploader.dart';
+import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:example/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
@@ -44,25 +44,27 @@ class ShowCase extends StatelessWidget {
             children: [
               Center(
                 child: FileUploader(
-                  builder: (context, controller) {
-                    return FileCard(
+                  builder: (context, ref) {
+                    return ProvidedFileCard(
+                      ref: ref,
                       content: Text("filename"),
-                      progress: 0.3,
-                      semantic: FileCardSemantic.waiting,
-                      onRemove: () => {},
                     );
                   },
                   onPressedAddFiles: () async {
                     await Future.delayed(const Duration(seconds: 1));
-                    return [File("ciao")];
+                    return [createFile()];
                   },
                   onFileAdded: (file) async {
                     await Future.delayed(const Duration(milliseconds: 500));
-                    return HttpFileHandler(
-                      path: "aa",
+                    return MockFileHandler(
                       file: file,
-                      client: Client(),
                     );
+                  },
+                  onFileUploaded: (file) {
+                    print("file uploaded ${file.id}");
+                  },
+                  onFileRemoved: (file) {
+                    print("file removed ${file.id}");
                   },
                   placeholder: Text("add a file"),
                 ),
@@ -73,4 +75,26 @@ class ShowCase extends StatelessWidget {
       ),
     );
   }
+}
+
+class MockFileHandler extends FileUploadHandler {
+  MockFileHandler({required super.file});
+
+  @override
+  Future<void> upload({ProgressCallback? onProgress}) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return;
+  }
+}
+
+File createFile({
+  int length = 1024,
+}) {
+  final tempDir = Directory.systemTemp.createTempSync();
+  final file = File('${tempDir.path}/file.txt');
+
+  final random = Random();
+  final buffer = List<int>.generate(length, (_) => random.nextInt(256));
+  file.writeAsBytesSync(buffer);
+  return file;
 }

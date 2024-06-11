@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/src/_constants.dart';
 
+const _kAnimationDuration = Duration(milliseconds: 250);
+
 class FileCard extends StatelessWidget {
   const FileCard({
     super.key,
@@ -50,34 +52,38 @@ class FileCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final radius = borderRadius ?? BorderRadius.circular(kFileUploaderRadius);
 
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: radius),
-      elevation: elevation,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: padding,
-            child: _FileCardContent(
-              content: content,
-              removeIcon: removeIcon,
-              retryIcon: retryIcon,
-              semantic: semantic,
-              onRemove: onRemove,
-              onRetry: onRetry,
-              uploadColor: uploadColor,
-              uploadIcon: uploadIcon,
-              onUpload: onUpload,
-              removeColor: removeColor,
-              retryColor: retryColor,
+    return AnimatedOpacity(
+      duration: _kAnimationDuration,
+      opacity: semantic._disabled ? 0.8 : 1,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: radius),
+        elevation: elevation,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: padding,
+              child: _FileCardContent(
+                content: content,
+                removeIcon: removeIcon,
+                retryIcon: retryIcon,
+                semantic: semantic,
+                onRemove: onRemove,
+                onRetry: onRetry,
+                uploadColor: uploadColor,
+                uploadIcon: uploadIcon,
+                onUpload: onUpload,
+                removeColor: removeColor,
+                retryColor: retryColor,
+              ),
             ),
-          ),
-          _FileCardProgress(
-            radius: radius,
-            progress: progress,
-            height: progressHeight,
-          ),
-        ],
+            _FileCardProgress(
+              radius: radius,
+              progress: progress,
+              height: progressHeight,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -120,7 +126,10 @@ class _FileCardContent extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         content,
-        _action(context),
+        AnimatedSwitcher(
+          duration: _kAnimationDuration,
+          child: _action(context),
+        ),
       ],
     );
   }
@@ -130,6 +139,7 @@ class _FileCardContent extends StatelessWidget {
 
     if (semantic._showRemove) {
       return _FileCardButton(
+        key: ValueKey("remove button"),
         iconData: removeIcon,
         onPressed: onRemove,
         color: removeColor ?? theme.colorScheme.error,
@@ -137,6 +147,7 @@ class _FileCardContent extends StatelessWidget {
     }
     if (semantic._showRetry) {
       return _FileCardButton(
+        key: ValueKey("retry button"),
         iconData: retryIcon,
         onPressed: onRetry,
         color: retryColor ?? theme.colorScheme.error,
@@ -144,12 +155,19 @@ class _FileCardContent extends StatelessWidget {
     }
     if (semantic._showUpload) {
       return _FileCardButton(
+        key: ValueKey("upload button"),
         iconData: uploadIcon,
         onPressed: onUpload,
         color: uploadColor ?? theme.colorScheme.primary,
       );
     }
-    return SizedBox();
+
+    // fake button for layout
+    return _FileCardButton(
+      key: ValueKey("fake button"),
+      iconData: uploadIcon,
+      color: Colors.transparent,
+    );
   }
 }
 
@@ -188,7 +206,7 @@ class _FileCardProgressState extends State<_FileCardProgress> {
     final theme = Theme.of(context);
 
     return TweenAnimationBuilder(
-      duration: const Duration(milliseconds: 250),
+      duration: _kAnimationDuration,
       tween: Tween(begin: _lastProgress, end: widget.progress),
       builder: (context, tweenProgress, child) {
         return LinearProgressIndicator(

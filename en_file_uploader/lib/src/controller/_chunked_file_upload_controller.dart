@@ -38,6 +38,7 @@ class _ChunkedFileUploadController extends FileUploadController {
     );
 
     _setUploaded();
+    onProgress?.call(size, size);
 
     return FileUploadResult(
       file: _handler.file,
@@ -52,17 +53,27 @@ class _ChunkedFileUploadController extends FileUploadController {
     _ensureNotUploaded();
     _logger?.info('retry file ${_handler.file.path}');
 
+    final size = await _handler.file.length();
+    var count = 0;
+
     await _chunksIterator(
       _handler.file,
       chunkSize: _handler.chunkSize,
       chunkCallback: (chunk, i) {
         _logger?.info('uploading chunk $i');
 
-        return _handler.uploadChunk(chunk);
+        return _handler.uploadChunk(
+          chunk,
+          onProgress: (chunkCount, _) {
+            count += chunkCount;
+            onProgress?.call(count, size);
+          },
+        );
       },
     );
 
     _setUploaded();
+    onProgress?.call(size, size);
 
     return FileUploadResult(
       file: _handler.file,

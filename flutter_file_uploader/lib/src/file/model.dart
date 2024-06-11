@@ -1,23 +1,23 @@
 import 'dart:math' as math;
-
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
+import 'package:flutter_file_uploader/src/file_uploader/model.dart';
 
 class FileUploadControllerModel with ChangeNotifier {
   FileUploadControllerModel({
-    required FileUploadController controller,
+    required FileUploaderRef ref,
     bool startOnInit = true,
     double progress = 0,
     FileCardSemantic semantic = FileCardSemantic.waiting,
-  })  : _controller = controller,
+  })  : _ref = ref,
         _startOnInit = startOnInit,
         _progress = math.min(progress, 1.0),
         _semantic = semantic {
     _startup();
   }
 
-  final FileUploadController _controller;
+  final FileUploaderRef _ref;
   final bool _startOnInit;
 
   double _progress;
@@ -25,6 +25,8 @@ class FileUploadControllerModel with ChangeNotifier {
 
   FileCardSemantic _semantic;
   FileCardSemantic get semantic => _semantic;
+
+  FileUploadResult? _result;
 
   void upload() {
     _upload(false);
@@ -46,6 +48,15 @@ class FileUploadControllerModel with ChangeNotifier {
       return null;
     }
     return retry;
+  }
+
+  void Function()? removeCallback() {
+    if (_result == null) {
+      return null;
+    }
+    return () {
+      _ref.onRemoved();
+    };
   }
 
   void _startup() {
@@ -71,10 +82,13 @@ class FileUploadControllerModel with ChangeNotifier {
       }
 
       _semantic = FileCardSemantic.uploading;
-      await retry
-          ? _controller.retry(onProgress: _updateProgress)
-          : _controller.upload(onProgress: _updateProgress);
+      final result = await (retry
+          ? _ref.controller.retry(onProgress: _updateProgress)
+          : _ref.controller.upload(onProgress: _updateProgress));
       _semantic = FileCardSemantic.done;
+      _result = result;
+      _ref.onUpload(result);
+      notifyListeners();
     } catch (e) {
       _semantic = FileCardSemantic.failed;
       notifyListeners();

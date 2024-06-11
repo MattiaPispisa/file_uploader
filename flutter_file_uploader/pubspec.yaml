@@ -11,7 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
   mobkit_dashed_border: ^0.0.6
-  en_file_uploader: 1.0.1
+  en_file_uploader: 
+    path: ../en_file_uploader
   provider: ^6.1.2
 
 dev_dependencies:

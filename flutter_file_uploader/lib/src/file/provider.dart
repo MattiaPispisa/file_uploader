@@ -1,24 +1,23 @@
-import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_file_uploader/src/file/model.dart';
+import 'package:flutter_file_uploader/src/file_uploader/model.dart';
 import 'package:provider/provider.dart';
-
-import 'model.dart';
 
 class FileUploadControllerProvider extends StatelessWidget {
   const FileUploadControllerProvider({
     super.key,
-    required this.controller,
+    required this.ref,
     required this.child,
   });
 
-  final FileUploadController controller;
+  final FileUploaderRef ref;
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => FileUploadControllerModel(
-        controller: controller,
+        ref: ref,
       ),
       child: child,
     );

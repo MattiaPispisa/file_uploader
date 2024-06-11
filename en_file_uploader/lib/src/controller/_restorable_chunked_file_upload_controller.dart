@@ -41,6 +41,7 @@ class _RestorableChunkedFileUploadController extends FileUploadController {
     );
 
     _setUploaded();
+    onProgress?.call(size, size);
 
     return FileUploadResult(
       file: _handler.file,
@@ -82,6 +83,7 @@ class _RestorableChunkedFileUploadController extends FileUploadController {
     );
 
     _setUploaded();
+    onProgress?.call(size, size);
 
     return FileUploadResult(
       file: _handler.file,

@@ -1,29 +1,51 @@
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_file_uploader/src/file_uploader/ui.dart';
 
-import 'ui.dart';
-
+/// The model that manages file uploads and removals.
 class FileUploaderModel with ChangeNotifier {
+  /// The model that manages file uploads and removals.
   FileUploaderModel({
     FileUploaderLogger? logger,
-    bool processingFiles = false,
-    String? errorOnFiles = null,
-    List<FileUploadController> controllers = const <FileUploadController>[],
-  })  : _processingFiles = processingFiles,
-        _controllers = controllers,
-        _logger = logger;
+    OnFileUploaded? onFileUploaded,
+    OnFileRemoved? onFileRemoved,
+  })  : _processingFiles = false,
+        _controllers = const <FileUploadController>[],
+        _logger = logger,
+        _filesUploaded = {},
+        _errorOnFiles = null,
+        _onFileUploaded = onFileUploaded,
+        _onFileRemoved = onFileRemoved;
 
   bool _processingFiles;
+
+  /// true if there are files under processing
   bool get processingFiles => _processingFiles;
 
   String? _errorOnFiles;
+
+  /// null: no error present
+  ///
+  /// else: the error string
   String? get errorOnFiles => _errorOnFiles;
 
+  final OnFileUploaded? _onFileUploaded;
+  final OnFileRemoved? _onFileRemoved;
+
   List<FileUploadController> _controllers;
-  List<FileUploadController> get controllers => _controllers;
 
-  FileUploaderLogger? _logger;
+  /// The references to be used by the widgets that handle file uploads:
+  Iterable<FileUploaderRef> get refs {
+    return _controllers.map(_fileUploaderRefBuilder);
+  }
 
+  /// preserve files uploaded
+  final Map<FileUploadController, FileUploadResult> _filesUploaded;
+
+  /// logger
+  final FileUploaderLogger? _logger;
+
+  /// Returns the callback to execute when you want to handle a set of files.
   Future<void> Function()? onPressedAddFiles({
     OnPressedAddFilesCallback? onPressedAddFiles,
     OnFileAdded? onFileAdded,
@@ -44,7 +66,7 @@ class FileUploaderModel with ChangeNotifier {
         final controllers = <FileUploadController>[];
 
         await Future.forEach(files, (file) async {
-          controllers.add(_controller(await onFileAdded(file)));
+          controllers.add(_controllerBuilder(await onFileAdded(file)));
         });
 
         _setStopProcessing(controllers);
@@ -54,30 +76,81 @@ class FileUploaderModel with ChangeNotifier {
     };
   }
 
-  void onRemovedController(FileUploadController controller) {
+  /// remove [FileUploadController] from [_controllers] and
+  ///
+  /// remove [FileUploadResult] from [_filesUploaded]
+  ///
+  /// call [_onFileRemoved]
+  void _onRemoved(FileUploadController controller) {
+    final file = _filesUploaded[controller];
+    if (file == null) {
+      return;
+    }
+
     _controllers.remove(controller);
+    _filesUploaded.remove(controller);
+    _onFileRemoved?.call(file);
     notifyListeners();
   }
 
-  FileUploadController _controller(IFileUploadHandler handler) {
+  /// add [FileUploadResult] to [_filesUploaded]
+  ///
+  /// call [_onFileUploaded]
+  void _onUploaded(FileUploadController controller, FileUploadResult result) {
+    _filesUploaded.putIfAbsent(controller, () => result);
+    _onFileUploaded?.call(result);
+  }
+
+  /// [FileUploadController] builder
+  FileUploadController _controllerBuilder(IFileUploadHandler handler) {
     return FileUploadController(handler, logger: _logger);
   }
 
+  /// [FileUploaderRef] builder
+  FileUploaderRef _fileUploaderRefBuilder(FileUploadController controller) {
+    return FileUploaderRef._(
+      controller: controller,
+      onRemoved: () => _onRemoved(controller),
+      onUpload: (result) => _onUploaded(controller, result),
+    );
+  }
+
+  /// start processing
   void _setProcessing() {
     _processingFiles = true;
     notifyListeners();
   }
 
+  /// stop processing (controllers are available)
   void _setStopProcessing(List<FileUploadController> controllers) {
     _processingFiles = false;
     _controllers = [..._controllers, ...controllers];
     notifyListeners();
   }
 
+  /// set error
   void _setErrorOnProcessing(dynamic e, dynamic stackTrace) {
     _processingFiles = false;
     _errorOnFiles = e.toString();
     _logger?.error(e.toString(), e, stackTrace);
     notifyListeners();
   }
+}
+
+/// A reference to [FileUploaderModel] for those who want to manage file uploads
+class FileUploaderRef {
+  FileUploaderRef._({
+    required this.controller,
+    required this.onRemoved,
+    required this.onUpload,
+  });
+
+  /// controller that handle the file upload and retry
+  final FileUploadController controller;
+
+  /// callback to fire on file removed
+  final void Function() onRemoved;
+
+  /// callback to fire on file upload
+  final void Function(FileUploadResult file) onUpload;
 }
