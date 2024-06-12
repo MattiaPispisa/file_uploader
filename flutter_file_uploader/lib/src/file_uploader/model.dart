@@ -1,6 +1,6 @@
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_file_uploader/src/file_uploader/ui.dart';
+import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 
 /// The model that manages file uploads and removals.
 class FileUploaderModel with ChangeNotifier {
@@ -9,6 +9,7 @@ class FileUploaderModel with ChangeNotifier {
     FileUploaderLogger? logger,
     OnFileUploaded? onFileUploaded,
     OnFileRemoved? onFileRemoved,
+    this.limit,
   })  : _processingFiles = false,
         _controllers = const <FileUploadController>[],
         _logger = logger,
@@ -45,6 +46,9 @@ class FileUploaderModel with ChangeNotifier {
   /// logger
   final FileUploaderLogger? _logger;
 
+  /// maximum number of files that can be uploaded
+  final int? limit;
+
   /// Returns the callback to execute when you want to handle a set of files.
   Future<void> Function()? onPressedAddFiles({
     OnPressedAddFilesCallback? onPressedAddFiles,
@@ -55,6 +59,10 @@ class FileUploaderModel with ChangeNotifier {
     }
 
     if (onPressedAddFiles == null || onFileAdded == null) {
+      return null;
+    }
+
+    if (limit != null && _controllers.length >= limit!) {
       return null;
     }
 
@@ -108,7 +116,7 @@ class FileUploaderModel with ChangeNotifier {
 
   /// [FileUploaderRef] builder
   FileUploaderRef _fileUploaderRefBuilder(FileUploadController controller) {
-    return FileUploaderRef._(
+    return FileUploaderRef(
       controller: controller,
       onRemoved: () => _onRemoved(controller),
       onUpload: (result) => _onUploaded(controller, result),
@@ -135,22 +143,4 @@ class FileUploaderModel with ChangeNotifier {
     _logger?.error(e.toString(), e, stackTrace);
     notifyListeners();
   }
-}
-
-/// A reference to [FileUploaderModel] for those who want to manage file uploads
-class FileUploaderRef {
-  FileUploaderRef._({
-    required this.controller,
-    required this.onRemoved,
-    required this.onUpload,
-  });
-
-  /// controller that handle the file upload and retry
-  final FileUploadController controller;
-
-  /// callback to fire on file removed
-  final void Function() onRemoved;
-
-  /// callback to fire on file upload
-  final void Function(FileUploadResult file) onUpload;
 }

@@ -2,18 +2,28 @@ import 'dart:math' as math;
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
-import 'package:flutter_file_uploader/src/file_uploader/model.dart';
 
+/// The model that manages the upload state of a file.
+///
+/// Expose [uploadCallback] and [retryCallback] to run the file upload.
+/// [upload] and [retry] run the same functions as
+/// [uploadCallback] and [retryCallback]
+///
+/// [progress] track the file upload progress
+///
 class FileUploadControllerModel with ChangeNotifier {
+  /// The model that manages the upload state of a file
+  ///
+  /// [startOnInit] to run the upload immediately
   FileUploadControllerModel({
     required FileUploaderRef ref,
     bool startOnInit = true,
     double progress = 0,
-    FileCardSemantic semantic = FileCardSemantic.waiting,
+    FileUploadStatus status = FileUploadStatus.waiting,
   })  : _ref = ref,
         _startOnInit = startOnInit,
-        _progress = math.min(progress, 1.0),
-        _semantic = semantic {
+        _progress = math.min(progress, 1),
+        _status = status {
     _startup();
   }
 
@@ -21,21 +31,28 @@ class FileUploadControllerModel with ChangeNotifier {
   final bool _startOnInit;
 
   double _progress;
+
+  /// file upload progress
   double get progress => _progress;
 
-  FileCardSemantic _semantic;
-  FileCardSemantic get semantic => _semantic;
+  FileUploadStatus _status;
+
+  /// file upload status
+  FileUploadStatus get status => _status;
 
   FileUploadResult? _result;
 
+  /// upload the file
   void upload() {
     _upload(false);
   }
 
+  /// retry the file upload
   void retry() {
     _upload(true);
   }
 
+  /// return [upload] if is available else null
   void Function()? uploadCallback() {
     if (!_canUpload()) {
       return null;
@@ -43,6 +60,7 @@ class FileUploadControllerModel with ChangeNotifier {
     return upload;
   }
 
+  /// return [retry] if is available else null
   void Function()? retryCallback() {
     if (!_canUpload()) {
       return null;
@@ -50,15 +68,15 @@ class FileUploadControllerModel with ChangeNotifier {
     return retry;
   }
 
+  /// callback to remove the file uploaded
   void Function()? removeCallback() {
     if (_result == null) {
       return null;
     }
-    return () {
-      _ref.onRemoved();
-    };
+    return _ref.onRemoved;
   }
 
+  /// upload on init
   void _startup() {
     if (!_startOnInit) {
       return;
@@ -66,6 +84,7 @@ class FileUploadControllerModel with ChangeNotifier {
     upload();
   }
 
+  /// notify upload progress changes
   void _updateProgress(int count, int total) {
     try {
       _progress = count / total;
@@ -75,28 +94,28 @@ class FileUploadControllerModel with ChangeNotifier {
     }
   }
 
-  void _upload(bool retry) async {
+  Future<void> _upload(bool retry) async {
     try {
       if (!_canUpload()) {
         return;
       }
 
-      _semantic = FileCardSemantic.uploading;
+      _status = FileUploadStatus.uploading;
       final result = await (retry
           ? _ref.controller.retry(onProgress: _updateProgress)
           : _ref.controller.upload(onProgress: _updateProgress));
-      _semantic = FileCardSemantic.done;
+      _status = FileUploadStatus.done;
       _result = result;
       _ref.onUpload(result);
       notifyListeners();
     } catch (e) {
-      _semantic = FileCardSemantic.failed;
+      _status = FileUploadStatus.failed;
       notifyListeners();
     }
   }
 
   bool _canUpload() {
-    return _semantic == FileCardSemantic.failed ||
-        _semantic == FileCardSemantic.waiting;
+    return _status == FileUploadStatus.failed ||
+        _status == FileUploadStatus.waiting;
   }
 }

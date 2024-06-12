@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 import 'package:flutter_file_uploader/src/_constants.dart';
 import 'package:flutter_file_uploader/src/file_uploader/model.dart';
 import 'package:mobkit_dashed_border/mobkit_dashed_border.dart';
@@ -55,6 +56,7 @@ class FileUploader extends StatelessWidget {
     this.gap = 4,
     this.onFileRemoved,
     this.onFileUploaded,
+    this.limit,
   });
 
   /// height of the button
@@ -93,6 +95,9 @@ class FileUploader extends StatelessWidget {
   /// gap between [builder] widgets
   final double gap;
 
+  /// maximum number of files that can be uploaded
+  final int? limit;
+
   @override
   Widget build(BuildContext context) {
     return _Provider(
@@ -100,6 +105,7 @@ class FileUploader extends StatelessWidget {
       onFileRemoved: onFileRemoved,
       onFileUploaded: onFileUploaded,
       logger: logger,
+      limit: limit,
       child: Column(
         children: [
           _builder(context),
@@ -187,6 +193,7 @@ class _Provider extends StatelessWidget {
     required this.child,
     required this.onFileRemoved,
     required this.onFileUploaded,
+    this.limit,
     super.key,
   });
 
@@ -194,6 +201,7 @@ class _Provider extends StatelessWidget {
   final Widget child;
   final OnFileUploaded? onFileUploaded;
   final OnFileRemoved? onFileRemoved;
+  final int? limit;
 
   @override
   Widget build(BuildContext context) {
@@ -202,6 +210,7 @@ class _Provider extends StatelessWidget {
         logger: logger,
         onFileRemoved: onFileRemoved,
         onFileUploaded: onFileUploaded,
+        limit: limit,
       ),
       child: child,
     );

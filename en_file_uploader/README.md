@@ -89,3 +89,4 @@ Other examples are provided in the tests to ensure the correct functionality of 
 - [] more logs
 - [] dio plugin
 - [] flutter widgets to handle the file upload ui
+- [] web compatibility

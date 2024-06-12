@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
-import 'package:flutter_file_uploader/src/file_uploader/model.dart';
 
+/// Apply [FileUploadControllerProvider] and [FileUploadControllerConsumer] to
+/// [FileCard].
+///
+/// Use [FileCard] to build an agnostic file upload widget.
+///
+/// Use [FileUploadControllerProvider] and [FileUploadControllerConsumer]
+/// to control the file upload
+///
+/// Business logic is controlled out of the box,
+/// remaining parameters are just for style.
 class ProvidedFileCard extends StatelessWidget {
+  /// constructor to create a [FileCard] with
+  /// the business logic already built in
   const ProvidedFileCard({
-    super.key,
     required this.ref,
     required this.content,
     this.borderRadius,
@@ -17,26 +27,43 @@ class ProvidedFileCard extends StatelessWidget {
     this.retryIcon = Icons.rotate_left_rounded,
     this.removeIcon = Icons.delete,
     this.removeColor,
+    super.key,
   });
 
+  /// reference to [FileUploader]
   final FileUploaderRef ref;
 
+  /// [FileCard] borderRadius
   final BorderRadius? borderRadius;
+
+  /// [FileCard] padding
   final EdgeInsetsGeometry padding;
 
+  /// [FileCard] elevation
   final double? elevation;
 
+  /// [FileCard] progressHeight
   final double progressHeight;
 
+  /// [FileCard] content
   final Widget content;
 
+  /// [FileCard] uploadIcon
   final IconData uploadIcon;
+
+  /// [FileCard] uploadColor
   final Color? uploadColor;
 
+  /// [FileCard] retryIcon
   final IconData retryIcon;
+
+  /// [FileCard] retryColor
   final Color? retryColor;
 
+  /// [FileCard] removeIcon
   final IconData removeIcon;
+
+  /// [FileCard] removeColor
   final Color? removeColor;
 
   @override
@@ -47,7 +74,7 @@ class ProvidedFileCard extends StatelessWidget {
         builder: (context, model, _) {
           return FileCard(
             content: content,
-            semantic: model.semantic,
+            status: model.status,
             progress: model.progress,
             borderRadius: borderRadius,
             elevation: elevation,

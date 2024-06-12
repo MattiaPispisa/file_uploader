@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 import 'package:flutter_file_uploader/src/_constants.dart';
 
 const _kAnimationDuration = Duration(milliseconds: 250);
 
+/// An agnostic file upload widget.
+///
+/// Use [ProvidedFileCard] to build [FileCard] with business logic
 class FileCard extends StatelessWidget {
+  /// Constructor to build an agnostic file upload widget.
   const FileCard({
-    super.key,
     required this.content,
-    required this.semantic,
+    required this.status,
     this.progress = 0.0,
     this.retryIcon = Icons.rotate_left_rounded,
     this.removeIcon = Icons.delete,
@@ -22,31 +26,56 @@ class FileCard extends StatelessWidget {
     this.uploadIcon = Icons.upload,
     this.onUpload,
     this.uploadColor,
+    super.key,
   });
 
+  /// border radius applied on card
   final BorderRadius? borderRadius;
+
+  /// content padding
   final EdgeInsetsGeometry padding;
 
+  /// card elevation
   final double? elevation;
 
+  /// upload progress (0..1)
   final double progress;
+
+  /// height of the progress indicator
   final double progressHeight;
 
+  /// card child
   final Widget content;
 
+  /// upload button icon
   final IconData uploadIcon;
+
+  /// upload button callback
   final VoidCallback? onUpload;
+
+  /// upload button color
   final Color? uploadColor;
 
+  /// retry button icon
   final IconData retryIcon;
+
+  /// retry button callback
   final VoidCallback? onRetry;
+
+  /// retry button color
   final Color? retryColor;
 
+  /// remove button icon
   final IconData removeIcon;
+
+  /// remove button callback
   final VoidCallback? onRemove;
+
+  /// remove button color
   final Color? removeColor;
 
-  final FileCardSemantic semantic;
+  /// upload status
+  final FileUploadStatus status;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +83,7 @@ class FileCard extends StatelessWidget {
 
     return AnimatedOpacity(
       duration: _kAnimationDuration,
-      opacity: semantic._disabled ? 0.8 : 1,
+      opacity: status._disabled ? 0.8 : 1,
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: radius),
         elevation: elevation,
@@ -67,7 +96,7 @@ class FileCard extends StatelessWidget {
                 content: content,
                 removeIcon: removeIcon,
                 retryIcon: retryIcon,
-                semantic: semantic,
+                semantic: status,
                 onRemove: onRemove,
                 onRetry: onRetry,
                 uploadColor: uploadColor,
@@ -118,7 +147,7 @@ class _FileCardContent extends StatelessWidget {
   final VoidCallback? onRemove;
   final Color? removeColor;
 
-  final FileCardSemantic semantic;
+  final FileUploadStatus semantic;
 
   @override
   Widget build(BuildContext context) {
@@ -264,14 +293,22 @@ class _FileCardButton extends StatelessWidget {
   }
 }
 
-enum FileCardSemantic {
+/// The various states of the upload
+enum FileUploadStatus {
+  /// upload in progress
   uploading,
+
+  /// waiting to start the upload
   waiting,
+
+  /// upload failed
   failed,
+
+  /// upload completed
   done;
 
-  bool get _showRemove => this == FileCardSemantic.done;
-  bool get _showRetry => this == FileCardSemantic.failed;
-  bool get _showUpload => this == FileCardSemantic.waiting;
-  bool get _disabled => this == FileCardSemantic.uploading;
+  bool get _showRemove => this == FileUploadStatus.done;
+  bool get _showRetry => this == FileUploadStatus.failed;
+  bool get _showUpload => this == FileUploadStatus.waiting;
+  bool get _disabled => this == FileUploadStatus.uploading;
 }
