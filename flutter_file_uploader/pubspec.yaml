@@ -1,6 +1,6 @@
 name: flutter_file_uploader
-description: A Very Good Project created by Very Good CLI.
-version: 0.1.0+1
+description: Flutter widgets that simplify the creation and use of the en_file_uploader library. They include both the UI and business logic for file management.
+version: 0.1.0
 publish_to: none
 
 environment:
@@ -11,12 +11,11 @@ dependencies:
   flutter:
     sdk: flutter
   mobkit_dashed_border: ^0.0.6
-  en_file_uploader: 
+  en_file_uploader:
     path: ../en_file_uploader
   provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  mocktail: ^1.0.3
   very_good_analysis: ^5.1.0

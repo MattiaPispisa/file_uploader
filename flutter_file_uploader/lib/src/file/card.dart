@@ -122,16 +122,16 @@ class _FileCardContent extends StatelessWidget {
   const _FileCardContent({
     required this.content,
     required this.uploadIcon,
-    this.onUpload,
     required this.uploadColor,
     required this.retryIcon,
+    required this.removeIcon,
+    required this.semantic,
+    this.onUpload,
     this.onRetry,
     this.retryColor,
-    required this.removeIcon,
     this.onRemove,
     this.removeColor,
-    required this.semantic,
-  }) : super(key: const ValueKey("_FileCardContent"));
+  }) : super(key: const ValueKey('_FileCardContent'));
 
   final Widget content;
 
@@ -168,7 +168,7 @@ class _FileCardContent extends StatelessWidget {
 
     if (semantic._showRemove) {
       return _FileCardButton(
-        key: ValueKey("remove button"),
+        key: const ValueKey('remove button'),
         iconData: removeIcon,
         onPressed: onRemove,
         color: removeColor ?? theme.colorScheme.error,
@@ -176,7 +176,7 @@ class _FileCardContent extends StatelessWidget {
     }
     if (semantic._showRetry) {
       return _FileCardButton(
-        key: ValueKey("retry button"),
+        key: const ValueKey('retry button'),
         iconData: retryIcon,
         onPressed: onRetry,
         color: retryColor ?? theme.colorScheme.error,
@@ -184,7 +184,7 @@ class _FileCardContent extends StatelessWidget {
     }
     if (semantic._showUpload) {
       return _FileCardButton(
-        key: ValueKey("upload button"),
+        key: const ValueKey('upload button'),
         iconData: uploadIcon,
         onPressed: onUpload,
         color: uploadColor ?? theme.colorScheme.primary,
@@ -193,7 +193,7 @@ class _FileCardContent extends StatelessWidget {
 
     // fake button for layout
     return _FileCardButton(
-      key: ValueKey("fake button"),
+      key: const ValueKey('fake button'),
       iconData: uploadIcon,
       color: Colors.transparent,
     );
@@ -205,7 +205,7 @@ class _FileCardProgress extends StatefulWidget {
     required this.progress,
     required this.radius,
     required this.height,
-  }) : super(key: const ValueKey("_FileCardProgress"));
+  }) : super(key: const ValueKey('_FileCardProgress'));
 
   final double progress;
   final BorderRadius radius;
@@ -255,10 +255,10 @@ class _FileCardProgressState extends State<_FileCardProgress> {
 
 class _FileCardButton extends StatelessWidget {
   const _FileCardButton({
-    super.key,
     required this.iconData,
-    this.onPressed,
     required this.color,
+    super.key,
+    this.onPressed,
   });
 
   final IconData iconData;
@@ -268,7 +268,7 @@ class _FileCardButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final style = theme.outlinedButtonTheme.style ?? ButtonStyle();
+    final style = theme.outlinedButtonTheme.style ?? const ButtonStyle();
 
     final stateColor = WidgetStatePropertyAll(color);
 
@@ -282,8 +282,6 @@ class _FileCardButton extends StatelessWidget {
         side: WidgetStatePropertyAll(
           BorderSide(
             color: color,
-            width: 1.0,
-            style: BorderStyle.solid,
           ),
         ),
       ),
