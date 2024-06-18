@@ -1,11 +1,13 @@
 name: flutter_file_uploader
 description: Flutter widgets that simplify the creation and use of the en_file_uploader library. They include both the UI and business logic for file management.
 version: 0.1.0
-topics: [en_file_uploader, file, upload, widgets]
+topics: [file, upload, widgets, en-file-uploader]
+homepage: https://mattiapispisa.github.io/
+repository: https://github.com/MattiaPispisa/file_uploader
 
 environment:
-  sdk: "^3.3.0"
-  flutter: "^3.19.0"
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
 
 dependencies:
   flutter:
