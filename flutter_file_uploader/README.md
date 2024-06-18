@@ -1,67 +1,66 @@
 # Flutter File Uploader
 
-[![style: very good analysis][very_good_analysis_badge]][very_good_analysis_link]
-[![Powered by Mason](https://img.shields.io/endpoint?url=https%3A%2F%2Ftinyurl.com%2Fmason-badge)](https://github.com/felangel/mason)
-[![License: MIT][license_badge]][license_link]
+## Features
 
-A Very Good Project created by Very Good CLI.
+This package uses `en_file_uploader` and provides widgets for displaying and managing file uploads.
 
-## Installation 💻
+`FileUploader` is a widget that encapsulates the logic for adding and removing files to be uploaded. Each file can have its own `IFileUploadHandler` for customized uploads.
 
-**❗ In order to start using Flutter File Uploader you must have the [Flutter SDK][flutter_install_link] installed on your machine.**
+`FileCard` is a file upload widget agnostic of `en_file_uploader`, while `FileUploadControllerProvider` is a provider that encapsulates the business logic for uploading a file. `ProvidedFileCard` combines `FileCard` with `FileUploadControllerProvider`.
 
-Install via `flutter pub add`:
+## Usage
 
-```sh
-dart pub add flutter_file_uploader
+```dart
+FileUploader(
+    builder: (context, ref) {
+        // for each file a ref is created using the provided `IFileUploadHandler`.
+        // Here, a widget for managing file uploads should be inserted.
+        // ProvidedFileCard automatically provides complete file management and allows for graphical customization.
+        // To manage the upload while creating your own widget, use only FileUploadControllerProvider. For just the UI, use FileCard.
+        return ProvidedFileCard(
+            ref: ref,
+            content: Text("filename"),
+        );
+    },
+    onPressedAddFiles: () async {
+        // on tap add a list of files
+    },
+    onFileAdded: (file) async {
+        // for each file added create a custom `IFileUploadHandler`
+    },
+    onFileUploaded: (file) {
+        print("file uploaded ${file.id}");
+    },
+    onFileRemoved: (file) {
+        print("file removed ${file.id}");
+    },
+    placeholder: Text("add a file"),
+),
 ```
 
----
+## Widgets
 
-## Continuous Integration 🤖
+### FileUploader
 
-Flutter File Uploader comes with a built-in [GitHub Actions workflow][github_actions_link] powered by [Very Good Workflows][very_good_workflows_link] but you can also add your preferred CI/CD solution.
+`FileUploader` is a widget that encapsulates the logic for adding and removing files to be uploaded. Each file can have its own `IFileUploadHandler` for customized uploads.
 
-Out of the box, on each pull request and push, the CI `formats`, `lints`, and `tests` the code. This ensures the code remains consistent and behaves correctly as you add functionality or make changes. The project uses [Very Good Analysis][very_good_analysis_link] for a strict set of analysis options used by our team. Code coverage is enforced using the [Very Good Workflows][very_good_coverage_link].
+### Providers
 
----
+Widgets that use the [provider](https://pub.dev/packages/provider) library to insert and consume `FileUploadControllerModel`.
 
-## Running Tests 🧪
+- `FileUploadControllerProvider`: `ChangeNotifierProvider` with `FileUploadControllerModel`
+- `FileUploadControllerSelector`: `Selector` with `FileUploadControllerModel`
+- `FileUploadControllerConsumer`: `Consumer` with `FileUploadControllerModel`
 
-For first time users, install the [very_good_cli][very_good_cli_link]:
+### FileCard
 
-```sh
-dart pub global activate very_good_cli
-```
+A card that displays the progress of a file upload.
 
-To run all unit tests:
+### ProvidedFileCard
 
-```sh
-very_good test --coverage
-```
+`FileCard` + `FileUploadControllerProvider` + `FileUploadControllerConsumer`
 
-To view the generated coverage report you can use [lcov](https://github.com/linux-test-project/lcov).
+## Screenshot
 
-```sh
-# Generate Coverage Report
-genhtml coverage/lcov.info -o coverage/
-
-# Open Coverage Report
-open coverage/index.html
-```
-
-[flutter_install_link]: https://docs.flutter.dev/get-started/install
-[github_actions_link]: https://docs.github.com/en/actions/learn-github-actions
-[license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
-[license_link]: https://opensource.org/licenses/MIT
-[logo_black]: https://raw.githubusercontent.com/VGVentures/very_good_brand/main/styles/README/vgv_logo_black.png#gh-light-mode-only
-[logo_white]: https://raw.githubusercontent.com/VGVentures/very_good_brand/main/styles/README/vgv_logo_white.png#gh-dark-mode-only
-[mason_link]: https://github.com/felangel/mason
-[very_good_analysis_badge]: https://img.shields.io/badge/style-very_good_analysis-B22C89.svg
-[very_good_analysis_link]: https://pub.dev/packages/very_good_analysis
-[very_good_cli_link]: https://pub.dev/packages/very_good_cli
-[very_good_coverage_link]: https://github.com/marketplace/actions/very-good-coverage
-[very_good_ventures_link]: https://verygood.ventures
-[very_good_ventures_link_light]: https://verygood.ventures#gh-light-mode-only
-[very_good_ventures_link_dark]: https://verygood.ventures#gh-dark-mode-only
-[very_good_workflows_link]: https://github.com/VeryGoodOpenSource/very_good_workflows
+![image](./screenshot/screenshot.jpg)
+![video](./screenshot/video.gif)

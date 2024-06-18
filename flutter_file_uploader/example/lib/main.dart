@@ -16,6 +16,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         appBarTheme: AppBarTheme(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -37,7 +38,7 @@ class ShowCase extends StatelessWidget {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: SingleChildScrollView(
+        child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,

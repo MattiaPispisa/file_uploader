@@ -2,6 +2,7 @@ name: flutter_file_uploader
 description: Flutter widgets that simplify the creation and use of the en_file_uploader library. They include both the UI and business logic for file management.
 version: 0.1.0
 publish_to: none
+topics: [en_file_uploader, file, upload, widgets]
 
 environment:
   sdk: "^3.3.0"
@@ -11,9 +12,8 @@ dependencies:
   flutter:
     sdk: flutter
   mobkit_dashed_border: ^0.0.6
-  en_file_uploader:
-    path: ../en_file_uploader
-  provider: ^6.1.2
+  en_file_uploader: ^1.1.0
+  provider: ^6.0.0
 
 dev_dependencies:
   flutter_test:
