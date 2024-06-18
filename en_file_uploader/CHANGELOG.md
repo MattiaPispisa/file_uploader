@@ -1,3 +1,9 @@
+## [1.1.1] - 2024-06-18
+
+### Changed
+
+- link to `flutter_file_uploader`
+
 ## [1.1.0] - 2024-06-17
 
 ### Added

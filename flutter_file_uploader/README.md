@@ -2,7 +2,7 @@
 
 ## Features
 
-This package uses `en_file_uploader` and provides widgets for displaying and managing file uploads.
+**This package use [en_file_uploader](https://pub.dev/packages/en_file_uploader) and provides widgets for displaying and managing file uploads.**
 
 `FileUploader` is a widget that encapsulates the logic for adding and removing files to be uploaded. Each file can have its own `IFileUploadHandler` for customized uploads.
 
