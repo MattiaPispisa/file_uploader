@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:en_file_uploader/en_file_uploader.dart';
@@ -115,7 +114,7 @@ abstract class FileUploadController {
 }
 
 Future<void> _chunksIterator(
-  File file, {
+  XFile file, {
   required int? chunkSize,
   required Future<void> Function(FileChunk chunk, int index) chunkCallback,
   int startFrom = 0,

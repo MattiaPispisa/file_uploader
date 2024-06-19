@@ -58,10 +58,13 @@ class ExampleRestorableChunkedFileUploadHandler
     FileUploadPresentationResponse presentation,
     FileChunk chunk, {
     ProgressCallback? onProgress,
-  }) {
+  }) async {
+    final chunkFile =
+        (await chunk.file.readAsBytes()).sublist(chunk.start, chunk.end);
+
     backend.addChunk(
       presentation.id,
-      chunk.file.readAsBytesSync().sublist(chunk.start, chunk.end),
+      chunkFile,
     );
     return Future.value();
   }
@@ -118,7 +121,7 @@ class InMemoryBackend {
 /// create a file with [name] with a random content
 ///
 /// file [length]
-File createFile({
+XFile createFile({
   required String name,
   int length = 1024,
 }) {
@@ -129,5 +132,5 @@ File createFile({
   final buffer = List<int>.generate(length, (_) => random.nextInt(256));
   file.writeAsBytesSync(buffer);
 
-  return file;
+  return XFile.fromData(file.readAsBytesSync());
 }

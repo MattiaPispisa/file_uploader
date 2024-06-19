@@ -82,8 +82,6 @@ void main() {
         expect(handler.statusCount, 1);
         expect(handler.total, 6);
       });
-
-      test('should retry everything', () {});
     },
   );
 }

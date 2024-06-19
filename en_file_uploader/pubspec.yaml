@@ -11,3 +11,5 @@ environment:
 dev_dependencies:
   test: ^1.25.2
   very_good_analysis: ^5.1.0
+dependencies:
+  cross_file: ^0.3.0

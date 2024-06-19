@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:en_file_uploader/en_file_uploader.dart';
 
 /// The base class from which [FileUploadHandler], [ChunkedFileUploadHandler]
@@ -13,5 +12,5 @@ abstract class IFileUploadHandler {
   });
 
   /// file to handle
-  final File file;
+  final XFile file;
 }

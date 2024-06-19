@@ -7,22 +7,23 @@ import 'package:test/test.dart';
 class Robot {
   Robot();
 
-  late File _file;
+  late XFile _file;
   late FileUploadController _controller;
 
   void createFile({
     int length = 1024,
   }) {
     final tempDir = Directory.systemTemp.createTempSync();
-    _file = File('${tempDir.path}/file.txt');
+    final file = File('${tempDir.path}/file.txt');
 
     final random = Random();
     final buffer = List<int>.generate(length, (_) => random.nextInt(256));
-    _file.writeAsBytesSync(buffer);
+    file.writeAsBytesSync(buffer);
+    _file = XFile('${tempDir.path}/file.txt');
   }
 
   void createController(
-    IFileUploadHandler Function(File file) handler,
+    IFileUploadHandler Function(XFile file) handler,
   ) {
     _controller = FileUploadController(handler(_file));
   }

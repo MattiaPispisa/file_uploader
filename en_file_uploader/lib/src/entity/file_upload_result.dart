@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:en_file_uploader/en_file_uploader.dart';
 
 /// the response of a file uploaded
@@ -10,7 +9,7 @@ class FileUploadResult {
   });
 
   /// file uploaded
-  final File file;
+  final XFile file;
 
   /// In the case of a [RestorableChunkedFileUploadHandler] handler,
   /// the id is the one from the presentation call.

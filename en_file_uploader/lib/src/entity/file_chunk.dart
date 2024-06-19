@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:en_file_uploader/en_file_uploader.dart';
 
 /// Represents a chunk of the file.
 class FileChunk {
@@ -10,7 +10,7 @@ class FileChunk {
   });
 
   /// The file from which the chunk was taken.
-  final File file;
+  final XFile file;
 
   /// The byte from which the chunk starts.
   final int start;
