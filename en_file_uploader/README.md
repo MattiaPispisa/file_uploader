@@ -12,11 +12,13 @@ This library provides the capability to:
 
 File uploader can be used with various libraries for making HTTP requests, such as http, dio, or others, offering a consistent and straightforward interface for uploading files without needing to change the code based on the underlying library used.
 
+This library also supports the web platform.
+
 ## [Plugins](https://github.com/MattiaPispisa/file_uploader/tree/main/plugins)
 
-- [http_file_uploader](https://github.com/MattiaPispisa/file_uploader/tree/main/plugins/http_file_uploader) This plugin allows you to implement file uploads using the http library.
+- [http_file_uploader](https://pub.dev/packages/http_file_uploader) This plugin allows you to implement file uploads using the http library.
 
-## [UI](https://github.com/MattiaPispisa/file_uploader/tree/main/flutter_file_uploader)
+## [UI](https://pub.dev/packages/flutter_file_uploader)
 
 This package uses `en_file_uploader` and provides widgets for displaying and managing file uploads.
 
@@ -91,5 +93,4 @@ Other examples are provided in the tests to ensure the correct functionality of 
 ## Next features
 
 - [] dio plugin
-- [] web compatibility
 - [] more logs

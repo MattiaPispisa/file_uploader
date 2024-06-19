@@ -88,7 +88,7 @@ class MockFileHandler extends FileUploadHandler {
   }
 }
 
-File createFile({
+XFile createFile({
   int length = 1024,
 }) {
   final tempDir = Directory.systemTemp.createTempSync();
@@ -97,5 +97,6 @@ File createFile({
   final random = Random();
   final buffer = List<int>.generate(length, (_) => random.nextInt(256));
   file.writeAsBytesSync(buffer);
-  return file;
+  
+  return XFile(file.path);
 }

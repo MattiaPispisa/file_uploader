@@ -21,7 +21,7 @@ import 'package:http/http.dart';
 
 main() async {
   final client = Client();
-  final file = File("fake_file");
+  final file = XFile("fake_file");
 
   final baseRequestPath = "my-server";
 

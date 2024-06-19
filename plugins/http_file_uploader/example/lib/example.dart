@@ -16,7 +16,7 @@ main() async {
 
   final restorableHandler = HttpRestorableChunkedFileHandler(
     client: client,
-    file: file,
+    file: XFile(file.path),
     presentMethod: "POST",
     chunkMethod: "PATCH",
     statusMethod: "HEAD",

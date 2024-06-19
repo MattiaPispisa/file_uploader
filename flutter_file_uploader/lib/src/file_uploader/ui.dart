@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
@@ -9,10 +7,10 @@ import 'package:mobkit_dashed_border/mobkit_dashed_border.dart';
 import 'package:provider/provider.dart';
 
 /// on pressed add files, more on [FileUploader]
-typedef OnPressedAddFilesCallback = Future<List<File>> Function();
+typedef OnPressedAddFilesCallback = Future<List<XFile>> Function();
 
 /// on file added, more on [FileUploader]
-typedef OnFileAdded = Future<IFileUploadHandler> Function(File file);
+typedef OnFileAdded = Future<IFileUploadHandler> Function(XFile file);
 
 /// builder, more on [FileUploader]
 typedef FileUploaderBuilderCallback = Widget Function(

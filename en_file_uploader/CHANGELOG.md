@@ -1,8 +1,9 @@
-## UNRELEASED
+## [2.0.0] - 2024-06-19
 
 ### Changed
 
 - Breaking, move from `File` to `XFile` for web compatibility
+- Update changelog references
 
 ## [1.1.1] - 2024-06-18
 

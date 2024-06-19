@@ -15,22 +15,24 @@ class HttpRobot {
   HttpRobot._(this._client);
 
   final Client _client;
-  late File _file;
+  late XFile _file;
   late FileUploadController _controller;
 
   void createFile({
     int length = 1024,
   }) {
     final tempDir = Directory.systemTemp.createTempSync();
-    _file = File('${tempDir.path}/file.txt');
+    final file = File('${tempDir.path}/file.txt');
 
     final random = Random();
     final buffer = List<int>.generate(length, (_) => random.nextInt(256));
-    _file.writeAsBytesSync(buffer);
+    file.writeAsBytesSync(buffer);
+
+    _file = XFile('${tempDir.path}/file.txt');
   }
 
   void createController(
-    IFileUploadHandler Function(Client client, File file) handler,
+    IFileUploadHandler Function(Client client, XFile file) handler,
   ) {
     _controller = FileUploadController(handler(_client, _file));
   }
