@@ -1,6 +1,9 @@
 # Http File Uploader
 
-A [File_Uploader] plugin to handle the file upload using [http](https://pub.dev/packages/http) package.
+A [en_file_uploader](https://pub.dev/packages/en_file_uploader) plugin to handle the file upload using [http](https://pub.dev/packages/http) package.
+
+**`http_file_uploader` requires `en_file_uploader` package.
+More info about `en_file_uploader` [here](https://pub.dev/packages/en_file_uploader)**
 
 ## Features
 
