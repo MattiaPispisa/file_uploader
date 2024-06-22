@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/plugins/dio_file_uploader/melos_dio_file_uploader.iml" filepath="$PROJECT_DIR$/plugins/dio_file_uploader/melos_dio_file_uploader.iml" />
       <module fileurl="file://$PROJECT_DIR$/en_file_uploader/melos_en_file_uploader.iml" filepath="$PROJECT_DIR$/en_file_uploader/melos_en_file_uploader.iml" />
       <module fileurl="file://$PROJECT_DIR$/tools/file_uploader_socket_interfaces/melos_file_uploader_socket_interfaces.iml" filepath="$PROJECT_DIR$/tools/file_uploader_socket_interfaces/melos_file_uploader_socket_interfaces.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tools/file_uploader_utils/melos_file_uploader_utils.iml" filepath="$PROJECT_DIR$/tools/file_uploader_utils/melos_file_uploader_utils.iml" />
       <module fileurl="file://$PROJECT_DIR$/flutter_file_uploader/melos_flutter_file_uploader.iml" filepath="$PROJECT_DIR$/flutter_file_uploader/melos_flutter_file_uploader.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/http_file_uploader/melos_http_file_uploader.iml" filepath="$PROJECT_DIR$/plugins/http_file_uploader/melos_http_file_uploader.iml" />
       <module fileurl="file://$PROJECT_DIR$/melos_file_uploader_workspace.iml" filepath="$PROJECT_DIR$/melos_file_uploader_workspace.iml" />
