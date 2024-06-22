@@ -1,3 +1,9 @@
+## [2.0.1] - 2024-06-22
+
+### Changed
+
+- Update `README.md` references
+
 ## [2.0.0] - 2024-06-19
 
 ### Changed

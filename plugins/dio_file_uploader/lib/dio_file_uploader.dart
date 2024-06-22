@@ -1,4 +1,4 @@
-/// A Very Good Project created by Very Good CLI.
+/// A `en_file_uploader` plugin to handle via `dio` the file upload.
 library dio_file_uploader;
 
 export 'package:file_uploader_socket_interfaces/file_uploader_socket_interfaces.dart'

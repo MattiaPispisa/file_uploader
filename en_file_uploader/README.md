@@ -18,6 +18,8 @@ This library also supports the web platform.
 
 - [http_file_uploader](https://pub.dev/packages/http_file_uploader) This plugin allows you to implement file uploads using the http library.
 
+- [dio_file_uploader](https://pub.dev/packages/dio_file_uploader) This plugin allows you to implement file uploads using the http library.
+
 ## [UI](https://pub.dev/packages/flutter_file_uploader)
 
 This package uses `en_file_uploader` and provides widgets for displaying and managing file uploads.
