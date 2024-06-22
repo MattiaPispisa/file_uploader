@@ -1,18 +1,19 @@
 import 'dart:convert';
+
+import 'package:dio/dio.dart';
+import 'package:dio_file_uploader/dio_file_uploader.dart';
 import 'package:en_file_uploader/en_file_uploader.dart';
-import 'package:http_file_uploader/http_file_uploader.dart';
-import 'package:http/http.dart';
 import 'package:file_uploader_utils/file_uploader_utils.dart' as utils;
 
 main() async {
-  final client = Client();
+  final client = Dio();
   final file = utils.createIoFile();
 
   final baseRequestPath = "my-request";
 
   final headers = {"Authorization": "Bearer XXX"};
 
-  final restorableHandler = HttpRestorableChunkedFileHandler(
+  final restorableHandler = DioRestorableChunkedFileHandler(
     client: client,
     file: XFile(file.path),
     presentMethod: "POST",
@@ -30,9 +31,9 @@ main() async {
     },
     statusHeaders: null,
     presentParser: (response) =>
-        FileUploadPresentationResponse(id: response.body),
+        FileUploadPresentationResponse(id: response.data),
     statusParser: (response) =>
-        FileUploadStatusResponse(nextChunkOffset: jsonDecode(response.body)),
+        FileUploadStatusResponse(nextChunkOffset: jsonDecode(response.data)),
     chunkSize: 1024 * 1024, // 1mb
     presentBody: null,
     chunkBody: null,

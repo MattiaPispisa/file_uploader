@@ -1,87 +1,56 @@
+import 'package:dio/dio.dart' as dio;
+import 'package:dio_file_uploader/dio_file_uploader.dart';
+import 'package:dio_file_uploader/src/dio_ext.dart';
 import 'package:en_file_uploader/en_file_uploader.dart';
-import 'package:http/http.dart' as http;
-import 'package:http_file_uploader/src/http_ext.dart';
+import 'package:file_uploader_socket_interfaces/file_uploader_socket_interfaces.dart'
+    as interfaces;
 
-/// [HttpRestorableChunkedFileHandler] handle the file upload in chunk with
+/// [DioRestorableChunkedFileHandler] handle the file upload in chunk with
 /// the capability to retry the upload from the last chunk sent.
-class HttpRestorableChunkedFileHandler
-    extends RestorableChunkedFileUploadHandler {
+class DioRestorableChunkedFileHandler
+    extends SocketRestorableChunkedFileHandler<dio.Response<dynamic>> {
   /// [client] used to upload the file
   ///
   /// set [chunkSize] to choose the size of the chunks else
   /// [defaultChunkSize] is used
-  const HttpRestorableChunkedFileHandler({
-    required http.Client client,
+  const DioRestorableChunkedFileHandler({
+    required dio.Dio client,
     required super.file,
-    required this.presentPath,
-    required this.chunkPath,
-    required this.statusPath,
-    required this.presentParser,
-    required this.statusParser,
-    this.presentMethod = 'POST',
-    this.chunkMethod = 'POST',
-    this.statusMethod = 'HEAD',
-    this.presentHeaders,
-    this.chunkHeaders,
-    this.statusHeaders,
-    this.presentBody,
-    this.chunkBody,
-    this.statusBody,
+    required super.presentPath,
+    required super.chunkPath,
+    required super.statusPath,
+    required super.presentParser,
+    required super.statusParser,
+    super.presentMethod,
+    super.chunkMethod,
+    super.statusMethod,
+    super.presentHeaders,
+    super.chunkHeaders,
+    super.statusHeaders,
+    super.presentBody,
+    super.chunkBody,
+    super.statusBody,
     super.chunkSize,
+    super.fileKey,
+    this.cancelToken,
   }) : _client = client;
 
-  final http.Client _client;
+  final dio.Dio _client;
 
-  /// [http.Client.send] `method` used on presentation
-  final String presentMethod;
-
-  /// [http.Client.send] `method` used on chunk upload
-  final String chunkMethod;
-
-  /// [http.Client.send] `method` used on status
-  final String statusMethod;
-
-  /// [http.Client.send] `path` used on presentation
-  final String presentPath;
-
-  /// [http.Client.send] `path` used on chunk upload
-  final ChunkPathCallback chunkPath;
-
-  /// [http.Client.send] `path` used on status
-  final StatusPathCallback statusPath;
-
-  /// [http.Client.send] `headers` used on presentation
-  final Map<String, String>? presentHeaders;
-
-  /// [http.Client.send] `headers` used on chunk upload
-  final RestorableChunkHeadersCallback? chunkHeaders;
-
-  /// [http.Client.send] `headers` used on status
-  final StatusHeadersCallback? statusHeaders;
-
-  /// [http.Client.send] `body` used on presentation
-  final String? presentBody;
-
-  /// [http.Client.send] `body` used on chunk upload
-  final String? chunkBody;
-
-  /// [http.Client.send] `body` used on status
-  final String? statusBody;
-
-  /// callback to convert [http.Response] into [FileUploadPresentationResponse]
-  final PresentParser presentParser;
-
-  /// callback to convert [http.Response] into [FileUploadStatusResponse]
-  final StatusParser statusParser;
+  /// Controls cancellation of [dio.Dio]'s requests.
+  final dio.CancelToken? cancelToken;
 
   @override
   Future<FileUploadPresentationResponse> present() {
     return _client
-        .sendUnStream(
-          method: presentMethod,
-          path: presentPath,
-          body: presentBody,
-          headers: presentHeaders,
+        .request<dynamic>(
+          presentPath,
+          cancelToken: cancelToken,
+          data: presentBody,
+          options: dio.Options(
+            method: presentMethod,
+            headers: presentHeaders,
+          ),
         )
         .then(presentParser);
   }
@@ -93,12 +62,13 @@ class HttpRestorableChunkedFileHandler
     ProgressCallback? onProgress,
   }) async {
     return _client
-        .sendChunk(
+        .sendChunk<dynamic>(
           method: chunkMethod,
           path: chunkPath(presentation, chunk),
           chunk: chunk,
           headers: chunkHeaders?.call(presentation, chunk),
           onProgress: onProgress,
+          fileKey: fileKey,
         )
         .then((value) => {});
   }
@@ -108,48 +78,21 @@ class HttpRestorableChunkedFileHandler
     FileUploadPresentationResponse presentation,
   ) {
     return _client
-        .sendUnStream(
-          method: statusMethod,
-          path: statusPath(presentation),
-          body: statusBody,
-          headers: statusHeaders?.call(presentation),
+        .request<dynamic>(
+          statusPath(presentation),
+          cancelToken: cancelToken,
+          data: statusBody,
+          options: dio.Options(
+            method: statusMethod,
+            headers: statusHeaders?.call(presentation),
+          ),
         )
         .then(statusParser);
   }
 }
 
-/// compose [http.Client.send] upload chunks `headers` from
-/// [FileUploadPresentationResponse] and [FileChunk]
-typedef RestorableChunkHeadersCallback = Map<String, String> Function(
-  FileUploadPresentationResponse presentation,
-  FileChunk chunk,
-);
+/// callback to convert [dio.Response] into [FileUploadPresentationResponse]
+typedef PresentParser = interfaces.PresentParser<dio.Response<dynamic>>;
 
-/// compose [http.Client.send] status `headers` from
-/// [FileUploadPresentationResponse]
-typedef StatusHeadersCallback = Map<String, String> Function(
-  FileUploadPresentationResponse presentation,
-);
-
-/// compose [http.Client.send] upload chunks `path`
-/// from on [FileUploadPresentationResponse] and [FileChunk]
-typedef ChunkPathCallback = String Function(
-  FileUploadPresentationResponse presentation,
-  FileChunk chunk,
-);
-
-/// compose [http.Client.send] status `path`
-/// from on [FileUploadPresentationResponse]
-typedef StatusPathCallback = String Function(
-  FileUploadPresentationResponse presentation,
-);
-
-/// callback to convert [http.Response] into [FileUploadPresentationResponse]
-typedef PresentParser = FileUploadPresentationResponse Function(
-  http.Response response,
-);
-
-/// callback to convert [http.Response] into [FileUploadStatusResponse]
-typedef StatusParser = FileUploadStatusResponse Function(
-  http.Response response,
-);
+/// callback to convert [dio.Response] into [FileUploadStatusResponse]
+typedef StatusParser = interfaces.StatusParser<dio.Response<dynamic>>;

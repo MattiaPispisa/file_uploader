@@ -1,11 +1,21 @@
 import 'dart:typed_data';
 
 /// A memory-based backend that allows inserting files one chunk at a time.
+///
+/// - Create an [InMemoryBackend] on start
+///
+/// - Use [InMemoryBackend.handleIncomingFile] on file presentation
+///
+/// - Use [InMemoryBackend.addChunk] on chunk upload
+///
+/// - Use [InMemoryBackend.nextFileOffset] on file status
+///
+/// - Use [InMemoryBackend.clear] on app exit
 class InMemoryBackend {
   /// Buffer to hold the chunks
   final Map<String, List<Uint8List>> _files = {};
 
-  // prepare the incoming chunks
+  /// prepare the incoming chunks
   String handleIncomingFile() {
     final id = DateTime.now().toIso8601String();
     _files.putIfAbsent(id, () => <Uint8List>[]);
@@ -40,7 +50,7 @@ class InMemoryBackend {
 
     for (final fileEntry in _files.entries) {
       buffer.writeln(
-        "file: ${fileEntry.key} with ${fileEntry.value.length} chunks uploaded",
+        'file: ${fileEntry.key} with ${fileEntry.value.length} chunks uploaded',
       );
     }
 

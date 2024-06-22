@@ -3,8 +3,8 @@ import 'dart:math';
 
 import 'package:en_file_uploader/en_file_uploader.dart';
 
-/// create an [XFile] using `dart:io`
-XFile createFile({
+/// create a [File]
+File createIoFile({
   String fileName = 'file.txt',
   int length = 1024,
 }) {
@@ -15,5 +15,15 @@ XFile createFile({
   final random = Random();
   final buffer = List<int>.generate(length, (_) => random.nextInt(256));
   file.writeAsBytesSync(buffer);
-  return XFile(path);
+
+  return file;
+}
+
+/// create an [XFile] using `dart:io`
+XFile createFile({
+  String fileName = 'file.txt',
+  int length = 1024,
+}) {
+  final file = createIoFile(fileName: fileName, length: length);
+  return XFile(file.path);
 }

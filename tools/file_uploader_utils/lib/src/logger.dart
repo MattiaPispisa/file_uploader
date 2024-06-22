@@ -1,8 +1,11 @@
+// ignore_for_file: avoid_print
+
 import 'package:en_file_uploader/en_file_uploader.dart';
 
+/// A [FileUploaderLogger] implementation that log every message using [print]
 class PrintLogger implements FileUploaderLogger {
   @override
-  void error(String message, error, stackTrace) {
+  void error(String message, dynamic error, dynamic stackTrace) {
     print(message);
   }
 

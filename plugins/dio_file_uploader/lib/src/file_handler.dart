@@ -1,37 +1,28 @@
-import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:dio/dio.dart' as dio;
+import 'package:dio_file_uploader/dio_file_uploader.dart';
+import 'package:dio_file_uploader/src/dio_ext.dart';
+import 'package:en_file_uploader/en_file_uploader.dart';
 
-/// [HttpFileHandler] handle the file upload using the [http.Client]
-class HttpFileHandler extends FileUploadHandler {
+/// [DioFileHandler] handle the file upload using the [dio.Dio.request]
+class DioFileHandler extends SocketFileHandler {
   /// [client] used to upload the file
   ///
   /// [path], [method], [headers], [body] are [http.Client.send] parameters
-  const HttpFileHandler({
+  const DioFileHandler({
     required dio.Dio client,
     required super.file,
-    required this.path,
-    this.method = 'POST',
-    this.headers,
-    this.body,
-    this.fileKey = 'file',
+    required super.path,
+    super.method,
+    super.headers,
+    super.body,
+    super.fileKey,
+    this.cancelToken,
   }) : _client = client;
 
   final dio.Dio _client;
 
-  /// [dio.Dio.request] `method`, default to `POST`
-  final String method;
-
-  /// [dio.Dio.request] `path`
-  final String path;
-
-  /// [dio.Dio.request] `headers`
-  final Map<String, String>? headers;
-
-  /// [dio.Dio.request] `body`
-  final String? body;
-
-    /// [dio.Dio.request] `formData` file key
-  final String fileKey;
+  /// Controls cancellation of [dio.Dio]'s requests.
+  final dio.CancelToken? cancelToken;
 
   @override
   Future<void> upload({
@@ -43,28 +34,16 @@ class HttpFileHandler extends FileUploadHandler {
       end: await file.length(),
     );
 
-            final formData = dio.FormData.fromMap({
-              fileKey: dio.MultipartFile.fromStream(
-                () => chunk.file.openRead(chunk.start,chunk.end),
-                        chunk.end - chunk.start,
-
-              ),
-            });
-
-
-    await _client.request(
-      path,
-      data: 
+    await _client.sendChunk<dynamic>(
+      method: method,
+      path: path,
+      chunk: chunk,
+      fileKey: fileKey,
+      cancelToken: cancelToken,
+      headers: headers,
+      onProgress: onProgress,
     );
 
-    return _client
-        .sendChunk(
-          method: method,
-          path: path,
-          chunk: chunk,
-          headers: headers,
-          onProgress: onProgress,
-        )
-        .then((value) {});
+    return;
   }
 }
