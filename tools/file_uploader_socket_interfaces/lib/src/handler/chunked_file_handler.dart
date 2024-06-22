@@ -1,9 +1,11 @@
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:file_uploader_socket_interfaces/file_uploader_socket_interfaces.dart';
+import 'package:file_uploader_socket_interfaces/src/default.dart';
 
 /// A common interface for any plugin that wants to handle
 /// file uploads using a socket client.
-abstract class SocketChunkedFileHandler extends ChunkedFileUploadHandler {
+abstract class SocketChunkedFileHandler<ResponseType>
+    extends ChunkedFileUploadHandler {
   /// [path], [method], [headers], [body] are request parameters
   ///
   /// set [chunkSize] to choose the size of the chunks else
@@ -11,11 +13,12 @@ abstract class SocketChunkedFileHandler extends ChunkedFileUploadHandler {
   const SocketChunkedFileHandler({
     required super.file,
     required this.path,
-    this.method = 'POST',
-    this.fileKey = 'file',
+    super.chunkSize,
+    this.method = kFileUploadMethod,
+    this.fileKey = kFileKey,
     this.headers,
     this.body,
-    super.chunkSize,
+    this.chunkParser = kChunkParser,
   });
 
   /// request `method`, default to `POST`
@@ -32,4 +35,7 @@ abstract class SocketChunkedFileHandler extends ChunkedFileUploadHandler {
 
   /// request key for file
   final String fileKey;
+
+  /// callback to validate chunk upload
+  final ChunkParser<ResponseType> chunkParser;
 }

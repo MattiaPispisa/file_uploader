@@ -3,6 +3,7 @@
 ### Added
 
 - Added `fileKey` parameter
+- Added `chunkParser`
 
 ### Changed
 

@@ -4,7 +4,7 @@ import 'package:dio_file_uploader/src/dio_ext.dart';
 import 'package:en_file_uploader/en_file_uploader.dart';
 
 /// [DioFileHandler] handle the file upload using the [dio.Dio.request]
-class DioFileHandler extends SocketFileHandler {
+class DioFileHandler extends SocketFileHandler<dio.Response<dynamic>> {
   /// [client] used to upload the file
   ///
   /// [path], [method], [headers], [body] are [http.Client.send] parameters
@@ -16,6 +16,7 @@ class DioFileHandler extends SocketFileHandler {
     super.headers,
     super.body,
     super.fileKey,
+    super.fileParser,
     this.cancelToken,
   }) : _client = client;
 
@@ -34,15 +35,17 @@ class DioFileHandler extends SocketFileHandler {
       end: await file.length(),
     );
 
-    await _client.sendChunk<dynamic>(
-      method: method,
-      path: path,
-      chunk: chunk,
-      fileKey: fileKey,
-      cancelToken: cancelToken,
-      headers: headers,
-      onProgress: onProgress,
-    );
+    await _client
+        .sendChunk<dynamic>(
+          method: method,
+          path: path,
+          chunk: chunk,
+          fileKey: fileKey,
+          cancelToken: cancelToken,
+          headers: headers,
+          onProgress: onProgress,
+        )
+        .then(fileParser);
 
     return;
   }

@@ -10,7 +10,7 @@ environment:
 
 dependencies:
   en_file_uploader: "^2.0.0"
-  file_uploader_socket_interfaces: "^1.1.0"
+  file_uploader_socket_interfaces: "^1.2.2"
   http: ^1.0.0
 
 dev_dependencies:

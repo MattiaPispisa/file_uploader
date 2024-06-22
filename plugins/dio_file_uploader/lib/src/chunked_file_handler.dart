@@ -4,7 +4,8 @@ import 'package:dio_file_uploader/src/dio_ext.dart';
 import 'package:en_file_uploader/en_file_uploader.dart';
 
 /// [DioChunkedFileHandler] handle the file upload in chunks
-class DioChunkedFileHandler extends SocketChunkedFileHandler {
+class DioChunkedFileHandler
+    extends SocketChunkedFileHandler<dio.Response<dynamic>> {
   /// [client] used to upload the file
   ///
   /// [path], [method], [headers], [body] are [http.Client.send] parameters
@@ -20,6 +21,7 @@ class DioChunkedFileHandler extends SocketChunkedFileHandler {
     super.body,
     super.chunkSize,
     super.fileKey,
+    super.chunkParser,
     this.cancelToken,
   }) : _client = client;
 
@@ -33,15 +35,17 @@ class DioChunkedFileHandler extends SocketChunkedFileHandler {
     FileChunk chunk, {
     ProgressCallback? onProgress,
   }) async {
-    await _client.sendChunk<dynamic>(
-      method: method,
-      path: path,
-      chunk: chunk,
-      fileKey: fileKey,
-      cancelToken: cancelToken,
-      headers: headers?.call(chunk),
-      onProgress: onProgress,
-    );
+    await _client
+        .sendChunk<dynamic>(
+          method: method,
+          path: path,
+          chunk: chunk,
+          fileKey: fileKey,
+          cancelToken: cancelToken,
+          headers: headers?.call(chunk),
+          onProgress: onProgress,
+        )
+        .then(chunkParser);
 
     return;
   }

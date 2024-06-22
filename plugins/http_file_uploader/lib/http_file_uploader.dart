@@ -2,7 +2,7 @@
 library http_file_uploader;
 
 export 'package:file_uploader_socket_interfaces/file_uploader_socket_interfaces.dart'
-    hide PresentParser, StatusParser;
+    hide ChunkParser, PresentParser, StatusParser;
 
 export 'src/chunked_file_handler.dart';
 export 'src/file_handler.dart';

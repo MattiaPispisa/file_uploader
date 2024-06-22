@@ -4,7 +4,7 @@ import 'package:http_file_uploader/http_file_uploader.dart';
 import 'package:http_file_uploader/src/http_ext.dart';
 
 /// [HttpChunkedFileHandler] handle the file upload in chunks
-class HttpChunkedFileHandler extends SocketChunkedFileHandler {
+class HttpChunkedFileHandler extends SocketChunkedFileHandler<http.Response> {
   /// [client] used to upload the file
   ///
   /// [path], [method], [headers], [body] are [http.Client.send] parameters
@@ -20,6 +20,7 @@ class HttpChunkedFileHandler extends SocketChunkedFileHandler {
     super.body,
     super.chunkSize,
     super.fileKey,
+    super.chunkParser,
   }) : _client = client;
 
   final http.Client _client;
@@ -38,6 +39,6 @@ class HttpChunkedFileHandler extends SocketChunkedFileHandler {
           headers: headers?.call(chunk),
           onProgress: onProgress,
         )
-        .then((value) => {});
+        .then(chunkParser);
   }
 }

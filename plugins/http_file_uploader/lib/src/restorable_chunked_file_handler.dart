@@ -32,6 +32,7 @@ class HttpRestorableChunkedFileHandler
     super.statusBody,
     super.chunkSize,
     super.fileKey,
+    super.chunkParser,
   }) : _client = client;
 
   final http.Client _client;
@@ -63,7 +64,7 @@ class HttpRestorableChunkedFileHandler
           headers: chunkHeaders?.call(presentation, chunk),
           onProgress: onProgress,
         )
-        .then((value) => {});
+        .then(chunkParser);
   }
 
   @override
@@ -83,6 +84,9 @@ class HttpRestorableChunkedFileHandler
 
 /// callback to convert [http.Response] into [FileUploadPresentationResponse]
 typedef PresentParser = interfaces.PresentParser<http.Response>;
+
+/// callback to validate chunk upload
+typedef ChunkParser = interfaces.ChunkParser<http.Response>;
 
 /// callback to convert [http.Response] into [FileUploadStatusResponse]
 typedef StatusParser = interfaces.StatusParser<http.Response>;

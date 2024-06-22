@@ -1,5 +1,6 @@
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:file_uploader_socket_interfaces/file_uploader_socket_interfaces.dart';
+import 'package:file_uploader_socket_interfaces/src/default.dart';
 
 /// A common interface for any plugin that wants to handle
 /// file uploads using a socket client.
@@ -14,17 +15,18 @@ abstract class SocketRestorableChunkedFileHandler<ResponseType>
     required this.statusPath,
     required this.presentParser,
     required this.statusParser,
-    this.presentMethod = 'POST',
-    this.chunkMethod = 'POST',
-    this.statusMethod = 'HEAD',
+    super.chunkSize,
+    this.presentMethod = kPresentMethod,
+    this.chunkMethod = kChunkMethod,
+    this.statusMethod = kStatusMethod,
     this.presentHeaders,
     this.chunkHeaders,
     this.statusHeaders,
     this.presentBody,
     this.chunkBody,
     this.statusBody,
-    this.fileKey = 'file',
-    super.chunkSize,
+    this.fileKey = kFileKey,
+    this.chunkParser = kChunkParser,
   });
 
   /// [http.Client.send] `method` used on presentation
@@ -65,6 +67,9 @@ abstract class SocketRestorableChunkedFileHandler<ResponseType>
 
   /// callback to convert [ResponseType] into [FileUploadPresentationResponse]
   final PresentParser<ResponseType> presentParser;
+
+  /// callback to validate chunk upload
+  final ChunkParser<ResponseType> chunkParser;
 
   /// callback to convert [ResponseType] into [FileUploadStatusResponse]
   final StatusParser<ResponseType> statusParser;

@@ -32,6 +32,7 @@ class DioRestorableChunkedFileHandler
     super.statusBody,
     super.chunkSize,
     super.fileKey,
+    super.chunkParser,
     this.cancelToken,
   }) : _client = client;
 
@@ -70,7 +71,7 @@ class DioRestorableChunkedFileHandler
           onProgress: onProgress,
           fileKey: fileKey,
         )
-        .then((value) => {});
+        .then(chunkParser);
   }
 
   @override
@@ -92,7 +93,10 @@ class DioRestorableChunkedFileHandler
 }
 
 /// callback to convert [dio.Response] into [FileUploadPresentationResponse]
-typedef PresentParser = interfaces.PresentParser<dio.Response<dynamic>>;
+typedef PresentParser<T> = interfaces.PresentParser<dio.Response<T>>;
+
+/// callback to validate chunk upload
+typedef ChunkParser<T> = interfaces.ChunkParser<dio.Response<T>>;
 
 /// callback to convert [dio.Response] into [FileUploadStatusResponse]
-typedef StatusParser = interfaces.StatusParser<dio.Response<dynamic>>;
+typedef StatusParser<T> = interfaces.StatusParser<dio.Response<T>>;
