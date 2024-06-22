@@ -12,5 +12,7 @@ dependencies:
   cross_file: ^0.3.0
 
 dev_dependencies:
+  file_uploader_utils: 
+    path: ../tools/file_uploader_utils
   test: ^1.25.2
   very_good_analysis: ^5.1.0

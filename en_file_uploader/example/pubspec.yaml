@@ -7,5 +7,6 @@ environment:
   sdk: "^3.3.0"
 
 dependencies:
-  en_file_uploader:
-    path: ../
+  en_file_uploader: "^2.0.0"
+  file_uploader_utils: 
+    path: ../../tools/file_uploader_utils

@@ -1,7 +1,5 @@
-import 'dart:io';
-import 'dart:math';
-
 import 'package:en_file_uploader/en_file_uploader.dart';
+import 'package:file_uploader_utils/file_uploader_utils.dart' as utils;
 import 'package:test/test.dart';
 
 class Robot {
@@ -13,13 +11,7 @@ class Robot {
   void createFile({
     int length = 1024,
   }) {
-    final tempDir = Directory.systemTemp.createTempSync();
-    final file = File('${tempDir.path}/file.txt');
-
-    final random = Random();
-    final buffer = List<int>.generate(length, (_) => random.nextInt(256));
-    file.writeAsBytesSync(buffer);
-    _file = XFile('${tempDir.path}/file.txt');
+    _file = utils.createFile(length: length);
   }
 
   void createController(
