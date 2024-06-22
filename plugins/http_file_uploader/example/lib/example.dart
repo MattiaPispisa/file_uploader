@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:http_file_uploader/http_file_uploader.dart';
 import 'package:http/http.dart';
+import 'package:file_uploader_utils/file_uploader_utils.dart' as utils;
 
 main() async {
   final client = Client();
@@ -43,26 +44,9 @@ main() async {
 
   final controller = FileUploadController(
     restorableHandler,
-    logger: PrintLogger(),
+    logger: utils.PrintLogger(),
   );
   await controller.upload();
 
   print("done!");
-}
-
-class PrintLogger implements FileUploaderLogger {
-  @override
-  void error(String message, error, stackTrace) {
-    print(message);
-  }
-
-  @override
-  void info(String message) {
-    print(message);
-  }
-
-  @override
-  void warning(String message) {
-    print(message);
-  }
 }

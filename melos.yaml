@@ -7,3 +7,4 @@ packages:
   - "en_file_uploader"
   - "flutter_file_uploader"
   - "plugins/*"
+  - "tools/*"

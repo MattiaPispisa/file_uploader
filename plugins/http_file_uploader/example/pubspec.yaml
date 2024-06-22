@@ -11,3 +11,7 @@ dependencies:
   http_file_uploader:
     path: ../
   http: ^1.0.0
+
+dev_dependencies:
+  file_uploader_utils:
+    path: ../../../tools/file_uploader_utils

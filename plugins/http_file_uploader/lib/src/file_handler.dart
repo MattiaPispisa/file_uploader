@@ -1,34 +1,24 @@
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_file_uploader/http_file_uploader.dart';
 import 'package:http_file_uploader/src/http_ext.dart';
 
 /// [HttpFileHandler] handle the file upload using the [http.Client]
-class HttpFileHandler extends FileUploadHandler {
+class HttpFileHandler extends SocketFileHandler {
   /// [client] used to upload the file
   ///
   /// [path], [method], [headers], [body] are [http.Client.send] parameters
   const HttpFileHandler({
     required http.Client client,
     required super.file,
-    required this.path,
-    this.method = 'POST',
-    this.headers,
-    this.body,
+    required super.path,
+    super.method,
+    super.headers,
+    super.body,
+    super.fileKey,
   }) : _client = client;
 
   final http.Client _client;
-
-  /// [http.Client.send] `method`, default to `POST`
-  final String method;
-
-  /// [http.Client.send] `path`
-  final String path;
-
-  /// [http.Client.send] `headers`
-  final Map<String, String>? headers;
-
-  /// [http.Client.send] `body`
-  final String? body;
 
   @override
   Future<void> upload({
@@ -42,6 +32,7 @@ class HttpFileHandler extends FileUploadHandler {
           path: path,
           chunk: chunk,
           headers: headers,
+          fileKey: fileKey,
           onProgress: onProgress,
         )
         .then((value) {});

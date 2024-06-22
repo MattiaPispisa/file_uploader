@@ -1,0 +1,17 @@
+name: dio_file_uploader
+description: A en_file_uploader plugin to handle the file upload using dio package. Provides the capability to upload a file in chunks with built-in retry handling.
+version: 1.0.0
+homepage: https://mattiapispisa.github.io/
+repository: https://github.com/MattiaPispisa/file_uploader
+topics: [dio, file, upload, chunks, retry]
+
+environment:
+  sdk: ">=2.18.0 <4.0.0"
+
+dependencies:
+  en_file_uploader: "^2.0.0"
+  dio: ">=4.0.0 <6.0.0"
+
+dev_dependencies:
+  test: ^1.25.2
+  very_good_analysis: ^5.1.0

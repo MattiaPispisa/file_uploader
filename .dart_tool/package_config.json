@@ -248,10 +248,8 @@
       "languageVersion": "2.18"
     }
   ],
-  "generated": "2024-06-11T05:59:57.651232Z",
+  "generated": "2024-06-22T17:27:35.221329Z",
   "generator": "pub",
-  "generatorVersion": "3.5.0-114.0.dev",
-  "flutterRoot": "file:///Users/mattiapispisa/fvm/versions/master",
-  "flutterVersion": "3.22.0-18.0.pre.76",
+  "generatorVersion": "3.4.2",
   "pubCache": "file:///Users/mattiapispisa/.pub-cache"
 }

@@ -38,6 +38,7 @@ extension HttpExtension on http.Client {
     required String method,
     required String path,
     required FileChunk chunk,
+    required String fileKey,
     Map<String, String>? headers,
     void Function(int count, int total)? onProgress,
   }) {
@@ -50,7 +51,7 @@ extension HttpExtension on http.Client {
 
     request.files.add(
       http.MultipartFile(
-        'file',
+        fileKey,
         chunk.file.openRead(chunk.start, chunk.end),
         chunk.end - chunk.start,
       ),

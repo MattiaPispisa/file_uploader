@@ -1,11 +1,14 @@
 import 'package:en_file_uploader/en_file_uploader.dart';
+import 'package:file_uploader_socket_interfaces/file_uploader_socket_interfaces.dart'
+    as interfaces;
 import 'package:http/http.dart' as http;
+import 'package:http_file_uploader/http_file_uploader.dart';
 import 'package:http_file_uploader/src/http_ext.dart';
 
 /// [HttpRestorableChunkedFileHandler] handle the file upload in chunk with
 /// the capability to retry the upload from the last chunk sent.
 class HttpRestorableChunkedFileHandler
-    extends RestorableChunkedFileUploadHandler {
+    extends SocketRestorableChunkedFileHandler<http.Response> {
   /// [client] used to upload the file
   ///
   /// set [chunkSize] to choose the size of the chunks else
@@ -13,66 +16,25 @@ class HttpRestorableChunkedFileHandler
   const HttpRestorableChunkedFileHandler({
     required http.Client client,
     required super.file,
-    required this.presentPath,
-    required this.chunkPath,
-    required this.statusPath,
-    required this.presentParser,
-    required this.statusParser,
-    this.presentMethod = 'POST',
-    this.chunkMethod = 'POST',
-    this.statusMethod = 'HEAD',
-    this.presentHeaders,
-    this.chunkHeaders,
-    this.statusHeaders,
-    this.presentBody,
-    this.chunkBody,
-    this.statusBody,
+    required super.presentPath,
+    required super.chunkPath,
+    required super.statusPath,
+    required super.presentParser,
+    required super.statusParser,
+    super.presentMethod,
+    super.chunkMethod,
+    super.statusMethod,
+    super.presentHeaders,
+    super.chunkHeaders,
+    super.statusHeaders,
+    super.presentBody,
+    super.chunkBody,
+    super.statusBody,
     super.chunkSize,
+    super.fileKey,
   }) : _client = client;
 
   final http.Client _client;
-
-  /// [http.Client.send] `method` used on presentation
-  final String presentMethod;
-
-  /// [http.Client.send] `method` used on chunk upload
-  final String chunkMethod;
-
-  /// [http.Client.send] `method` used on status
-  final String statusMethod;
-
-  /// [http.Client.send] `path` used on presentation
-  final String presentPath;
-
-  /// [http.Client.send] `path` used on chunk upload
-  final ChunkPathCallback chunkPath;
-
-  /// [http.Client.send] `path` used on status
-  final StatusPathCallback statusPath;
-
-  /// [http.Client.send] `headers` used on presentation
-  final Map<String, String>? presentHeaders;
-
-  /// [http.Client.send] `headers` used on chunk upload
-  final RestorableChunkHeadersCallback? chunkHeaders;
-
-  /// [http.Client.send] `headers` used on status
-  final StatusHeadersCallback? statusHeaders;
-
-  /// [http.Client.send] `body` used on presentation
-  final String? presentBody;
-
-  /// [http.Client.send] `body` used on chunk upload
-  final String? chunkBody;
-
-  /// [http.Client.send] `body` used on status
-  final String? statusBody;
-
-  /// callback to convert [http.Response] into [FileUploadPresentationResponse]
-  final PresentParser presentParser;
-
-  /// callback to convert [http.Response] into [FileUploadStatusResponse]
-  final StatusParser statusParser;
 
   @override
   Future<FileUploadPresentationResponse> present() {
@@ -97,6 +59,7 @@ class HttpRestorableChunkedFileHandler
           method: chunkMethod,
           path: chunkPath(presentation, chunk),
           chunk: chunk,
+          fileKey: fileKey,
           headers: chunkHeaders?.call(presentation, chunk),
           onProgress: onProgress,
         )
@@ -118,38 +81,8 @@ class HttpRestorableChunkedFileHandler
   }
 }
 
-/// compose [http.Client.send] upload chunks `headers` from
-/// [FileUploadPresentationResponse] and [FileChunk]
-typedef RestorableChunkHeadersCallback = Map<String, String> Function(
-  FileUploadPresentationResponse presentation,
-  FileChunk chunk,
-);
-
-/// compose [http.Client.send] status `headers` from
-/// [FileUploadPresentationResponse]
-typedef StatusHeadersCallback = Map<String, String> Function(
-  FileUploadPresentationResponse presentation,
-);
-
-/// compose [http.Client.send] upload chunks `path`
-/// from on [FileUploadPresentationResponse] and [FileChunk]
-typedef ChunkPathCallback = String Function(
-  FileUploadPresentationResponse presentation,
-  FileChunk chunk,
-);
-
-/// compose [http.Client.send] status `path`
-/// from on [FileUploadPresentationResponse]
-typedef StatusPathCallback = String Function(
-  FileUploadPresentationResponse presentation,
-);
-
 /// callback to convert [http.Response] into [FileUploadPresentationResponse]
-typedef PresentParser = FileUploadPresentationResponse Function(
-  http.Response response,
-);
+typedef PresentParser = interfaces.PresentParser<http.Response>;
 
 /// callback to convert [http.Response] into [FileUploadStatusResponse]
-typedef StatusParser = FileUploadStatusResponse Function(
-  http.Response response,
-);
+typedef StatusParser = interfaces.StatusParser<http.Response>;
