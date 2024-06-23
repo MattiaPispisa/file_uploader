@@ -1,8 +1,8 @@
 name: file_uploader_socket_interfaces
 description: common interfaces for plugins that handle file upload via socket
-version: 1.2.2
+version: 1.3.0
 homepage: https://mattiapispisa.github.io/
-repository: https://github.com/MattiaPispisa/file_uploader
+repository: https://github.com/MattiaPispisa/file_uploader/tree/main/tools/file_uploader_socket_interfaces
 topics: ["socket", file, upload, chunks, retry]
 
 environment:

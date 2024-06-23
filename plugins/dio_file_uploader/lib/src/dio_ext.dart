@@ -23,8 +23,8 @@ extension DioExtension on dio.Dio {
     dio.CancelToken? cancelToken,
   }) {
     final formData = dio.FormData.fromMap({
-      fileKey: dio.MultipartFile.fromStream(
-        () => chunk.file.openRead(chunk.start, chunk.end),
+      fileKey: dio.MultipartFile(
+        chunk.file.openRead(chunk.start, chunk.end),
         chunk.end - chunk.start,
       ),
     });

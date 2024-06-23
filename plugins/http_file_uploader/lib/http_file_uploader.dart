@@ -1,4 +1,4 @@
-/// A `FileUploader` plugin to handle via `http` the file upload.
+/// A `en_file_uploader` plugin to handle via `http` the file upload.
 library http_file_uploader;
 
 export 'package:file_uploader_socket_interfaces/file_uploader_socket_interfaces.dart'

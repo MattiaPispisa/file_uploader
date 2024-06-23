@@ -1,3 +1,13 @@
+## [1.3.0] - 2024-06-23
+
+### Added
+
+- added example
+
+### Changed
+
+- `repository` in `pubspec.yaml`
+
 ## [1.2.2] - 2024-06-22
 
 ### Fix

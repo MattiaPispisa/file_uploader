@@ -1,3 +1,9 @@
+## [2.1.1] - 2024-06-23
+
+### Changed
+
+- `repository` in `pubspec.yaml`
+
 ## [2.1.0] - 2024-06-22
 
 ### Added
