@@ -23,6 +23,7 @@ class Robot {
   Future<void> expectUpload() async {
     await _controller.upload();
 
+    expect(_controller.uploaded, true);
     expect(
       () {},
       returnsNormally,
@@ -32,6 +33,7 @@ class Robot {
   Future<void> expectRetry() async {
     await _controller.retry();
 
+    expect(_controller.uploaded, true);
     expect(
       () {},
       returnsNormally,
@@ -43,5 +45,16 @@ class Robot {
       _controller.upload(),
       throwsA(isA<T>()),
     );
+    expect(_controller.uploaded, false);
   }
+
+  Future<void> expectFileUploaderExceptionOnSecondUpload() async {
+    await expectLater(
+      _controller.upload(),
+      throwsA(isA<FileAlreadyUploadedException>()),
+    );
+    expect(_controller.uploaded, true);
+  }
+
+  void dispose() {}
 }

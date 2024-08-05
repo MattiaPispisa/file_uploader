@@ -1,17 +1,14 @@
 import 'package:en_file_uploader/en_file_uploader.dart';
 
 /// base class for file uploader exceptions
-abstract class FileUploaderException implements Exception {
-  /// constructor
-  const FileUploaderException();
-}
+abstract class FileUploaderException implements Exception {}
 
 /// unexpected handler exception
 class UnexpectedHandlerException implements FileUploaderException {
   /// unexpected handler exception
   const UnexpectedHandlerException({
     required this.handler,
-  });
+  }) : super();
 
   /// unrecognized file upload handler
   final IFileUploadHandler handler;
@@ -25,7 +22,7 @@ class UnexpectedHandlerException implements FileUploaderException {
 /// file already uploaded exception
 class FileAlreadyUploadedException implements FileUploaderException {
   /// file already uploaded exception
-  const FileAlreadyUploadedException();
+  const FileAlreadyUploadedException() : super();
 
   @override
   String toString() {
