@@ -103,6 +103,66 @@ void main() {
               ),
             ).called(4);
           });
+
+          test('should call progress on upload', () async {
+            const size = 1024 * 1027;
+            var onProgressCount = 0;
+            final counts = <int>[];
+            late int total;
+
+            r = Robot()
+              ..createFile(length: size)
+              ..createController((file) {
+                final builder = MockChunkedFileUploadHandlerBuilder(file)
+                  ..chunkSize = size ~/ 3;
+                return handler = builder.build();
+              });
+
+            await r.expectUpload(
+              onProgress: (c, t) {
+                onProgressCount++;
+                counts.add(c);
+                total = t;
+              },
+            );
+
+            expect(onProgressCount, 5);
+            expect(counts[1], greaterThan(counts[0]));
+            expect(counts[2], greaterThan(counts[1]));
+            expect(counts[3], greaterThan(counts[2]));
+            expect(counts.last, size);
+            expect(counts.last, total);
+          });
+
+          test('should call progress on retry', () async {
+            const size = 1024 * 1027;
+            var onProgressCount = 0;
+            final counts = <int>[];
+            late int total;
+
+            r = Robot()
+              ..createFile(length: size)
+              ..createController((file) {
+                final builder = MockChunkedFileUploadHandlerBuilder(file)
+                  ..chunkSize = size ~/ 3;
+                return handler = builder.build();
+              });
+
+            await r.expectRetry(
+              onProgress: (c, t) {
+                onProgressCount++;
+                counts.add(c);
+                total = t;
+              },
+            );
+
+            expect(onProgressCount, 5);
+            expect(counts[1], greaterThan(counts[0]));
+            expect(counts[2], greaterThan(counts[1]));
+            expect(counts[3], greaterThan(counts[2]));
+            expect(counts.last, size);
+            expect(counts.last, total);
+          });
         },
       );
     },

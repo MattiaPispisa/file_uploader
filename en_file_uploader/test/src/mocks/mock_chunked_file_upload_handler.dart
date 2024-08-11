@@ -29,7 +29,17 @@ class MockChunkedFileUploadHandlerBuilder {
         any(),
         onProgress: any(named: 'onProgress'),
       ),
-    ).thenAnswer((_) async {
+    ).thenAnswer((invocation) async {
+      final chunk = invocation.positionalArguments[0] as FileChunk;
+      final onProgressCallback =
+          invocation.namedArguments[const Symbol('onProgress')] as void
+              Function(int, int)?;
+
+      onProgressCallback?.call(
+        chunk.end - chunk.start,
+        0,
+      );
+
       return chunkFn?.call() ?? Future.value();
     });
 

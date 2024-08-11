@@ -61,7 +61,7 @@ class _RestorableChunkedFileUploadController extends FileUploadController {
     final status = await _handler.status(_presentationResponse!);
 
     final size = await _handler.file.length();
-    final count = math.max(status.nextChunkOffset - 1, 0) *
+    var count = math.max(status.nextChunkOffset - 1, 0) *
         (_handler.chunkSize ?? defaultChunkSize);
 
     // use [status.nextChunkOffset] to skip already uploaded chunks
@@ -76,6 +76,7 @@ class _RestorableChunkedFileUploadController extends FileUploadController {
           _presentationResponse!,
           chunk,
           onProgress: (chunkCount, _) {
+            count += chunkCount;
             onProgress?.call(count, size);
           },
         );

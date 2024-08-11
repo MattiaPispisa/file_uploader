@@ -20,8 +20,8 @@ class Robot {
     _controller = FileUploadController(handler(_file));
   }
 
-  Future<void> expectUpload() async {
-    await _controller.upload();
+  Future<void> expectUpload({void Function(int, int)? onProgress}) async {
+    await _controller.upload(onProgress: onProgress);
 
     expect(_controller.uploaded, true);
     expect(
@@ -30,8 +30,8 @@ class Robot {
     );
   }
 
-  Future<void> expectRetry() async {
-    await _controller.retry();
+  Future<void> expectRetry({void Function(int, int)? onProgress}) async {
+    await _controller.retry(onProgress: onProgress);
 
     expect(_controller.uploaded, true);
     expect(

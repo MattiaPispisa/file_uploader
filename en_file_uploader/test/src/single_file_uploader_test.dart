@@ -51,6 +51,64 @@ void main() {
           ),
         ).called(1);
       });
+
+      test('should call onProgress on upload', () async {
+        var onProgressCount = 0;
+        var count = 0;
+        late int total;
+
+        r = Robot()
+          ..createFile(length: 1024)
+          ..createController((file) {
+            final builder = MockFileUploadHandlerBuilder(file)
+              ..uploadFn = () {
+                return Future.value();
+              };
+
+            return handler = builder.build();
+          });
+
+        await r.expectUpload(
+          onProgress: (c, t) {
+            onProgressCount++;
+            count = c;
+            total = t;
+          },
+        );
+
+        expect(onProgressCount, 1);
+        expect(count, 1024);
+        expect(count, total);
+      });
+
+      test('should call onProgress on retry', () async {
+        var onProgressCount = 0;
+        var count = 0;
+        late int total;
+
+        r = Robot()
+          ..createFile(length: 1024)
+          ..createController((file) {
+            final builder = MockFileUploadHandlerBuilder(file)
+              ..uploadFn = () {
+                return Future.value();
+              };
+
+            return handler = builder.build();
+          });
+
+        await r.expectRetry(
+          onProgress: (c, t) {
+            onProgressCount++;
+            count = c;
+            total = t;
+          },
+        );
+
+        expect(onProgressCount, 1);
+        expect(count, 1024);
+        expect(count, total);
+      });
     },
   );
 }
