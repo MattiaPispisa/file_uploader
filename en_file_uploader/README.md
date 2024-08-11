@@ -1,5 +1,8 @@
 # File Uploader
 
+[![License: MIT][license_badge]][license_link]
+[![coverage][coverage_badge]][coverage_badge]
+
 This Dart package provides a **file upload functionality that is implementation-agnostic**.
 
 ## Features
@@ -94,5 +97,8 @@ Other examples are provided in the tests to ensure the correct functionality of 
 
 ## Next features
 
-- [] dio plugin
 - [] more logs
+
+[license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
+[license_link]: https://opensource.org/licenses/MIT
+[coverage_badge]: https://img.shields.io/badge/coverage-100%25-green

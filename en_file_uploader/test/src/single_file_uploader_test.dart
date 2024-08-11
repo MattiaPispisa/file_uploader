@@ -58,7 +58,7 @@ void main() {
         late int total;
 
         r = Robot()
-          ..createFile(length: 1024)
+          ..createFile()
           ..createController((file) {
             final builder = MockFileUploadHandlerBuilder(file)
               ..uploadFn = () {
@@ -87,7 +87,7 @@ void main() {
         late int total;
 
         r = Robot()
-          ..createFile(length: 1024)
+          ..createFile()
           ..createController((file) {
             final builder = MockFileUploadHandlerBuilder(file)
               ..uploadFn = () {

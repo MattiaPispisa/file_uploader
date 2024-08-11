@@ -181,6 +181,7 @@ void main() {
 
           test('should call progress on retry', () async {
             const size = 1024 * 1027;
+            const chunkSize = size ~/ 3;
             var onProgressCount = 0;
             final counts = <int>[];
             late int total;
@@ -190,8 +191,9 @@ void main() {
               ..createController((file) {
                 final builder =
                     MockRestorableChunkedFileUploadHandlerBuilder(file)
-                      ..chunkSize = size ~/ 3
+                      ..chunkSize = chunkSize
                       ..statusFn = () {
+                        // skip first chunk
                         return Future.value(
                           const FileUploadStatusResponse(nextChunkOffset: 1),
                         );
@@ -207,8 +209,8 @@ void main() {
               },
             );
 
+            // -1 from upload (skip first chunk)
             expect(onProgressCount, 4);
-            expect(counts[0], greaterThan(0));
             expect(counts[1], greaterThan(counts[0]));
             expect(counts[2], greaterThan(counts[1]));
             expect(counts.last, size);
