@@ -6,7 +6,7 @@
 
 ### Fixed
 
-- callback `onProgress` in `retry` with `RestorableChunkedFileUploadHandler` doesn't send count
+- callback `onProgress` in `retry` with `RestorableChunkedFileUploadHandler` didn't send count
   correctly
 
 ## [2.0.2] - 2024-06-22
