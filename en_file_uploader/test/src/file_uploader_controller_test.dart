@@ -23,4 +23,3 @@ void main() {
 class UnknownHandler extends IFileUploadHandler {
   UnknownHandler({required super.file});
 }
-

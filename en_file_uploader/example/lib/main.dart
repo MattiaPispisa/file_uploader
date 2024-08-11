@@ -1,12 +1,13 @@
-import 'package:file_uploader_utils/file_uploader_utils.dart' as utils;
 import 'package:en_file_uploader/en_file_uploader.dart';
+import 'package:file_uploader_utils/file_uploader_utils.dart' as utils;
 
+/// instance of [utils.InMemoryBackend]
 final backend = utils.InMemoryBackend();
 
 void main() async {
   backend.clear();
 
-  var sampleFile = utils.createFile(fileName: "test1", length: 1024);
+  var sampleFile = utils.createFile(fileName: 'test1');
   var handler = ExampleRestorableChunkedFileUploadHandler(
     file: sampleFile,
     chunkSize: 500,
@@ -14,7 +15,7 @@ void main() async {
   var controller = FileUploadController(handler);
   await controller.upload();
 
-  sampleFile = utils.createFile(fileName: "test2", length: 1024);
+  sampleFile = utils.createFile(fileName: 'test2');
   handler = ExampleRestorableChunkedFileUploadHandler(
     file: sampleFile,
     chunkSize: 1000,
@@ -22,13 +23,14 @@ void main() async {
   controller = FileUploadController(handler);
   await controller.upload();
 
-  print(backend.toString());
+  // print(backend);
 }
 
-/// An example implementation of a [RestorableChunkedFileUploadHandler] handler that sends
-/// data to an [InMemoryBackend]
+/// An example implementation of a [RestorableChunkedFileUploadHandler]
+/// handler that sends data to an [utils.InMemoryBackend]
 class ExampleRestorableChunkedFileUploadHandler
     extends RestorableChunkedFileUploadHandler {
+  /// constructor
   ExampleRestorableChunkedFileUploadHandler({
     required super.file,
     super.chunkSize,
