@@ -101,15 +101,18 @@ class FileUploadControllerModel with ChangeNotifier {
       }
 
       _status = FileUploadStatus.uploading;
+      notifyListeners();
+
       final result = await (retry
-          ? _ref.controller.retry(onProgress: _updateProgress)
-          : _ref.controller.upload(onProgress: _updateProgress));
+          ? _ref.retry(onProgress: _updateProgress)
+          : _ref.upload(onProgress: _updateProgress));
       _status = FileUploadStatus.done;
       _result = result;
-      _ref.onUpload(result);
+
       notifyListeners();
     } catch (e) {
       _status = FileUploadStatus.failed;
+      print(e);
       notifyListeners();
     }
   }

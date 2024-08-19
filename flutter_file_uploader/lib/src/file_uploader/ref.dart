@@ -6,16 +6,40 @@ class FileUploaderRef {
   /// constructor
   FileUploaderRef({
     required this.controller,
-    required this.onRemoved,
     required this.onUpload,
+    required this.onRemoved,
   });
 
   /// controller that handle the file upload and retry
+  @Deprecated(
+    '''
+    do not used, 
+    instead of `controller.upload` and `onUpload` call `upload`
+    instead of `controller.retry` and `onUpload` call `retry`
+    
+    In the future `controller` will be private
+    ''',
+  )
   final FileUploadController controller;
+
+  /// callback to fire on file upload
+  @Deprecated('do not use, in the future `onUpload` will be private')
+  final void Function(FileUploadResult file) onUpload;
 
   /// callback to fire on file removed
   final void Function() onRemoved;
 
-  /// callback to fire on file upload
-  final void Function(FileUploadResult file) onUpload;
+  /// upload file
+  Future<FileUploadResult> upload({ProgressCallback? onProgress}) async {
+    final result = await controller.upload(onProgress: onProgress);
+    onUpload(result);
+    return result;
+  }
+
+  /// retry upload file
+  Future<FileUploadResult> retry({ProgressCallback? onProgress}) async {
+    final result = await controller.retry(onProgress: onProgress);
+    onUpload(result);
+    return result;
+  }
 }
