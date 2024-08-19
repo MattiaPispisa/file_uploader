@@ -1,3 +1,14 @@
+## [2.1.2] - 2024-08-19
+
+### Added
+
+- More tests, 100% coverage
+
+### Changed
+
+- Update README.md
+- Fix linter in `example` project
+
 ## [2.1.1] - 2024-06-23
 
 ### Changed

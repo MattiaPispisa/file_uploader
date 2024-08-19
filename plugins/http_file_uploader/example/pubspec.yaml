@@ -8,10 +8,10 @@ environment:
 
 dependencies:
   en_file_uploader: ^2.0.0
-  http_file_uploader:
-    path: ../
-  http: ^1.0.0
-
-dev_dependencies:
   file_uploader_utils:
     path: ../../../tools/file_uploader_utils
+  http: ^1.0.0
+  http_file_uploader:
+    path: ../
+
+

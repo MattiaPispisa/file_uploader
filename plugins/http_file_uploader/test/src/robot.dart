@@ -5,6 +5,13 @@ import 'package:http/testing.dart';
 import 'package:test/expect.dart';
 import 'package:test/test.dart';
 
+/// A class that, using the Robot pattern,
+/// allows testing of a [FileUploadController]
+/// starting from an [IFileUploadHandler].
+///
+/// 1. [createFile]
+/// 2. [createController]
+/// 3. test using `expect` methods
 class HttpRobot {
   factory HttpRobot(Future<Response> Function(Request) fn) {
     return HttpRobot._(MockClient(fn));
@@ -48,29 +55,29 @@ class HttpRobot {
 }
 
 Future<Response> Function(Request) mockClientFn({
-  Response? Function()? onPresentation,
-  Response? Function()? onChunk,
-  Response? Function()? onStatus,
+  Response? Function(Request request)? onPresentation,
+  Response? Function(Request request)? onChunk,
+  Response? Function(Request request)? onStatus,
 }) {
   return (request) {
     var response = Response('', 200);
 
     if (request.url.path.contains('presentation')) {
-      final presentationResponse = onPresentation?.call();
+      final presentationResponse = onPresentation?.call(request);
       if (presentationResponse != null) {
         response = presentationResponse;
       }
     }
 
     if (request.url.path.contains('chunks/')) {
-      final chunkResponse = onChunk?.call();
+      final chunkResponse = onChunk?.call(request);
       if (chunkResponse != null) {
         response = chunkResponse;
       }
     }
 
     if (request.url.path.contains('status')) {
-      final statusResponse = onStatus?.call();
+      final statusResponse = onStatus?.call(request);
       if (statusResponse != null) {
         response = statusResponse;
       }
