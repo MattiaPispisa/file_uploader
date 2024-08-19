@@ -1,5 +1,8 @@
 # Http File Uploader
 
+[![License: MIT][license_badge]][license_link]
+[![coverage][coverage_badge]][coverage_badge]
+
 A [en_file_uploader](https://pub.dev/packages/en_file_uploader) plugin to handle the file upload using [http](https://pub.dev/packages/http) package.
 
 **`http_file_uploader` requires `en_file_uploader` package.
@@ -63,3 +66,7 @@ main() async {
 }
 
 ```
+
+[license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
+[license_link]: https://opensource.org/licenses/MIT
+[coverage_badge]: https://img.shields.io/badge/coverage-100%25-green
