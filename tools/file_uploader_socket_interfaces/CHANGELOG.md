@@ -1,3 +1,13 @@
+## [1.3.1] - 2024-08-19
+
+### Added
+
+- test coverage
+
+### Changed
+
+- update README.md
+
 ## [1.3.0] - 2024-06-23
 
 ### Added
@@ -26,7 +36,7 @@
 
 - Added chunk parser
 
-## [1.1.0] - 2024-06-22
+##[1.1.0] - 2024-06-22
 
 ### Added
 
