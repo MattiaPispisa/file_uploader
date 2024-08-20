@@ -95,7 +95,7 @@ class FileUploaderModel with ChangeNotifier {
       return;
     }
 
-    _controllers.remove(controller);
+    _controllers = [..._controllers]..remove(controller);
     _filesUploaded.remove(controller);
     _onFileRemoved?.call(file);
     notifyListeners();
@@ -107,6 +107,7 @@ class FileUploaderModel with ChangeNotifier {
   void _onUploaded(FileUploadController controller, FileUploadResult result) {
     _filesUploaded.putIfAbsent(controller, () => result);
     _onFileUploaded?.call(result);
+    notifyListeners();
   }
 
   /// [FileUploadController] builder

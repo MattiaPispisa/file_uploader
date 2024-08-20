@@ -3,16 +3,33 @@ import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 import 'package:provider/provider.dart';
 
 /// [ChangeNotifierProvider] with [FileUploadControllerModel]
+///
+/// ```dart
+/// class MyCustomFileUploadWidget extends StatelessWidget {
+///
+///   Widget build(BuildContext context) {
+///     return FileUploadControllerProvider(
+///       ref: ref,
+///       child: FileUploadControllerConsumer(
+///         builder: (context, model, _) {
+///           // UI Widget
+///           return ...
+///         ...
+/// ```
 class FileUploadControllerProvider extends StatelessWidget {
   /// [ChangeNotifierProvider] with [FileUploadControllerModel]
   const FileUploadControllerProvider({
     required this.ref,
     required this.child,
+    this.startOnInit = true,
     super.key,
   });
 
   /// reference to [FileUploader]
   final FileUploaderRef ref;
+
+  /// start upload on init
+  final bool startOnInit;
 
   /// child
   final Widget child;
@@ -22,6 +39,7 @@ class FileUploadControllerProvider extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => FileUploadControllerModel(
         ref: ref,
+        startOnInit: startOnInit,
       ),
       child: child,
     );

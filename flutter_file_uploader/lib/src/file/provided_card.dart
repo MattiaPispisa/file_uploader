@@ -27,16 +27,22 @@ class ProvidedFileCard extends StatelessWidget {
     this.retryIcon = Icons.rotate_left_rounded,
     this.removeIcon = Icons.delete,
     this.removeColor,
+    this.startUploadOnInit = true,
     super.key,
   });
 
   /// reference to [FileUploader]
   final FileUploaderRef ref;
 
+  /// start upload on init
+  final bool startUploadOnInit;
+
   /// [FileCard] borderRadius
   final BorderRadius? borderRadius;
 
   /// [FileCard] padding
+  ///
+  /// padding of [FileCard.content]
   final EdgeInsetsGeometry padding;
 
   /// [FileCard] elevation
@@ -70,6 +76,7 @@ class ProvidedFileCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return FileUploadControllerProvider(
       ref: ref,
+      startOnInit: startUploadOnInit,
       child: FileUploadControllerConsumer(
         builder: (context, model, _) {
           return FileCard(

@@ -3,14 +3,14 @@ import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 
-/// The model that manages the upload state of a file.
+/// The model that manages the upload state of a file. State is composed of:
+///
+/// - [FileUploadControllerModel.progress], track the file upload progress
+/// - [FileUploadControllerModel.status], file upload status
 ///
 /// Expose [uploadCallback] and [retryCallback] to run the file upload.
 /// [upload] and [retry] run the same functions as
 /// [uploadCallback] and [retryCallback]
-///
-/// [progress] track the file upload progress
-///
 class FileUploadControllerModel with ChangeNotifier {
   /// The model that manages the upload state of a file
   ///
@@ -73,7 +73,9 @@ class FileUploadControllerModel with ChangeNotifier {
     if (_result == null) {
       return null;
     }
-    return _ref.onRemoved;
+
+    // ignore: unnecessary_lambdas
+    return () => _ref.onRemoved();
   }
 
   /// upload on init
@@ -112,7 +114,6 @@ class FileUploadControllerModel with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       _status = FileUploadStatus.failed;
-      print(e);
       notifyListeners();
     }
   }

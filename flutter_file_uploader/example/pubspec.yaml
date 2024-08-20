@@ -15,7 +15,9 @@ dependencies:
   flutter_file_uploader:
     path: ../
   en_file_uploader: ^2.0.0
-  http: 
+  http:
+  file_uploader_utils:
+    path: ../../tools/file_uploader_utils
 
 dev_dependencies:
   flutter_test:

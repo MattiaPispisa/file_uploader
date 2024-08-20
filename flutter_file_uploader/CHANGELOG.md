@@ -1,3 +1,18 @@
+## [1.1.0] - 2024-08-20
+
+### Added
+
+- test coverage
+- `FileUploadControllerProvider.startOnInit`
+- deprecated legacy properties of `FileUploaderRef`, added `upload` and `retry` to control a file
+  upload
+- more documentation
+- more examples
+
+### Fix
+
+- Fix remove file uploaded
+
 ## [1.0.1] - 2024-06-23
 
 ### Changed

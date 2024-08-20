@@ -32,7 +32,7 @@ class FileCard extends StatelessWidget {
   /// border radius applied on card
   final BorderRadius? borderRadius;
 
-  /// content padding
+  /// [FileCard.content] padding
   final EdgeInsetsGeometry padding;
 
   /// card elevation
@@ -45,6 +45,10 @@ class FileCard extends StatelessWidget {
   final double progressHeight;
 
   /// card child
+  ///
+  /// Starting from the left, it expands up to the call to action.
+  ///
+  /// Below the content, there is a LinearProgressIndicator.
   final Widget content;
 
   /// upload button icon
@@ -131,7 +135,7 @@ class _FileCardContent extends StatelessWidget {
     this.retryColor,
     this.onRemove,
     this.removeColor,
-  }) : super(key: const ValueKey('_FileCardContent'));
+  }) : super(key: const ValueKey('_file_card_content'));
 
   final Widget content;
 
@@ -168,7 +172,7 @@ class _FileCardContent extends StatelessWidget {
 
     if (semantic._showRemove) {
       return _FileCardButton(
-        key: const ValueKey('remove button'),
+        key: const ValueKey('remove_button'),
         iconData: removeIcon,
         onPressed: onRemove,
         color: removeColor ?? theme.colorScheme.error,
@@ -176,7 +180,7 @@ class _FileCardContent extends StatelessWidget {
     }
     if (semantic._showRetry) {
       return _FileCardButton(
-        key: const ValueKey('retry button'),
+        key: const ValueKey('retry_button'),
         iconData: retryIcon,
         onPressed: onRetry,
         color: retryColor ?? theme.colorScheme.error,
@@ -184,7 +188,7 @@ class _FileCardContent extends StatelessWidget {
     }
     if (semantic._showUpload) {
       return _FileCardButton(
-        key: const ValueKey('upload button'),
+        key: const ValueKey('upload_button'),
         iconData: uploadIcon,
         onPressed: onUpload,
         color: uploadColor ?? theme.colorScheme.primary,
@@ -193,7 +197,7 @@ class _FileCardContent extends StatelessWidget {
 
     // fake button for layout
     return _FileCardButton(
-      key: const ValueKey('fake button'),
+      key: const ValueKey('fake_button'),
       iconData: uploadIcon,
       color: Colors.transparent,
     );
@@ -205,7 +209,7 @@ class _FileCardProgress extends StatefulWidget {
     required this.progress,
     required this.radius,
     required this.height,
-  }) : super(key: const ValueKey('_FileCardProgress'));
+  }) : super(key: const ValueKey('_file_card_progress'));
 
   final double progress;
   final BorderRadius radius;
@@ -216,7 +220,7 @@ class _FileCardProgress extends StatefulWidget {
 }
 
 class _FileCardProgressState extends State<_FileCardProgress> {
-  late double _lastProgress = 0;
+  late double _lastProgress;
 
   @override
   void initState() {
@@ -306,7 +310,10 @@ enum FileUploadStatus {
   done;
 
   bool get _showRemove => this == FileUploadStatus.done;
+
   bool get _showRetry => this == FileUploadStatus.failed;
+
   bool get _showUpload => this == FileUploadStatus.waiting;
+
   bool get _disabled => this == FileUploadStatus.uploading;
 }
