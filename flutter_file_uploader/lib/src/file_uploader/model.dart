@@ -23,13 +23,13 @@ class FileUploaderModel with ChangeNotifier {
   /// true if there are files under processing (during [onPressedAddFiles])
   bool get processingFiles => _processingFiles;
 
-  String? _errorOnFiles;
+  dynamic _errorOnFiles;
 
   /// error during [onPressedAddFiles]
   /// null: no error present
   ///
-  /// else: the error string
-  String? get errorOnFiles => _errorOnFiles;
+  /// else: the error caught
+  dynamic get errorOnFiles => _errorOnFiles;
 
   final OnFileUploaded? _onFileUploaded;
   final OnFileRemoved? _onFileRemoved;

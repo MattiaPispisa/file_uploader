@@ -40,6 +40,12 @@ class FileUploader extends StatelessWidget {
   ///
   /// [border], [borderRadius], [height], [width]
   /// are used to customize the button's style.
+  ///
+  /// use [loadingBuilder] to customize the loading widget
+  ///
+  /// use [errorBuilder] to customize the error widget
+  ///
+  /// set either [onPressedAddFiles] or [onFileAdded] to disable the `onTap`
   const FileUploader({
     required this.builder,
     super.key,
@@ -55,6 +61,8 @@ class FileUploader extends StatelessWidget {
     this.onFileRemoved,
     this.onFileUploaded,
     this.limit,
+    this.errorBuilder,
+    this.loadingBuilder,
   });
 
   /// height of the button
@@ -77,6 +85,19 @@ class FileUploader extends StatelessWidget {
 
   /// child of [FileUploader] when is waiting files
   final Widget? placeholder;
+
+  /// child of [FileUploader] when some files went in error under processing
+  final Widget Function(
+    BuildContext context,
+    dynamic errorOnFiles,
+  )? errorBuilder;
+
+  /// child of [FileUploader] under processing
+  ///
+  /// default is [CircularProgressIndicator]
+  final Widget Function(
+    BuildContext context,
+  )? loadingBuilder;
 
   /// border radius of [FileUploader]
   final BorderRadiusGeometry? borderRadius;
@@ -165,18 +186,19 @@ class FileUploader extends StatelessWidget {
               borderRadius: borderRadius,
             ),
             child: processingFiles
-                ? const _Loading(
-                    loading: null,
-                    key: ValueKey('FileUploader loading'),
+                ? _Loading(
+                    key: const ValueKey('file_uploader_loading'),
+                    loading: loadingBuilder?.call(context),
                   )
                 : errorOnFiles != null
-                    ? const _Error(
-                        error: SizedBox(),
-                        key: ValueKey('FileUploader error'),
+                    ? _Error(
+                        key: const ValueKey('file_uploader_error'),
+                        error: errorBuilder?.call(context, errorOnFiles) ??
+                            const SizedBox(),
                       )
                     : _Placeholder(
+                        key: const ValueKey('file_uploader_placeholder'),
                         placeholder: placeholder,
-                        key: const ValueKey('FileUploader placeholder'),
                       ),
           ),
         );
