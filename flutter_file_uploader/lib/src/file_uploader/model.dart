@@ -149,7 +149,7 @@ class FileUploaderModel with ChangeNotifier {
   /// set error
   void _setErrorOnProcessing(dynamic e, dynamic stackTrace) {
     _processingFiles = false;
-    _errorOnFiles = e.toString();
+    _errorOnFiles = e;
     _logger?.error(e.toString(), e, stackTrace);
     notifyListeners();
   }
