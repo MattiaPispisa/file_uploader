@@ -135,6 +135,7 @@ class FileUploaderModel with ChangeNotifier {
 
   /// start processing
   void _setProcessing() {
+    _errorOnFiles = null;
     _processingFiles = true;
     notifyListeners();
   }
@@ -142,6 +143,7 @@ class FileUploaderModel with ChangeNotifier {
   /// stop processing (controllers are available)
   void _setStopProcessing(List<FileUploadController> controllers) {
     _processingFiles = false;
+    _errorOnFiles = null;
     _controllers = List.unmodifiable([..._controllers, ...controllers]);
     notifyListeners();
   }
