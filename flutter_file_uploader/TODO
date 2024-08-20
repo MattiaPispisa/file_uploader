@@ -1,3 +1,7 @@
-1. Refactor FileUploaderRef:
-    1.1 private Controller
-    1.2 three public methods: onUpload,onRemoved, onRetry that call the private
+More UI Test on FileCard and FileUploader.
+
+FireCard:
+- onTap buttons,
+- verify callbacks called
+
+FileUploader:
