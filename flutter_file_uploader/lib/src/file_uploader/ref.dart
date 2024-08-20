@@ -59,15 +59,15 @@ class FileUploaderRef {
 
   /// upload file
   Future<FileUploadResult> upload({ProgressCallback? onProgress}) async {
-    final result = await controller.upload(onProgress: onProgress);
-    onUpload(result);
+    final result = await _controller.upload(onProgress: onProgress);
+    _onUpload(result);
     return result;
   }
 
   /// retry upload file
   Future<FileUploadResult> retry({ProgressCallback? onProgress}) async {
-    final result = await controller.retry(onProgress: onProgress);
-    onUpload(result);
+    final result = await _controller.retry(onProgress: onProgress);
+    _onUpload(result);
     return result;
   }
 

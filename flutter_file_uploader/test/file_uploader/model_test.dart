@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:file_uploader_utils/file_uploader_utils.dart' as utils;
+import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 import 'package:flutter_file_uploader/src/file_uploader/model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -54,14 +55,16 @@ void main() {
         'should add file',
         () async {
           final model = FileUploaderModel();
+          final file = utils.createFile();
+          final handler = MockFileUploadHandler();
 
           final callback = model.onPressedAddFiles(
             onFileAdded: (file) async {
-              return MockFileUploadHandler();
+              return handler;
             },
             onPressedAddFiles: () async {
               await Future<void>.delayed(const Duration(milliseconds: 10));
-              return [utils.createFile()];
+              return [file];
             },
           );
           unawaited(callback?.call());
@@ -71,6 +74,116 @@ void main() {
           await Future<void>.delayed(const Duration(milliseconds: 10));
           expect(model.processingFiles, false);
           expect(model.refs.length, 1);
+          expect(
+            model.refs.first,
+            isA<FileUploaderRef>()
+                .having((ref) => ref.uploaded, 'uploaded', false),
+          );
+        },
+      );
+
+      test(
+        'should handle errors on add file',
+        () async {
+          final model = FileUploaderModel();
+          final handler = MockFileUploadHandler();
+
+          final callback = model.onPressedAddFiles(
+            onFileAdded: (file) async {
+              return handler;
+            },
+            onPressedAddFiles: () async {
+              throw Error();
+            },
+          );
+          await callback?.call();
+
+          expect(model.refs, isEmpty);
+          expect(model.processingFiles, false);
+          expect(model.errorOnFiles, isNotNull);
+        },
+      );
+
+      test(
+        'should upload file',
+        () async {
+          final model = FileUploaderModel();
+          final handler = MockFileUploadHandler();
+          final file = utils.createFile();
+
+          when(() => handler.upload(onProgress: any(named: 'onProgress')))
+              .thenAnswer((_) async => {});
+          when(() => handler.file).thenReturn(file);
+
+          final callback = model.onPressedAddFiles(
+            onFileAdded: (file) async {
+              return handler;
+            },
+            onPressedAddFiles: () async {
+              return [file];
+            },
+          );
+          await callback?.call();
+
+          final first = model.refs.first;
+          await first.upload();
+          expect(first.uploaded, true);
+        },
+      );
+
+      test(
+        'should retry file',
+            () async {
+          final model = FileUploaderModel();
+          final handler = MockFileUploadHandler();
+          final file = utils.createFile();
+
+          when(() => handler.upload(onProgress: any(named: 'onProgress')))
+              .thenAnswer((_) async => {});
+          when(() => handler.file).thenReturn(file);
+
+          final callback = model.onPressedAddFiles(
+            onFileAdded: (file) async {
+              return handler;
+            },
+            onPressedAddFiles: () async {
+              return [file];
+            },
+          );
+          await callback?.call();
+
+          final first = model.refs.first;
+          await first.retry();
+          expect(first.uploaded, true);
+        },
+      );
+
+      test(
+        'should upload and remove file',
+        () async {
+          final model = FileUploaderModel();
+          final handler = MockFileUploadHandler();
+          final file = utils.createFile();
+
+          when(() => handler.upload(onProgress: any(named: 'onProgress')))
+              .thenAnswer((_) async => {});
+          when(() => handler.file).thenReturn(file);
+
+          final callback = model.onPressedAddFiles(
+            onFileAdded: (file) async {
+              return handler;
+            },
+            onPressedAddFiles: () async {
+              return [file];
+            },
+          );
+          await callback?.call();
+
+          final first = model.refs.first;
+          await first.upload();
+          first.onRemoved();
+
+          expect(model.refs, isEmpty);
         },
       );
     },

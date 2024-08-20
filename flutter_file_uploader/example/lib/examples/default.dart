@@ -1,5 +1,4 @@
 import 'package:example/handlers/fake_file_handler.dart';
-import 'package:example/main.dart';
 import 'package:example/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';

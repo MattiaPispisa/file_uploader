@@ -1,4 +1,3 @@
-import 'package:example/handlers/fake_file_handler.dart';
 import 'package:example/handlers/handlers.dart';
 import 'package:example/utils.dart';
 import 'package:flutter/material.dart';
