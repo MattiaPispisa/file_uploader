@@ -11,7 +11,7 @@ class FileUploaderModel with ChangeNotifier {
     OnFileRemoved? onFileRemoved,
     this.limit,
   })  : _processingFiles = false,
-        _controllers = const <FileUploadController>[],
+        _controllers = List<FileUploadController>.unmodifiable([]),
         _logger = logger,
         _filesUploaded = {},
         _errorOnFiles = null,
@@ -20,11 +20,12 @@ class FileUploaderModel with ChangeNotifier {
 
   bool _processingFiles;
 
-  /// true if there are files under processing
+  /// true if there are files under processing (during [onPressedAddFiles])
   bool get processingFiles => _processingFiles;
 
   String? _errorOnFiles;
 
+  /// error during [onPressedAddFiles]
   /// null: no error present
   ///
   /// else: the error string
@@ -50,6 +51,14 @@ class FileUploaderModel with ChangeNotifier {
   final int? limit;
 
   /// Returns the callback to execute when you want to handle a set of files.
+  ///
+  /// If either [onPressedAddFiles] or [onFileAdded] is provided, no callback
+  /// is returned (which is useful to disable button callbacks)
+  ///
+  /// Executing the callback will:
+  ///
+  /// 1. call [onPressedAddFiles].
+  /// 2. after files are added, call [onFileAdded] for each file;
   Future<void> Function()? onPressedAddFiles({
     OnPressedAddFilesCallback? onPressedAddFiles,
     OnFileAdded? onFileAdded,
@@ -58,11 +67,11 @@ class FileUploaderModel with ChangeNotifier {
       return null;
     }
 
-    if (onPressedAddFiles == null || onFileAdded == null) {
+    if (limit != null && _controllers.length >= limit!) {
       return null;
     }
 
-    if (limit != null && _controllers.length >= limit!) {
+    if (onPressedAddFiles == null || onFileAdded == null) {
       return null;
     }
 
@@ -95,7 +104,7 @@ class FileUploaderModel with ChangeNotifier {
       return;
     }
 
-    _controllers = [..._controllers]..remove(controller);
+    _controllers = List.unmodifiable([..._controllers]..remove(controller));
     _filesUploaded.remove(controller);
     _onFileRemoved?.call(file);
     notifyListeners();
@@ -133,7 +142,7 @@ class FileUploaderModel with ChangeNotifier {
   /// stop processing (controllers are available)
   void _setStopProcessing(List<FileUploadController> controllers) {
     _processingFiles = false;
-    _controllers = [..._controllers, ...controllers];
+    _controllers = List.unmodifiable([..._controllers, ...controllers]);
     notifyListeners();
   }
 
