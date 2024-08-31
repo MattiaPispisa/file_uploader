@@ -1,3 +1,9 @@
+## [1.1.1] - 2024-08-31
+
+### Fixed
+
+- Update `README.md` screenshot references
+
 ## [1.1.0] - 2024-08-20
 
 ### Added
