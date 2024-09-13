@@ -22,6 +22,8 @@ class DefaultFilesUpload extends StatelessWidget {
             children: [
               Center(
                 child: FileUploader(
+                  limit: 1,
+                  hideOnLimit: false,
                   builder: (context, ref) {
                     return ProvidedFileCard(
                       ref: ref,

@@ -76,8 +76,55 @@ void main() {
       );
 
       testWidgets(
+        'should not tap add files on limit reached',
+        (tester) async {
+          final handler = MockFileUploadHandler();
+          final file = utils.createFile();
+
+          final robot = FileUploaderRobot(tester: tester);
+          await robot.pumpFileUploader(
+            builder: (_, __) => const SizedBox(),
+            onFileAdded: (file) async => handler,
+            limit: 1,
+            onPressedAddFiles: () async {
+              return [file];
+            },
+          );
+
+          await robot.tapAddFiles();
+          await robot.pumpAndSettle();
+
+          robot.expectCantTapAddFile();
+        },
+      );
+
+      testWidgets(
+        'should hide upload button on limit reached',
+        (tester) async {
+          final handler = MockFileUploadHandler();
+          final file = utils.createFile();
+
+          final robot = FileUploaderRobot(tester: tester);
+          await robot.pumpFileUploader(
+            builder: (_, __) => const SizedBox(),
+            onFileAdded: (file) async => handler,
+            limit: 1,
+            hideOnLimit: true,
+            onPressedAddFiles: () async {
+              return [file];
+            },
+          );
+
+          await robot.tapAddFiles();
+          await robot.pumpAndSettle();
+
+          robot.expectNoFileUploaderButton();
+        },
+      );
+
+      testWidgets(
         'should go on error',
-            (tester) async {
+        (tester) async {
           final handler = MockFileUploadHandler();
           final completer = Completer<bool>();
 

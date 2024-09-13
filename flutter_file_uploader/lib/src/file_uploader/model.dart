@@ -50,6 +50,15 @@ class FileUploaderModel with ChangeNotifier {
   /// maximum number of files that can be uploaded
   final int? limit;
 
+  /// files uploaded reach the available limit
+  bool get reachedLimit {
+    if (limit == null) {
+      return false;
+    }
+
+    return _controllers.length >= limit!;
+  }
+
   /// Returns the callback to execute when you want to handle a set of files.
   ///
   /// If either [onPressedAddFiles] or [onFileAdded] is provided, no callback
@@ -63,11 +72,7 @@ class FileUploaderModel with ChangeNotifier {
     OnPressedAddFilesCallback? onPressedAddFiles,
     OnFileAdded? onFileAdded,
   }) {
-    if (_processingFiles) {
-      return null;
-    }
-
-    if (limit != null && _controllers.length >= limit!) {
+    if (_processingFiles || reachedLimit) {
       return null;
     }
 

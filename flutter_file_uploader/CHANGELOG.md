@@ -1,3 +1,14 @@
+## [1.2.0] - 2024-09-13
+
+### Added
+
+- can hide file uploader button (`FileUploader.hideOnLimit`)
+- disable effect on default FileUploader border
+
+### Fix
+
+- fix onTap on limit reached [1](https://github.com/MattiaPispisa/file_uploader/issues/1)
+
 ## [1.1.1] - 2024-08-31
 
 ### Fixed
