@@ -14,6 +14,8 @@ class FileUploaderRobot {
     required FileUploaderBuilderCallback builder,
     Future<List<XFile>> Function()? onPressedAddFiles,
     Future<IFileUploadHandler> Function(XFile)? onFileAdded,
+    int? limit,
+    bool? hideOnLimit,
   }) {
     return _tester.pumpWidget(
       Material(
@@ -23,6 +25,8 @@ class FileUploaderRobot {
             builder: builder,
             onPressedAddFiles: onPressedAddFiles,
             onFileAdded: onFileAdded,
+            limit: limit,
+            hideOnLimit: hideOnLimit,
           ),
         ),
       ),
@@ -39,6 +43,45 @@ class FileUploaderRobot {
 
   Future<void> pump() {
     return _tester.pump();
+  }
+
+  void expectNoFileUploaderButton() {
+    expect(
+      find.byKey(
+        const ValueKey('file_uploader_button_inkwell'),
+      ),
+      findsNothing,
+    );
+  }
+
+  void expectCanTapAddFile() {
+    expect(
+      _tester.widget(
+        find.byKey(
+          const ValueKey('file_uploader_button_inkwell'),
+        ),
+      ),
+      isA<InkWell>().having(
+        (inkwell) => inkwell.onTap,
+        'onTap',
+        isNotNull,
+      ),
+    );
+  }
+
+  void expectCantTapAddFile() {
+    expect(
+      _tester.widget(
+        find.byKey(
+          const ValueKey('file_uploader_button_inkwell'),
+        ),
+      ),
+      isA<InkWell>().having(
+        (inkwell) => inkwell.onTap,
+        'onTap',
+        isNull,
+      ),
+    );
   }
 
   void expectProcessingFilesWidget() {
@@ -61,7 +104,6 @@ class FileUploaderRobot {
       findsOneWidget,
     );
   }
-
 
   void expectNoErrorOnFilesWidget() {
     expect(

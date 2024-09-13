@@ -6,6 +6,8 @@ import 'package:flutter_file_uploader/src/file_uploader/model.dart';
 import 'package:mobkit_dashed_border/mobkit_dashed_border.dart';
 import 'package:provider/provider.dart';
 
+const _kAnimationDuration = Duration(milliseconds: 250);
+
 /// on pressed add files, more on [FileUploader]
 typedef OnPressedAddFilesCallback = Future<List<XFile>> Function();
 
@@ -63,6 +65,7 @@ class FileUploader extends StatelessWidget {
     this.limit,
     this.errorBuilder,
     this.loadingBuilder,
+    this.hideOnLimit,
   });
 
   /// height of the button
@@ -117,10 +120,13 @@ class FileUploader extends StatelessWidget {
   /// maximum number of files that can be uploaded
   final int? limit;
 
+  /// hide file uploader button on limit reached
+  final bool? hideOnLimit;
+
   @override
   Widget build(BuildContext context) {
     return _Provider(
-      key: const ValueKey('FileUploader Provider'),
+      key: const ValueKey('file_uploader_provider'),
       onFileRemoved: onFileRemoved,
       onFileUploaded: onFileUploaded,
       logger: logger,
@@ -129,7 +135,19 @@ class FileUploader extends StatelessWidget {
         children: [
           _builder(context),
           const SizedBox(height: 12),
-          _button(context),
+          _Button(
+            key: const ValueKey('file_uploader_button'),
+            onFileAdded: onFileAdded,
+            onPressedAddFiles: onPressedAddFiles,
+            border: border,
+            width: width,
+            height: height,
+            borderRadius: borderRadius,
+            loadingBuilder: loadingBuilder,
+            errorBuilder: errorBuilder,
+            placeholder: placeholder,
+            hideOnLimit: hideOnLimit,
+          ),
         ],
       ),
     );
@@ -152,57 +170,101 @@ class FileUploader extends StatelessWidget {
       },
     );
   }
+}
 
-  Widget _button(BuildContext context) {
+class _Button extends StatelessWidget {
+  const _Button({
+    required this.onFileAdded,
+    required this.onPressedAddFiles,
+    required this.border,
+    required this.width,
+    required this.height,
+    required this.loadingBuilder,
+    required this.errorBuilder,
+    required this.placeholder,
+    required this.borderRadius,
+    required this.hideOnLimit,
+    super.key,
+  });
+
+  final OnFileAdded? onFileAdded;
+  final OnPressedAddFilesCallback? onPressedAddFiles;
+  final BoxBorder? border;
+  final double width;
+  final double height;
+  final BorderRadiusGeometry? borderRadius;
+  final Widget Function(BuildContext context)? loadingBuilder;
+  final Widget Function(BuildContext context, dynamic errorOnFiles)?
+      errorBuilder;
+  final Widget? placeholder;
+  final bool? hideOnLimit;
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final border = this.border ??
-        DashedBorder.all(
-          dashLength: 10,
-          color: theme.colorScheme.secondary,
-        );
     final borderRadius =
         this.borderRadius ?? BorderRadius.circular(kFileUploaderRadius);
+    final color = theme.colorScheme.secondary;
 
-    return _Selector(
-      selector: (context, model) => (model.processingFiles, model.errorOnFiles),
-      builder: (context, data, _) {
-        final (processingFiles, errorOnFiles) = data;
+    return _Builder(
+      builder: (context, model, _) {
+        final onTap = model.onPressedAddFiles(
+          onFileAdded: onFileAdded,
+          onPressedAddFiles: onPressedAddFiles,
+        );
+        final border = this.border ??
+            DashedBorder.all(
+              dashLength: 10,
+              color: model.reachedLimit ? color.withOpacity(0.3) : color,
+            );
+        final hide = model.reachedLimit && (hideOnLimit ?? false);
 
-        return InkWell(
-          onTap: context.read<FileUploaderModel>().onPressedAddFiles(
-                onFileAdded: onFileAdded,
-                onPressedAddFiles: onPressedAddFiles,
-              ),
-          radius: kFileUploaderRadius,
-          hoverColor: theme.colorScheme.secondary.withOpacity(0.1),
-          focusColor: theme.colorScheme.secondary.withOpacity(0.1),
-          splashColor: theme.colorScheme.secondary.withOpacity(0.1),
-          highlightColor: theme.colorScheme.secondary.withOpacity(0.2),
-          child: Container(
-            width: width,
-            height: height,
-            decoration: BoxDecoration(
-              border: border,
-              borderRadius: borderRadius,
-            ),
-            child: processingFiles
-                ? _Loading(
-                    key: const ValueKey('file_uploader_loading'),
-                    loading: loadingBuilder?.call(context),
-                  )
-                : errorOnFiles != null
-                    ? _Error(
-                        key: const ValueKey('file_uploader_error'),
-                        error: errorBuilder?.call(context, errorOnFiles) ??
-                            const SizedBox(),
-                      )
-                    : _Placeholder(
-                        key: const ValueKey('file_uploader_placeholder'),
-                        placeholder: placeholder,
-                      ),
-          ),
+        return AnimatedSwitcher(
+          duration: _kAnimationDuration,
+          child: hide
+              ? const SizedBox()
+              : InkWell(
+                  key: const ValueKey('file_uploader_button_inkwell'),
+                  onTap: onTap,
+                  radius: kFileUploaderRadius,
+                  hoverColor: color.withOpacity(0.1),
+                  focusColor: color.withOpacity(0.1),
+                  splashColor: color.withOpacity(0.1),
+                  highlightColor: color.withOpacity(0.2),
+                  child: Container(
+                    width: width,
+                    height: height,
+                    decoration: BoxDecoration(
+                      border: border,
+                      borderRadius: borderRadius,
+                    ),
+                    child: _content(context, model),
+                  ),
+                ),
         );
       },
+    );
+  }
+
+  Widget _content(BuildContext context, FileUploaderModel model) {
+    if (model.processingFiles) {
+      return _Loading(
+        key: const ValueKey('file_uploader_loading'),
+        loading: loadingBuilder?.call(context),
+      );
+    }
+
+    if (model.errorOnFiles != null) {
+      return _Error(
+        key: const ValueKey('file_uploader_error'),
+        error:
+            errorBuilder?.call(context, model.errorOnFiles) ?? const SizedBox(),
+      );
+    }
+
+    return _Placeholder(
+      key: const ValueKey('file_uploader_placeholder'),
+      placeholder: placeholder,
     );
   }
 }
@@ -254,6 +316,26 @@ class _Selector<T> extends StatelessWidget {
     return Selector<FileUploaderModel, T>(
       builder: builder,
       selector: selector,
+      child: child,
+    );
+  }
+}
+
+class _Builder extends StatelessWidget {
+  const _Builder({
+    required this.builder,
+    super.key,
+    this.child,
+  });
+
+  final Widget Function(
+      BuildContext context, FileUploaderModel model, Widget? child) builder;
+  final Widget? child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<FileUploaderModel>(
+      builder: builder,
       child: child,
     );
   }
