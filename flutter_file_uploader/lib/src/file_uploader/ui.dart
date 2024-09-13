@@ -207,6 +207,7 @@ class _Button extends StatelessWidget {
     final color = theme.colorScheme.secondary;
 
     return _Builder(
+      key: const ValueKey('file_uploader_button_builder'),
       builder: (context, model, _) {
         final onTap = model.onPressedAddFiles(
           onFileAdded: onFileAdded,
@@ -303,20 +304,17 @@ class _Selector<T> extends StatelessWidget {
   const _Selector({
     required this.selector,
     required this.builder,
-    this.child,
     super.key,
   });
 
   final T Function(BuildContext context, FileUploaderModel model) selector;
   final Widget Function(BuildContext context, T value, Widget? child) builder;
-  final Widget? child;
 
   @override
   Widget build(BuildContext context) {
     return Selector<FileUploaderModel, T>(
       builder: builder,
       selector: selector,
-      child: child,
     );
   }
 }
@@ -325,18 +323,18 @@ class _Builder extends StatelessWidget {
   const _Builder({
     required this.builder,
     super.key,
-    this.child,
   });
 
   final Widget Function(
-      BuildContext context, FileUploaderModel model, Widget? child) builder;
-  final Widget? child;
+    BuildContext context,
+    FileUploaderModel model,
+    Widget? child,
+  ) builder;
 
   @override
   Widget build(BuildContext context) {
     return Consumer<FileUploaderModel>(
       builder: builder,
-      child: child,
     );
   }
 }
