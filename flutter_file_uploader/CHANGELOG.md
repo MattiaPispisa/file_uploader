@@ -3,6 +3,7 @@
 ### Added
 
 - can hide file uploader button (`FileUploader.hideOnLimit`)
+- disable effect on default FileUploader border
 
 ### Fix
 
