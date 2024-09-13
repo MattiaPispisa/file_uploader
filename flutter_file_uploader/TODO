@@ -1,7 +1,4 @@
-More UI Test on FileCard and FileUploader.
-
-FireCard:
-- onTap buttons,
-- verify callbacks called
-
-FileUploader:
+- FileUploader.color
+- FileUploader.placeholderBuilder
+- expose FileUploaderBuilder and FileUploaderSelector
+- example with global state to toggle limit, hideOnLimit
