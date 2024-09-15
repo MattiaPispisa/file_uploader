@@ -2,11 +2,11 @@ import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 import 'package:flutter_file_uploader/src/_constants.dart';
-import 'package:flutter_file_uploader/src/file_uploader/model.dart';
 import 'package:mobkit_dashed_border/mobkit_dashed_border.dart';
 import 'package:provider/provider.dart';
 
 const _kAnimationDuration = Duration(milliseconds: 250);
+const _kButtonHeight = 100.0;
 
 /// on pressed add files, more on [FileUploader]
 typedef OnPressedAddFilesCallback = Future<List<XFile>> Function();
@@ -48,10 +48,12 @@ class FileUploader extends StatelessWidget {
   /// use [errorBuilder] to customize the error widget
   ///
   /// set either [onPressedAddFiles] or [onFileAdded] to disable the `onTap`
+  ///
+  /// use [color] to customize [border] color and tap effects.
   const FileUploader({
     required this.builder,
     super.key,
-    this.height = 100,
+    this.height = _kButtonHeight,
     this.width = double.maxFinite,
     this.onFileAdded,
     this.onPressedAddFiles,
@@ -66,6 +68,7 @@ class FileUploader extends StatelessWidget {
     this.errorBuilder,
     this.loadingBuilder,
     this.hideOnLimit,
+    this.color,
   });
 
   /// height of the button
@@ -87,9 +90,15 @@ class FileUploader extends StatelessWidget {
   final OnFileRemoved? onFileRemoved;
 
   /// child of [FileUploader] when is waiting files
+  ///
+  /// inside you can use [FileUploaderSelector] and [FileUploaderConsumer]
+  /// to use [FileUploaderModel].
   final Widget? placeholder;
 
   /// child of [FileUploader] when some files went in error under processing
+  ///
+  /// inside you can use [FileUploaderSelector] and [FileUploaderConsumer]
+  /// to use [FileUploaderModel].
   final Widget Function(
     BuildContext context,
     dynamic errorOnFiles,
@@ -98,6 +107,9 @@ class FileUploader extends StatelessWidget {
   /// child of [FileUploader] under processing
   ///
   /// default is [CircularProgressIndicator]
+  ///
+  /// inside you can use [FileUploaderSelector] and [FileUploaderConsumer]
+  /// to use [FileUploaderModel].
   final Widget Function(
     BuildContext context,
   )? loadingBuilder;
@@ -109,6 +121,9 @@ class FileUploader extends StatelessWidget {
   final BoxBorder? border;
 
   /// used to create the file upload handler
+  ///
+  /// inside you can use [FileUploaderSelector] and [FileUploaderConsumer]
+  /// to use [FileUploaderModel].
   final FileUploaderBuilderCallback builder;
 
   /// logger
@@ -122,6 +137,11 @@ class FileUploader extends StatelessWidget {
 
   /// hide file uploader button on limit reached
   final bool? hideOnLimit;
+
+  /// [FileUploader] color used on default [border] and tap effects.
+  ///
+  /// default is [ColorScheme.secondary].
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -147,6 +167,7 @@ class FileUploader extends StatelessWidget {
             errorBuilder: errorBuilder,
             placeholder: placeholder,
             hideOnLimit: hideOnLimit,
+            color: color,
           ),
         ],
       ),
@@ -154,7 +175,7 @@ class FileUploader extends StatelessWidget {
   }
 
   Widget _builder(BuildContext context) {
-    return _Selector(
+    return FileUploaderSelector(
       selector: (_, model) => model.refs,
       builder: (context, refs, _) {
         return Column(
@@ -184,6 +205,7 @@ class _Button extends StatelessWidget {
     required this.placeholder,
     required this.borderRadius,
     required this.hideOnLimit,
+    required this.color,
     super.key,
   });
 
@@ -198,15 +220,15 @@ class _Button extends StatelessWidget {
       errorBuilder;
   final Widget? placeholder;
   final bool? hideOnLimit;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final borderRadius =
         this.borderRadius ?? BorderRadius.circular(kFileUploaderRadius);
-    final color = theme.colorScheme.secondary;
+    final color = this.color ?? Theme.of(context).colorScheme.secondary;
 
-    return _Builder(
+    return FileUploaderConsumer(
       key: const ValueKey('file_uploader_button_builder'),
       builder: (context, model, _) {
         final onTap = model.onPressedAddFiles(
@@ -296,45 +318,6 @@ class _Provider extends StatelessWidget {
         limit: limit,
       ),
       child: child,
-    );
-  }
-}
-
-class _Selector<T> extends StatelessWidget {
-  const _Selector({
-    required this.selector,
-    required this.builder,
-    super.key,
-  });
-
-  final T Function(BuildContext context, FileUploaderModel model) selector;
-  final Widget Function(BuildContext context, T value, Widget? child) builder;
-
-  @override
-  Widget build(BuildContext context) {
-    return Selector<FileUploaderModel, T>(
-      builder: builder,
-      selector: selector,
-    );
-  }
-}
-
-class _Builder extends StatelessWidget {
-  const _Builder({
-    required this.builder,
-    super.key,
-  });
-
-  final Widget Function(
-    BuildContext context,
-    FileUploaderModel model,
-    Widget? child,
-  ) builder;
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<FileUploaderModel>(
-      builder: builder,
     );
   }
 }
