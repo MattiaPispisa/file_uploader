@@ -1,4 +1,5 @@
 import 'package:example/handlers/handlers.dart';
+import 'package:example/settings/read.dart';
 import 'package:example/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
@@ -10,6 +11,8 @@ class DefaultRestorableChunkedFilesUpload extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final settings = context.watchSettings();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('DEFAULT RESTORABLE CHUNKED'),
@@ -23,6 +26,9 @@ class DefaultRestorableChunkedFilesUpload extends StatelessWidget {
             children: [
               Center(
                 child: FileUploader(
+                  limit: settings.limit,
+                  hideOnLimit: settings.hideOnLimit,
+                  color: settings.color,
                   builder: (context, ref) {
                     return ProvidedFileCard(
                       ref: ref,

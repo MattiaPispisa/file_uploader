@@ -1,4 +1,0 @@
-- FileUploader.color
-- FileUploader.placeholderBuilder
-- expose FileUploaderBuilder and FileUploaderSelector
-- example with global state to toggle limit, hideOnLimit
