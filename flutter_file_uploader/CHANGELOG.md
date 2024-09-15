@@ -1,3 +1,11 @@
+## [1.3.0] - 2024-09-15
+
+### Added
+
+- on `example` project added a global state to change the parameters of `FileUploader`
+- added `FileUploader.color`
+- added `FileUploaderConsumer`, `FileUploaderSelector` to interact with `FileUploaderModel`
+
 ## [1.2.0] - 2024-09-13
 
 ### Added
