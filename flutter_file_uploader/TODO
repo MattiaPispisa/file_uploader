@@ -1,7 +1,0 @@
-More UI Test on FileCard and FileUploader.
-
-FireCard:
-- onTap buttons,
-- verify callbacks called
-
-FileUploader:

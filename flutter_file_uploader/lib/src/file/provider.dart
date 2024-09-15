@@ -64,7 +64,7 @@ class FileUploadControllerSelector<T> extends StatelessWidget {
     FileUploadControllerModel model,
   ) selector;
 
-  /// Callback executed on every change of T.
+  /// Callback executed on every change of [T].
   ///
   /// The parameter `child` is the one passed into
   /// [FileUploadControllerSelector].
@@ -106,7 +106,7 @@ class FileUploadControllerConsumer extends StatelessWidget {
     Widget? child,
   ) builder;
 
-  /// Widget not effected from [Selector]
+  /// Widget not effected from [Consumer]
   final Widget? child;
 
   @override
