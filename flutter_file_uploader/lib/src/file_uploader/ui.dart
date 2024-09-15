@@ -93,13 +93,13 @@ class FileUploader extends StatelessWidget {
   /// child of [FileUploader] when is waiting files
   ///
   /// inside you can use [FileUploaderSelector] and [FileUploaderConsumer]
-  /// to use [FileUploaderModel].
+  /// to interact with [FileUploaderModel].
   final Widget? placeholder;
 
   /// child of [FileUploader] when some files went in error under processing
   ///
   /// inside you can use [FileUploaderSelector] and [FileUploaderConsumer]
-  /// to use [FileUploaderModel].
+  /// to interact with [FileUploaderModel].
   final Widget Function(
     BuildContext context,
     dynamic errorOnFiles,
@@ -110,7 +110,7 @@ class FileUploader extends StatelessWidget {
   /// default is [CircularProgressIndicator]
   ///
   /// inside you can use [FileUploaderSelector] and [FileUploaderConsumer]
-  /// to use [FileUploaderModel].
+  /// to interact with [FileUploaderModel].
   final Widget Function(
     BuildContext context,
   )? loadingBuilder;
@@ -124,7 +124,7 @@ class FileUploader extends StatelessWidget {
   /// used to create the file upload handler
   ///
   /// inside you can use [FileUploaderSelector] and [FileUploaderConsumer]
-  /// to use [FileUploaderModel].
+  /// to interact with [FileUploaderModel].
   final FileUploaderBuilderCallback builder;
 
   /// logger
