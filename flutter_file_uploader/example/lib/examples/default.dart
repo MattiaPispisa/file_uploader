@@ -1,4 +1,5 @@
 import 'package:example/handlers/fake_file_handler.dart';
+import 'package:example/settings/read.dart';
 import 'package:example/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
@@ -9,6 +10,8 @@ class DefaultFilesUpload extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final settings = context.watchSettings();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('DEFAULT'),
@@ -22,8 +25,9 @@ class DefaultFilesUpload extends StatelessWidget {
             children: [
               Center(
                 child: FileUploader(
-                  limit: 1,
-                  hideOnLimit: false,
+                  limit: settings.limit,
+                  hideOnLimit: settings.hideOnLimit,
+                  color: settings.color,
                   builder: (context, ref) {
                     return ProvidedFileCard(
                       ref: ref,
