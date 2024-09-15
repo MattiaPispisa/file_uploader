@@ -1,6 +1,5 @@
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
-import 'package:flutter_file_uploader/src/file_uploader/model.dart';
 
 /// A reference to [FileUploaderModel] for those who want to manage file uploads
 ///

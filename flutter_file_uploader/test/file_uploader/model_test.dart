@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:file_uploader_utils/file_uploader_utils.dart' as utils;
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
-import 'package:flutter_file_uploader/src/file_uploader/model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

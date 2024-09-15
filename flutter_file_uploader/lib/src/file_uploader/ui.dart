@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 const _kAnimationDuration = Duration(milliseconds: 250);
 const _kButtonHeight = 100.0;
+const _kBuilderGap = 4.0;
 
 /// on pressed add files, more on [FileUploader]
 typedef OnPressedAddFilesCallback = Future<List<XFile>> Function();
@@ -61,7 +62,7 @@ class FileUploader extends StatelessWidget {
     this.border,
     this.borderRadius,
     this.logger,
-    this.gap = 4,
+    this.gap = _kBuilderGap,
     this.onFileRemoved,
     this.onFileUploaded,
     this.limit,
