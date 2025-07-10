@@ -59,7 +59,7 @@ extension HttpExtension on http.Client {
       StreamTransformer.fromHandlers(
         handleData: (chunk, sink) {
           bytesSent += chunk.length;
-          request.sink.add(chunk);
+          sink.add(chunk);
           onProgress?.call(bytesSent, totalBytes);
         },
       ),
