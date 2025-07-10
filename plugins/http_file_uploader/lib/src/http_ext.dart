@@ -42,44 +42,45 @@ extension HttpExtension on http.Client {
     Map<String, String>? headers,
     void Function(int count, int total)? onProgress,
   }) async {
+    var bytesSent = 0;
+    final completer = Completer<void>();
+
     final uri = Uri.parse(path);
     final request = http.StreamedRequest(method, uri);
 
+    request.contentLength = chunk.end - chunk.start;
+
     request.headers.addAll({
       'Content-Type': 'application/octet-stream',
-      'Content-Length': (chunk.end - chunk.start).toString(),
       ...(headers ?? {}),
     });
 
     final fileStream = chunk.file.openRead(chunk.start, chunk.end);
-    int bytesSent = 0;
     final totalBytes = chunk.end - chunk.start;
 
-    final fileStreamWithProgress = fileStream.transform(
-      StreamTransformer<Uint8List, Uint8List>.fromHandlers(
-        handleData: (chunk, sink) {
-          bytesSent += chunk.length;
-          onProgress?.call(bytesSent, totalBytes);
-          sink.add(chunk);
-        },
-      ),
+    final subscription = fileStream.listen(
+      (data) {
+        bytesSent += data.length;
+        onProgress?.call(bytesSent, totalBytes);
+        request.sink.add(data);
+      },
+      onError: (error, stackTrace) {
+        request.sink.addError(error, stackTrace);
+        completer.completeError(error, stackTrace);
+      },
+      onDone: () {
+        request.sink.close();
+        completer.complete();
+      },
+      cancelOnError: true,
     );
 
-    await request.sink.addStream(fileStreamWithProgress);
-    await request.sink.close();
-
-    final streamResponse = await request.send();
-
-    final responseBytes = await streamResponse.stream.toBytes();
-
-    return http.Response.bytes(
-      responseBytes,
-      streamResponse.statusCode,
-      request: streamResponse.request,
-      headers: streamResponse.headers,
-      isRedirect: streamResponse.isRedirect,
-      persistentConnection: streamResponse.persistentConnection,
-      reasonPhrase: streamResponse.reasonPhrase,
-    );
+    try {
+      await completer.future;
+      return send(request).then(http.Response.fromStream);
+    } catch (e) {
+      await subscription.cancel();
+      rethrow;
+    }
   }
 }
