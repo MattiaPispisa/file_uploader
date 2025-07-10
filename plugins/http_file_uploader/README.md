@@ -1,5 +1,6 @@
 # Http File Uploader
 
+[![Pub Version][pub_badge]][pub_link]
 [![License: MIT][license_badge]][license_link]
 [![coverage][coverage_badge]][coverage_badge]
 
@@ -70,3 +71,5 @@ main() async {
 [license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [license_link]: https://opensource.org/licenses/MIT
 [coverage_badge]: https://img.shields.io/badge/coverage-100%25-green
+[pub_badge]: https://img.shields.io/pub/v/http_file_uploader
+[pub_link]: https://pub.dev/packages/http_file_uploader

@@ -1,5 +1,15 @@
-## [2.1.3] - 2024-08-19
+## [3.0.0] - 2025-07-10
 
+**Breaking**:
+
+- `uploadChunk` now internally uses `StreamedRequest` instead of `MultipartRequest`. The default request `Content-Type` is now `application/octet-stream` instead of `multipart/form-data` (default headers are set before custom ones so they can be overridden).
+
+### Changed
+
+- Update `README.md`
+
+## [2.1.3] - 2024-08-19
+ 
 ### Changed
 
 - Update README.md

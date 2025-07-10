@@ -41,57 +41,46 @@ extension HttpExtension on http.Client {
     required String fileKey,
     Map<String, String>? headers,
     void Function(int count, int total)? onProgress,
-  }) {
+  }) async {
+    var bytesSent = 0;
+    final completer = Completer<void>();
+
     final uri = Uri.parse(path);
-    final request = http.MultipartRequest(method, uri);
+    final request = http.StreamedRequest(method, uri);
 
-    if (headers != null) {
-      request.headers.addAll(headers);
-    }
+    request.contentLength = chunk.end - chunk.start;
 
-    request.files.add(
-      http.MultipartFile(
-        fileKey,
-        chunk.file.openRead(chunk.start, chunk.end),
-        chunk.end - chunk.start,
-      ),
+    request.headers.addAll({
+      'Content-Type': 'application/octet-stream',
+      ...(headers ?? {}),
+    });
+
+    final fileStream = chunk.file.openRead(chunk.start, chunk.end);
+    final totalBytes = chunk.end - chunk.start;
+
+    final subscription = fileStream.listen(
+      (data) {
+        bytesSent += data.length;
+        onProgress?.call(bytesSent, totalBytes);
+        request.sink.add(data);
+      },
+      onError: (error, stackTrace) {
+        request.sink.addError(error, stackTrace);
+        completer.completeError(error, stackTrace);
+      },
+      onDone: () {
+        request.sink.close();
+        completer.complete();
+      },
+      cancelOnError: true,
     );
 
-    return send(request).then((streamResponse) async {
-      final completer = Completer<Uint8List>();
-      final sink = ByteConversionSink.withCallback(
-        (bytes) => completer.complete(
-          Uint8List.fromList(bytes),
-        ),
-      );
-
-      var count = 0;
-      final length = streamResponse.contentLength;
-
-      streamResponse.stream.listen(
-        (sendedChunk) {
-          count += sendedChunk.length;
-          sink.add(sendedChunk);
-
-          if (length != null) {
-            onProgress?.call(count, length);
-          }
-        },
-        onError: completer.completeError,
-        onDone: sink.close,
-        cancelOnError: true,
-      );
-
-      final body = await completer.future;
-      return http.Response.bytes(
-        body,
-        streamResponse.statusCode,
-        request: streamResponse.request,
-        headers: streamResponse.headers,
-        isRedirect: streamResponse.isRedirect,
-        persistentConnection: streamResponse.persistentConnection,
-        reasonPhrase: streamResponse.reasonPhrase,
-      );
-    });
+    try {
+      await completer.future;
+      return send(request).then(http.Response.fromStream);
+    } catch (e) {
+      await subscription.cancel();
+      rethrow;
+    }
   }
 }
