@@ -55,17 +55,17 @@ extension HttpExtension on http.Client {
     int bytesSent = 0;
     final totalBytes = chunk.end - chunk.start;
 
-    fileStream.transform(
-      StreamTransformer.fromHandlers(
+    final fileStreamWithProgress = fileStream.transform(
+      StreamTransformer<Uint8List, Uint8List>.fromHandlers(
         handleData: (chunk, sink) {
           bytesSent += chunk.length;
-          sink.add(chunk);
           onProgress?.call(bytesSent, totalBytes);
+          sink.add(chunk);
         },
       ),
     );
 
-    await request.sink.addStream(fileStream);
+    await request.sink.addStream(fileStreamWithProgress);
     await request.sink.close();
 
     final streamResponse = await request.send();
