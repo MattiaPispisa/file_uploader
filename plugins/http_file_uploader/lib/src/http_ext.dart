@@ -41,57 +41,45 @@ extension HttpExtension on http.Client {
     required String fileKey,
     Map<String, String>? headers,
     void Function(int count, int total)? onProgress,
-  }) {
+  }) async {
     final uri = Uri.parse(path);
-    final request = http.MultipartRequest(method, uri);
+    final request = http.StreamedRequest(method, uri);
 
-    if (headers != null) {
-      request.headers.addAll(headers);
-    }
+    request.headers.addAll({
+      'Content-Type': 'application/octet-stream',
+      'Content-Length': (chunk.end - chunk.start).toString(),
+      ...(headers ?? {}),
+    });
 
-    request.files.add(
-      http.MultipartFile(
-        fileKey,
-        chunk.file.openRead(chunk.start, chunk.end),
-        chunk.end - chunk.start,
+    final fileStream = chunk.file.openRead(chunk.start, chunk.end);
+    int bytesSent = 0;
+    final totalBytes = chunk.end - chunk.start;
+
+    fileStream.transform(
+      StreamTransformer.fromHandlers(
+        handleData: (chunk, sink) {
+          bytesSent += chunk.length;
+          request.sink.add(chunk);
+          onProgress?.call(bytesSent, totalBytes);
+        },
       ),
     );
 
-    return send(request).then((streamResponse) async {
-      final completer = Completer<Uint8List>();
-      final sink = ByteConversionSink.withCallback(
-        (bytes) => completer.complete(
-          Uint8List.fromList(bytes),
-        ),
-      );
+    await request.sink.addStream(fileStream);
+    await request.sink.close();
 
-      var count = 0;
-      final length = streamResponse.contentLength;
+    final streamResponse = await request.send();
 
-      streamResponse.stream.listen(
-        (sendedChunk) {
-          count += sendedChunk.length;
-          sink.add(sendedChunk);
+    final responseBytes = await streamResponse.stream.toBytes();
 
-          if (length != null) {
-            onProgress?.call(count, length);
-          }
-        },
-        onError: completer.completeError,
-        onDone: sink.close,
-        cancelOnError: true,
-      );
-
-      final body = await completer.future;
-      return http.Response.bytes(
-        body,
-        streamResponse.statusCode,
-        request: streamResponse.request,
-        headers: streamResponse.headers,
-        isRedirect: streamResponse.isRedirect,
-        persistentConnection: streamResponse.persistentConnection,
-        reasonPhrase: streamResponse.reasonPhrase,
-      );
-    });
+    return http.Response.bytes(
+      responseBytes,
+      streamResponse.statusCode,
+      request: streamResponse.request,
+      headers: streamResponse.headers,
+      isRedirect: streamResponse.isRedirect,
+      persistentConnection: streamResponse.persistentConnection,
+      reasonPhrase: streamResponse.reasonPhrase,
+    );
   }
 }
