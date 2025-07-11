@@ -1,6 +1,6 @@
 name: en_file_uploader
 description: This Dart package provides a file upload functionality that is implementation-agnostic. Provides the capability to upload a file in chunks with built-in retry handling.
-version: 2.0.3
+version: 2.1.0
 homepage: https://mattiapispisa.github.io/
 repository: https://github.com/MattiaPispisa/file_uploader/tree/main/en_file_uploader
 topics: [file, upload, chunks, retry]

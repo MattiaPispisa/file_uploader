@@ -13,10 +13,10 @@ class MockFileUploadHandler extends Mock implements FileUploadHandler {}
 void main() {
   group(
     'FileUploaderModel',
-        () {
+    () {
       test(
         'should construct correctly',
-            () {
+        () {
           final model = FileUploaderModel();
           expect(model.refs, isEmpty);
           expect(model.processingFiles, false);
@@ -26,7 +26,7 @@ void main() {
 
       test(
         'onPressedAddFiles should return correctly',
-            () {
+        () {
           final model = FileUploaderModel();
 
           var callback = model.onPressedAddFiles(
@@ -52,7 +52,7 @@ void main() {
 
       test(
         'should add file',
-            () async {
+        () async {
           final model = FileUploaderModel();
           final file = utils.createFile();
           final handler = MockFileUploadHandler();
@@ -83,7 +83,7 @@ void main() {
 
       test(
         'should handle errors on add file',
-            () async {
+        () async {
           final model = FileUploaderModel();
           final handler = MockFileUploadHandler();
 
@@ -105,7 +105,7 @@ void main() {
 
       test(
         'should upload file',
-            () async {
+        () async {
           final model = FileUploaderModel();
           final handler = MockFileUploadHandler();
           final file = utils.createFile();
@@ -132,7 +132,7 @@ void main() {
 
       test(
         'should upload file (deprecated)',
-            () async {
+        () async {
           final model = FileUploaderModel();
           final handler = MockFileUploadHandler();
           final file = utils.createFile();
@@ -160,7 +160,7 @@ void main() {
 
       test(
         'should retry file',
-            () async {
+        () async {
           final model = FileUploaderModel();
           final handler = MockFileUploadHandler();
           final file = utils.createFile();
@@ -187,7 +187,7 @@ void main() {
 
       test(
         'should retry file (deprecated)',
-            () async {
+        () async {
           final model = FileUploaderModel();
           final handler = MockFileUploadHandler();
           final file = utils.createFile();
@@ -215,7 +215,7 @@ void main() {
 
       test(
         'should upload and remove file',
-            () async {
+        () async {
           final model = FileUploaderModel();
           final handler = MockFileUploadHandler();
           final file = utils.createFile();

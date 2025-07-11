@@ -24,7 +24,8 @@ class ThrowingChunkedFileUploadHandler extends ChunkedFileUploadHandler {
   bool _isRetry = false;
 
   @override
-  Future<void> uploadChunk(FileChunk chunk, {ProgressCallback? onProgress}) async {
+  Future<void> uploadChunk(FileChunk chunk,
+      {ProgressCallback? onProgress}) async {
     if (shouldFailOnUpload && !_isRetry) {
       throw Exception('Upload chunk failed');
     }
@@ -36,7 +37,8 @@ class ThrowingChunkedFileUploadHandler extends ChunkedFileUploadHandler {
   void markAsRetry() => _isRetry = true;
 }
 
-class ThrowingRestorableChunkedFileUploadHandler extends RestorableChunkedFileUploadHandler {
+class ThrowingRestorableChunkedFileUploadHandler
+    extends RestorableChunkedFileUploadHandler {
   ThrowingRestorableChunkedFileUploadHandler({
     required super.file,
     super.chunkSize,
@@ -56,7 +58,8 @@ class ThrowingRestorableChunkedFileUploadHandler extends RestorableChunkedFileUp
   }
 
   @override
-  Future<FileUploadStatusResponse> status(FileUploadPresentationResponse presentation) async {
+  Future<FileUploadStatusResponse> status(
+      FileUploadPresentationResponse presentation) async {
     return FileUploadStatusResponse(nextChunkOffset: nextChunkOffset);
   }
 
@@ -86,13 +89,14 @@ void main() {
     });
 
     group('FileUploadController Error Handling', () {
-      test('should log error and rethrow exception on upload failure', () async {
+      test('should log error and rethrow exception on upload failure',
+          () async {
         final file = createFile();
         final exception = Exception('Upload failed');
-        
+
         final handler = MockFileUploadHandlerBuilder(file)
           ..uploadFn = () => throw exception;
-        
+
         final controller = FileUploadController(
           handler.build(),
           logger: mockLogger,
@@ -105,19 +109,19 @@ void main() {
 
         verify(() => mockLogger.info('uploading file ${file.path}')).called(1);
         verify(() => mockLogger.error(
-          'error uploading file ${file.path}',
-          exception,
-          any(),
-        )).called(1);
+              'error uploading file ${file.path}',
+              exception,
+              any(),
+            )).called(1);
       });
 
       test('should log error and rethrow exception on retry failure', () async {
         final file = createFile();
         final exception = Exception('Retry failed');
-        
+
         final handler = MockFileUploadHandlerBuilder(file)
           ..uploadFn = () => throw exception;
-        
+
         final controller = FileUploadController(
           handler.build(),
           logger: mockLogger,
@@ -128,24 +132,26 @@ void main() {
           throwsA(equals(exception)),
         );
 
-        verify(() => mockLogger.info('retry uploading file ${file.path}')).called(1);
+        verify(() => mockLogger.info('retry uploading file ${file.path}'))
+            .called(1);
         verify(() => mockLogger.error(
-          'error retry uploading file ${file.path}',
-          exception,
-          any(),
-        )).called(1);
+              'error retry uploading file ${file.path}',
+              exception,
+              any(),
+            )).called(1);
       });
     });
 
     group('ChunkedFileUploadController Error Handling', () {
-      test('should log error and rethrow exception on chunk upload failure', () async {
+      test('should log error and rethrow exception on chunk upload failure',
+          () async {
         final file = createFile(length: 2048);
         final exception = Exception('Chunk upload failed');
-        
+
         final handler = MockChunkedFileUploadHandlerBuilder(file)
           ..chunkSize = 1024
           ..chunkFn = () => throw exception;
-        
+
         final controller = FileUploadController(
           handler.build(),
           logger: mockLogger,
@@ -157,22 +163,24 @@ void main() {
         );
 
         verify(() => mockLogger.info('uploading file ${file.path}')).called(1);
-        verify(() => mockLogger.info('uploading chunk 0 of ${file.path}')).called(1);
+        verify(() => mockLogger.info('uploading chunk 0 of ${file.path}'))
+            .called(1);
         verify(() => mockLogger.error(
-          'error uploading chunk 0 of ${file.path}',
-          exception,
-          any(),
-        )).called(1);
+              'error uploading chunk 0 of ${file.path}',
+              exception,
+              any(),
+            )).called(1);
       });
 
-      test('should log error and rethrow exception on chunk retry failure', () async {
+      test('should log error and rethrow exception on chunk retry failure',
+          () async {
         final file = createFile(length: 2048);
         final exception = Exception('Chunk retry failed');
-        
+
         final handler = MockChunkedFileUploadHandlerBuilder(file)
           ..chunkSize = 1024
           ..chunkFn = () => throw exception;
-        
+
         final controller = FileUploadController(
           handler.build(),
           logger: mockLogger,
@@ -183,24 +191,27 @@ void main() {
           throwsA(equals(exception)),
         );
 
-        verify(() => mockLogger.info('retry uploading file ${file.path}')).called(1);
-        verify(() => mockLogger.info('retry uploading chunk 0 of ${file.path}')).called(1);
+        verify(() => mockLogger.info('retry uploading file ${file.path}'))
+            .called(1);
+        verify(() => mockLogger.info('retry uploading chunk 0 of ${file.path}'))
+            .called(1);
         verify(() => mockLogger.error(
-          'error retry uploading chunk 0 of ${file.path}',
-          exception,
-          any(),
-        )).called(1);
+              'error retry uploading chunk 0 of ${file.path}',
+              exception,
+              any(),
+            )).called(1);
       });
     });
 
     group('RestorableChunkedFileUploadController Error Handling', () {
-      test('should log error and rethrow exception on presentation failure', () async {
+      test('should log error and rethrow exception on presentation failure',
+          () async {
         final file = createFile();
         final exception = Exception('Presentation failed');
-        
+
         final handler = MockRestorableChunkedFileUploadHandlerBuilder(file)
           ..presentationFn = () => throw exception;
-        
+
         final controller = FileUploadController(
           handler.build(),
           logger: mockLogger,
@@ -213,19 +224,21 @@ void main() {
 
         verify(() => mockLogger.info('uploading file ${file.path}')).called(1);
         verify(() => mockLogger.error(
-          'error presenting file ${file.path}',
-          exception,
-          any(),
-        )).called(1);
+              'error presenting file ${file.path}',
+              exception,
+              any(),
+            )).called(1);
       });
 
-      test('should log error and rethrow exception on presentation retrieval failure during retry', () async {
+      test(
+          'should log error and rethrow exception on presentation retrieval failure during retry',
+          () async {
         final file = createFile();
         final exception = Exception('Presentation retrieval failed');
-        
+
         final handler = MockRestorableChunkedFileUploadHandlerBuilder(file)
           ..presentationFn = () => throw exception;
-        
+
         final controller = FileUploadController(
           handler.build(),
           logger: mockLogger,
@@ -236,22 +249,24 @@ void main() {
           throwsA(equals(exception)),
         );
 
-        verify(() => mockLogger.info('retry uploading file ${file.path}')).called(1);
+        verify(() => mockLogger.info('retry uploading file ${file.path}'))
+            .called(1);
         verify(() => mockLogger.error(
-          'error retrieving presentation for file ${file.path}',
-          exception,
-          any(),
-        )).called(1);
+              'error retrieving presentation for file ${file.path}',
+              exception,
+              any(),
+            )).called(1);
       });
 
-      test('should log error and rethrow exception on chunk upload failure', () async {
+      test('should log error and rethrow exception on chunk upload failure',
+          () async {
         final file = createFile(length: 2048);
         final exception = Exception('Chunk upload failed');
-        
+
         final handler = MockRestorableChunkedFileUploadHandlerBuilder(file)
           ..chunkSize = 1024
           ..chunkFn = () => throw exception;
-        
+
         final controller = FileUploadController(
           handler.build(),
           logger: mockLogger,
@@ -263,23 +278,26 @@ void main() {
         );
 
         verify(() => mockLogger.info('uploading file ${file.path}')).called(1);
-        verify(() => mockLogger.info('uploading chunk 0 of ${file.path}')).called(1);
+        verify(() => mockLogger.info('uploading chunk 0 of ${file.path}'))
+            .called(1);
         verify(() => mockLogger.error(
-          'error uploading chunk 0 of ${file.path}',
-          exception,
-          any(),
-        )).called(1);
+              'error uploading chunk 0 of ${file.path}',
+              exception,
+              any(),
+            )).called(1);
       });
 
-      test('should log error and rethrow exception on chunk retry failure', () async {
+      test('should log error and rethrow exception on chunk retry failure',
+          () async {
         final file = createFile(length: 2048);
         final exception = Exception('Chunk retry failed');
-        
+
         final handler = MockRestorableChunkedFileUploadHandlerBuilder(file)
           ..chunkSize = 1024
-          ..statusFn = () => Future.value(const FileUploadStatusResponse(nextChunkOffset: 0));
+          ..statusFn = () =>
+              Future.value(const FileUploadStatusResponse(nextChunkOffset: 0));
         handler.chunkFn = () => throw exception;
-        
+
         final controller = FileUploadController(
           handler.build(),
           logger: mockLogger,
@@ -290,14 +308,17 @@ void main() {
           throwsA(equals(exception)),
         );
 
-        verify(() => mockLogger.info('retry uploading file ${file.path}')).called(1);
-        verify(() => mockLogger.info(any(that: contains('retry uploading file ${file.path} from offset:'))));
-        verify(() => mockLogger.info('retry uploading chunk 0 of ${file.path}')).called(1);
+        verify(() => mockLogger.info('retry uploading file ${file.path}'))
+            .called(1);
+        verify(() => mockLogger.info(any(
+            that: contains('retry uploading file ${file.path} from offset:'))));
+        verify(() => mockLogger.info('retry uploading chunk 0 of ${file.path}'))
+            .called(1);
         verify(() => mockLogger.error(
-          'error retry uploading chunk 0 of ${file.path}',
-          exception,
-          any(),
-        )).called(1);
+              'error retry uploading chunk 0 of ${file.path}',
+              exception,
+              any(),
+            )).called(1);
       });
     });
 
@@ -305,10 +326,10 @@ void main() {
       test('should work correctly without logger (null logger)', () async {
         final file = createFile();
         final exception = Exception('Upload failed');
-        
+
         final handler = MockFileUploadHandlerBuilder(file)
           ..uploadFn = () => throw exception;
-        
+
         final controller = FileUploadController(
           handler.build(),
           // logger: null (implicitly)
@@ -323,9 +344,9 @@ void main() {
 
       test('should log successful operations', () async {
         final file = createFile();
-        
+
         final handler = MockFileUploadHandlerBuilder(file);
-        
+
         final controller = FileUploadController(
           handler.build(),
           logger: mockLogger,
@@ -338,4 +359,4 @@ void main() {
       });
     });
   });
-} 
+}

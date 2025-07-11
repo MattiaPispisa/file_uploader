@@ -1,3 +1,13 @@
+## [2.1.0] - 2025-07-11
+
+### Added
+
+- Added logs on errors.
+
+### Changed
+
+- Improved logs messages to be more descriptive.
+
 ## [2.0.3] - 2024-08-11
 
 ### Added
