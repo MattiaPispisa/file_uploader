@@ -74,7 +74,7 @@ class _ChunkedFileUploadController extends FileUploadController {
         _logger?.info('retry uploading chunk $i of ${_handler.file.path}');
 
         try {
-          return _handler.uploadChunk(
+          await _handler.uploadChunk(
             chunk,
             onProgress: (chunkCount, _) {
               count += chunkCount;

@@ -1,8 +1,13 @@
-# See https://www.dartlang.org/guides/libraries/private-files
+# See https://dart.dev/guides/libraries/private-files
 
 # Files and directories created by pub
-.dart_tool/
+.dart_tool
 .packages
-build/
+.pub
 pubspec.lock
-coverage/html
+build/
+
+coverage/
+
+# ignore generated mocks
+**/*.mocks.dart

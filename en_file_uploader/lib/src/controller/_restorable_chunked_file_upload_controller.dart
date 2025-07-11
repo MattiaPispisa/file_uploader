@@ -40,7 +40,7 @@ class _RestorableChunkedFileUploadController extends FileUploadController {
         _logger?.info('uploading chunk $i of ${_handler.file.path}');
 
         try {
-          return _handler.uploadChunk(
+          await _handler.uploadChunk(
             _presentationResponse!,
             chunk,
             onProgress: (chunkCount, _) {
@@ -107,7 +107,7 @@ class _RestorableChunkedFileUploadController extends FileUploadController {
         _logger?.info('retry uploading chunk $i of ${_handler.file.path}');
 
         try {
-          return _handler.uploadChunk(
+          await _handler.uploadChunk(
             _presentationResponse!,
             chunk,
             onProgress: (chunkCount, _) {

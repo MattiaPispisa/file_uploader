@@ -8,3 +8,12 @@ melos_overrides.yaml
 # FVM Version Cache
 .fvm/
 .fvmrc
+
+# See https://dart.dev/guides/libraries/private-files
+
+# Files and directories created by pub
+.dart_tool/
+.packages
+
+# ignore generated mocks
+**/*.mocks.dart
