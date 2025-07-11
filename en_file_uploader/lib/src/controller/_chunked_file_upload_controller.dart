@@ -24,21 +24,32 @@ class _ChunkedFileUploadController extends FileUploadController {
     await _chunksIterator(
       _handler.file,
       chunkSize: _handler.chunkSize,
-      chunkCallback: (chunk, i) {
-        _logger?.info('uploading chunk $i');
+      chunkCallback: (chunk, i) async {
+        _logger?.info('uploading chunk $i of ${_handler.file.path}');
 
-        return _handler.uploadChunk(
-          chunk,
-          onProgress: (chunkCount, _) {
-            count += chunkCount;
-            onProgress?.call(count, size);
-          },
-        );
+        try {
+          await _handler.uploadChunk(
+            chunk,
+            onProgress: (chunkCount, _) {
+              count += chunkCount;
+              onProgress?.call(count, size);
+            },
+          );
+        } catch (error, stackTrace) {
+          _logger?.error(
+            'error uploading chunk $i of ${_handler.file.path}',
+            error,
+            stackTrace,
+          );
+          rethrow;
+        }
       },
     );
 
     _setUploaded();
     onProgress?.call(size, size);
+
+    _logger?.info('file uploaded ${_handler.file.path}');
 
     return FileUploadResult(
       file: _handler.file,
@@ -51,7 +62,7 @@ class _ChunkedFileUploadController extends FileUploadController {
     ProgressCallback? onProgress,
   }) async {
     _ensureNotUploaded();
-    _logger?.info('retry file ${_handler.file.path}');
+    _logger?.info('retry uploading file ${_handler.file.path}');
 
     final size = await _handler.file.length();
     var count = 0;
@@ -59,21 +70,32 @@ class _ChunkedFileUploadController extends FileUploadController {
     await _chunksIterator(
       _handler.file,
       chunkSize: _handler.chunkSize,
-      chunkCallback: (chunk, i) {
-        _logger?.info('uploading chunk $i');
+      chunkCallback: (chunk, i) async {
+        _logger?.info('retry uploading chunk $i of ${_handler.file.path}');
 
-        return _handler.uploadChunk(
-          chunk,
-          onProgress: (chunkCount, _) {
-            count += chunkCount;
-            onProgress?.call(count, size);
-          },
-        );
+        try {
+          return _handler.uploadChunk(
+            chunk,
+            onProgress: (chunkCount, _) {
+              count += chunkCount;
+              onProgress?.call(count, size);
+            },
+          );
+        } catch (error, stackTrace) {
+          _logger?.error(
+            'error retry uploading chunk $i of ${_handler.file.path}',
+            error,
+            stackTrace,
+          );
+          rethrow;
+        }
       },
     );
 
     _setUploaded();
     onProgress?.call(size, size);
+
+    _logger?.info('file upload retry completed ${_handler.file.path}');
 
     return FileUploadResult(
       file: _handler.file,
