@@ -19,29 +19,50 @@ class _RestorableChunkedFileUploadController extends FileUploadController {
     _ensureNotUploaded();
     _logger?.info('uploading file ${_handler.file.path}');
 
-    _presentationResponse = await _handler.present();
+    try {
+      _presentationResponse = await _handler.present();
+    } catch (error, stackTrace) {
+      _logger?.error(
+        'error presenting file ${_handler.file.path}',
+        error,
+        stackTrace,
+      );
+      rethrow;
+    }
+
     final size = await _handler.file.length();
     var count = 0;
 
     await _chunksIterator(
       _handler.file,
       chunkSize: _handler.chunkSize,
-      chunkCallback: (chunk, i) {
-        _logger?.info('uploading chunk $i');
+      chunkCallback: (chunk, i) async {
+        _logger?.info('uploading chunk $i of ${_handler.file.path}');
 
-        return _handler.uploadChunk(
-          _presentationResponse!,
-          chunk,
-          onProgress: (chunkCount, _) {
-            count += chunkCount;
-            onProgress?.call(count, size);
-          },
-        );
+        try {
+          await _handler.uploadChunk(
+            _presentationResponse!,
+            chunk,
+            onProgress: (chunkCount, _) {
+              count += chunkCount;
+              onProgress?.call(count, size);
+            },
+          );
+        } catch (error, stackTrace) {
+          _logger?.error(
+            'error uploading chunk $i of ${_handler.file.path}',
+            error,
+            stackTrace,
+          );
+          rethrow;
+        }
       },
     );
 
     _setUploaded();
     onProgress?.call(size, size);
+
+    _logger?.info('file uploaded ${_handler.file.path}');
 
     return FileUploadResult(
       file: _handler.file,
@@ -54,37 +75,61 @@ class _RestorableChunkedFileUploadController extends FileUploadController {
     ProgressCallback? onProgress,
   }) async {
     _ensureNotUploaded();
-    _logger?.info('retry file ${_handler.file.path}');
+    _logger?.info('retry uploading file ${_handler.file.path}');
 
-    // retrieve the presentation if was successfully fired
-    _presentationResponse ??= await _handler.present();
+    try {
+      // retrieve the presentation if was successfully fired
+      _presentationResponse ??= await _handler.present();
+    } catch (error, stackTrace) {
+      _logger?.error(
+        'error retrieving presentation for file ${_handler.file.path}',
+        error,
+        stackTrace,
+      );
+      rethrow;
+    }
+
     final status = await _handler.status(_presentationResponse!);
 
     final size = await _handler.file.length();
     var count = math.max(status.nextChunkOffset - 1, 0) *
         (_handler.chunkSize ?? defaultChunkSize);
 
+    _logger?.info(
+        'retry uploading file ${_handler.file.path} from offset: ${status.nextChunkOffset}');
+
     // use [status.nextChunkOffset] to skip already uploaded chunks
     await _chunksIterator(
       _handler.file,
       chunkSize: _handler.chunkSize,
       startFrom: status.nextChunkOffset,
-      chunkCallback: (chunk, i) {
-        _logger?.info('uploading chunk $i');
+      chunkCallback: (chunk, i) async {
+        _logger?.info('retry uploading chunk $i of ${_handler.file.path}');
 
-        return _handler.uploadChunk(
-          _presentationResponse!,
-          chunk,
-          onProgress: (chunkCount, _) {
-            count += chunkCount;
-            onProgress?.call(count, size);
-          },
-        );
+        try {
+          await _handler.uploadChunk(
+            _presentationResponse!,
+            chunk,
+            onProgress: (chunkCount, _) {
+              count += chunkCount;
+              onProgress?.call(count, size);
+            },
+          );
+        } catch (error, stackTrace) {
+          _logger?.error(
+            'error retry uploading chunk $i of ${_handler.file.path}',
+            error,
+            stackTrace,
+          );
+          rethrow;
+        }
       },
     );
 
     _setUploaded();
     onProgress?.call(size, size);
+
+    _logger?.info('file upload retry completed ${_handler.file.path}');
 
     return FileUploadResult(
       file: _handler.file,
