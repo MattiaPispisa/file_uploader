@@ -1,8 +1,10 @@
 # File Uploader
 
 [![Pub Version][pub_badge]][pub_link]
+[![pub points][pub_points]][pub_link]
+[![codecov][codecov_badge]][codecov_link]
+[![ci_badge][ci_badge]][ci_link]
 [![License: MIT][license_badge]][license_link]
-[![coverage][coverage_badge]][coverage_badge]
 
 This Dart package provides a **file upload functionality that is implementation-agnostic**.
 
@@ -101,6 +103,10 @@ Other examples are provided in the tests to ensure the correct functionality of 
 
 [license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [license_link]: https://opensource.org/licenses/MIT
-[coverage_badge]: https://img.shields.io/badge/coverage-100%25-green
 [pub_link]: https://pub.dev/packages/en_file_uploader
 [pub_badge]: https://img.shields.io/pub/v/en_file_uploader
+[codecov_badge]: https://img.shields.io/codecov/c/github/MattiaPispisa/file_uploader/main?flag=en_file_uploader&logo=codecov
+[codecov_link]: https://app.codecov.io/gh/MattiaPispisa/file_uploader/tree/main/en_file_uploader
+[ci_badge]: https://img.shields.io/github/actions/workflow/status/MattiaPispisa/file_uploader/main.yaml
+[ci_link]: https://github.com/MattiaPispisa/file_uploader/actions/workflows/main.yaml
+[pub_points]: https://img.shields.io/pub/points/en_file_uploader

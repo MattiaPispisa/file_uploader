@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:en_file_uploader/en_file_uploader.dart';
 
@@ -26,4 +27,22 @@ XFile createFile({
 }) {
   final file = createIoFile(fileName: fileName, length: length);
   return XFile(file.path);
+}
+
+XFile createBrokenFile() {
+  return _BrokenXFile();
+}
+
+// Mock XFile class that throws an error when openRead() is called
+class _BrokenXFile extends XFile {
+  _BrokenXFile() : super('broken_file_path');
+
+  @override
+  Stream<Uint8List> openRead([int? start, int? end]) {
+    // Return a stream that emits an error
+    return Stream.fromFuture(Future.error(Exception('File read error')));
+  }
+
+  @override
+  Future<int> length() async => 1024; // Return a fake length
 }

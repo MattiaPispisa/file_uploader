@@ -1,6 +1,6 @@
 name: file_uploader_utils
 description: common test/example utils for file uploader packages
-version: 0.1.0+1
+version: 0.2.0
 publish_to: none
 
 environment:

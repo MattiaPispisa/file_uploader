@@ -22,3 +22,10 @@ scripts:
     run: dart analyze --fatal-infos --fatal-warnings
     exec:
       concurrency: 1
+
+  format:
+    name: Format
+    description: Format the code
+    run: dart format --line-length 80 --set-exit-if-changed lib test .
+    exec:
+      concurrency: 1
