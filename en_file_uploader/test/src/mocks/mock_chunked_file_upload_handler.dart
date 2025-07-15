@@ -29,8 +29,8 @@ class MockChunkedFileUploadHandlerBuilder {
 
     when(
       () => handler.uploadChunk(
-        any(),
-        onProgress: any(named: 'onProgress'),
+        any<FileChunk>(),
+        onProgress: any<ProgressCallback>(named: 'onProgress'),
       ),
     ).thenAnswer((invocation) async {
       final chunk = invocation.positionalArguments[0] as FileChunk;

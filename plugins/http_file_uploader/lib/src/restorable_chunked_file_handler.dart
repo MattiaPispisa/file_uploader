@@ -56,7 +56,7 @@ class HttpRestorableChunkedFileHandler
     ProgressCallback? onProgress,
   }) async {
     return _client
-        .sendChunk(
+        .sendStreamedChunk(
           method: chunkMethod,
           path: chunkPath(presentation, chunk),
           chunk: chunk,

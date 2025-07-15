@@ -31,7 +31,7 @@ class HttpChunkedFileHandler extends SocketChunkedFileHandler<http.Response> {
     ProgressCallback? onProgress,
   }) async {
     return _client
-        .sendChunk(
+        .sendStreamedChunk(
           method: method,
           path: path,
           chunk: chunk,

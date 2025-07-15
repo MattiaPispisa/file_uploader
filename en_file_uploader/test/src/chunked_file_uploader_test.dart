@@ -32,8 +32,8 @@ void main() {
           await r.expectUpload();
           verify(
             () => handler.uploadChunk(
-              any(),
-              onProgress: any(named: 'onProgress'),
+              any<FileChunk>(),
+              onProgress: any<ProgressCallback>(named: 'onProgress'),
             ),
           ).called(2);
         });
@@ -57,8 +57,8 @@ void main() {
 
             verify(
               () => handler.uploadChunk(
-                any(),
-                onProgress: any(named: 'onProgress'),
+                any<FileChunk>(),
+                onProgress: any<ProgressCallback>(named: 'onProgress'),
               ),
             ).called(4);
           });
@@ -88,8 +88,8 @@ void main() {
 
             verify(
               () => handler.uploadChunk(
-                any(),
-                onProgress: any(named: 'onProgress'),
+                any<FileChunk>(),
+                onProgress: any<ProgressCallback>(named: 'onProgress'),
               ),
             ).called(3);
 
@@ -98,8 +98,8 @@ void main() {
             // repeat all
             verify(
               () => handler.uploadChunk(
-                any(),
-                onProgress: any(named: 'onProgress'),
+                any<FileChunk>(),
+                onProgress: any<ProgressCallback>(named: 'onProgress'),
               ),
             ).called(4);
           });
@@ -136,7 +136,7 @@ void main() {
             // Ensure no progress value exceeds total file size
             expect(counts.every((count) => count <= size), isTrue);
             // Ensure progress is monotonic (never decreases)
-            for (int i = 1; i < counts.length; i++) {
+            for (var i = 1; i < counts.length; i++) {
               expect(counts[i], greaterThanOrEqualTo(counts[i - 1]));
             }
           });
@@ -172,12 +172,12 @@ void main() {
 
             expect(counts.every((count) => count <= size), isTrue);
             // Ensure progress is monotonic (never decreases)
-            for (int i = 1; i < counts.length; i++) {
+            for (var i = 1; i < counts.length; i++) {
               expect(counts[i], greaterThanOrEqualTo(counts[i - 1]));
             }
           });
 
-          test('should handle multiple progress calls per chunk (Dio-style)',
+          test('should handle multiple progress calls per chunk',
               () async {
             const size = 1024 * 1027;
             var onProgressCount = 0;
@@ -190,7 +190,7 @@ void main() {
                 final builder = MockChunkedFileUploadHandlerBuilder(file)
                   ..chunkSize = size ~/ 3
                   ..simulateMultipleProgressCalls =
-                      true; // Simulate Dio behavior
+                      true;
                 return handler = builder.build();
               });
 
@@ -204,10 +204,8 @@ void main() {
 
             expect(onProgressCount, greaterThan(5));
 
-            for (int i = 1; i < counts.length; i++) {
-              expect(counts[i], greaterThanOrEqualTo(counts[i - 1]),
-                  reason:
-                      'Progress should never decrease: ${counts[i - 1]} -> ${counts[i]}');
+            for (var i = 1; i < counts.length; i++) {
+              expect(counts[i], greaterThanOrEqualTo(counts[i - 1]));
             }
 
             // Final count should equal total size

@@ -38,7 +38,7 @@ void main() {
 
         verify(
           () => handler.upload(
-            onProgress: any(named: 'onProgress'),
+            onProgress: any<ProgressCallback>(named: 'onProgress'),
           ),
         ).called(1);
 
@@ -47,7 +47,7 @@ void main() {
         // repeat upload
         verify(
           () => handler.upload(
-            onProgress: any(named: 'onProgress'),
+            onProgress: any<ProgressCallback>(named: 'onProgress'),
           ),
         ).called(1);
       });

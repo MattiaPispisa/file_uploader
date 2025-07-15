@@ -34,16 +34,17 @@ class MockRestorableChunkedFileUploadHandlerBuilder {
           Future.value(const FileUploadPresentationResponse(id: 'id'));
     });
 
-    when(() => handler.status(any())).thenAnswer((_) async {
+    when(() => handler.status(any<FileUploadPresentationResponse>()))
+        .thenAnswer((_) async {
       return statusFn?.call() ??
           Future.value(const FileUploadStatusResponse(nextChunkOffset: 1));
     });
 
     when(
       () => handler.uploadChunk(
-        any(),
-        any(),
-        onProgress: any(named: 'onProgress'),
+        any<FileUploadPresentationResponse>(),
+        any<FileChunk>(),
+        onProgress: any<ProgressCallback>(named: 'onProgress'),
       ),
     ).thenAnswer((invocation) async {
       final chunk = invocation.positionalArguments[1] as FileChunk;

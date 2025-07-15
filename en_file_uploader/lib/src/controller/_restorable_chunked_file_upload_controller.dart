@@ -97,7 +97,9 @@ class _RestorableChunkedFileUploadController extends FileUploadController {
         (_handler.chunkSize ?? defaultChunkSize);
 
     _logger?.info(
-        'retry uploading file ${_handler.file.path} from offset: ${status.nextChunkOffset}');
+      'retry uploading file ${_handler.file.path}'
+      ' from offset: ${status.nextChunkOffset}',
+    );
 
     // use [status.nextChunkOffset] to skip already uploaded chunks
     await _chunksIterator(

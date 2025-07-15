@@ -32,9 +32,9 @@ void main() {
           await r.expectUpload();
           verify(
             () => handler.uploadChunk(
-              any(),
-              any(),
-              onProgress: any(named: 'onProgress'),
+              any<FileUploadPresentationResponse>(),
+              any<FileChunk>(),
+              onProgress: any<ProgressCallback>(named: 'onProgress'),
             ),
           ).called(2);
         });
@@ -59,9 +59,9 @@ void main() {
 
             verify(
               () => handler.uploadChunk(
-                any(),
-                any(),
-                onProgress: any(named: 'onProgress'),
+                any<FileUploadPresentationResponse>(),
+                any<FileChunk>(),
+                onProgress: any<ProgressCallback>(named: 'onProgress'),
               ),
             ).called(4);
           });
@@ -82,9 +82,9 @@ void main() {
 
             verify(
               () => handler.uploadChunk(
-                any(),
-                any(),
-                onProgress: any(named: 'onProgress'),
+                any<FileUploadPresentationResponse>(),
+                any<FileChunk>(),
+                onProgress: any<ProgressCallback>(named: 'onProgress'),
               ),
             ).called(4);
 
@@ -122,22 +122,26 @@ void main() {
 
             verify(
               () => handler.uploadChunk(
-                any(),
-                any(),
-                onProgress: any(named: 'onProgress'),
+                any<FileUploadPresentationResponse>(),
+                any<FileChunk>(),
+                onProgress: any<ProgressCallback>(named: 'onProgress'),
               ),
             ).called(3);
             verify(() => handler.present()).called(1);
-            verifyNever(() => handler.status(any()));
+            verifyNever(
+              () => handler.status(
+                any<FileUploadPresentationResponse>(),
+              ),
+            );
 
             await r.expectRetry();
 
             // repeat the one failed, upload the last
             verify(
               () => handler.uploadChunk(
-                any(),
-                any(),
-                onProgress: any(named: 'onProgress'),
+                any<FileUploadPresentationResponse>(),
+                any<FileChunk>(),
+                onProgress: any<ProgressCallback>(named: 'onProgress'),
               ),
             ).called(2);
 
@@ -145,7 +149,9 @@ void main() {
             verifyNever(() => handler.present());
 
             // called on retry
-            verify(() => handler.status(any())).called(1);
+            verify(
+              () => handler.status(any<FileUploadPresentationResponse>()),
+            ).called(1);
           });
 
           test('should call progress on upload', () async {
@@ -181,7 +187,7 @@ void main() {
             // Ensure no progress value exceeds total file size
             expect(counts.every((count) => count <= size), isTrue);
             // Ensure progress is monotonic (never decreases)
-            for (int i = 1; i < counts.length; i++) {
+            for (var i = 1; i < counts.length; i++) {
               expect(counts[i], greaterThanOrEqualTo(counts[i - 1]));
             }
           });
@@ -225,13 +231,12 @@ void main() {
 
             expect(counts.every((count) => count <= size), isTrue);
             // Ensure progress is monotonic (never decreases)
-            for (int i = 1; i < counts.length; i++) {
+            for (var i = 1; i < counts.length; i++) {
               expect(counts[i], greaterThanOrEqualTo(counts[i - 1]));
             }
           });
 
-          test('should handle multiple progress calls per chunk (Dio-style)',
-              () async {
+          test('should handle multiple progress calls per chunk', () async {
             const size = 1024 * 1027;
             var onProgressCount = 0;
             final counts = <int>[];
@@ -243,8 +248,7 @@ void main() {
                 final builder =
                     MockRestorableChunkedFileUploadHandlerBuilder(file)
                       ..chunkSize = size ~/ 3
-                      ..simulateMultipleProgressCalls =
-                          true; // Simulate Dio behavior
+                      ..simulateMultipleProgressCalls = true;
                 return handler = builder.build();
               });
 
@@ -260,7 +264,7 @@ void main() {
             expect(onProgressCount, greaterThan(5));
 
             // Progress should always increase or stay the same (never decrease)
-            for (int i = 1; i < counts.length; i++) {
+            for (var i = 1; i < counts.length; i++) {
               expect(counts[i], greaterThanOrEqualTo(counts[i - 1]));
             }
 
@@ -268,8 +272,6 @@ void main() {
             expect(counts.last, size);
             expect(counts.last, total);
 
-            // Check that we don't have incorrect accumulation
-            // With old buggy logic, this would fail because counts would be way too high
             expect(counts.every((count) => count <= size), isTrue);
           });
         },

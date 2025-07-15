@@ -9,3 +9,16 @@ packages:
   - "plugins/*"
   - "tools/*"
 
+scripts:
+  test:
+    name: Test
+    description: Run the tests
+    run: dart test
+    exec:
+      concurrency: 1
+  analyze:
+    name: Analyze
+    description: Analyze the code
+    run: dart analyze --fatal-infos --fatal-warnings
+    exec:
+      concurrency: 1

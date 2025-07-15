@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 /// Contains:
 ///
 /// - [sendUnStream]
-/// - [sendChunk]
+/// - [sendStreamedChunk]
 extension HttpExtension on http.Client {
   /// wrap around [http.Client.send] to send request unStream with
   /// optional parameters
@@ -29,9 +29,9 @@ extension HttpExtension on http.Client {
     return send(request).then(http.Response.fromStream);
   }
 
-  /// wrap around [http.Client.send] to send [http.MultipartRequest]
+  /// wrap around [http.Client.send] to send [http.StreamedRequest]
   /// exposing [onProgress] callback
-  Future<http.Response> sendChunk({
+  Future<http.Response> sendStreamedChunk({
     required String method,
     required String path,
     required FileChunk chunk,
@@ -43,14 +43,12 @@ extension HttpExtension on http.Client {
     final completer = Completer<void>();
 
     final uri = Uri.parse(path);
-    final request = http.StreamedRequest(method, uri);
-
-    request.contentLength = chunk.end - chunk.start;
-
-    request.headers.addAll({
-      'Content-Type': 'application/octet-stream',
-      ...(headers ?? {}),
-    });
+    final request = http.StreamedRequest(method, uri)
+      ..contentLength = chunk.end - chunk.start
+      ..headers.addAll({
+        'Content-Type': 'application/octet-stream',
+        ...(headers ?? {}),
+      });
 
     final fileStream = chunk.file.openRead(chunk.start, chunk.end);
     final totalBytes = chunk.end - chunk.start;
@@ -61,7 +59,7 @@ extension HttpExtension on http.Client {
         onProgress?.call(bytesSent, totalBytes);
         request.sink.add(data);
       },
-      onError: (error, stackTrace) {
+      onError: (Object error, StackTrace? stackTrace) {
         request.sink.addError(error, stackTrace);
         completer.completeError(error, stackTrace);
       },
@@ -79,5 +77,38 @@ extension HttpExtension on http.Client {
       await subscription.cancel();
       rethrow;
     }
+  }
+
+  /// wrap around [http.Client.send] to send [http.Request]
+  /// exposing [onProgress] callback
+  Future<http.Response> sendSimpleChunk({
+    required String method,
+    required String path,
+    required FileChunk chunk,
+    required String fileKey,
+    Map<String, String>? headers,
+    void Function(int count, int total)? onProgress,
+  }) async {
+    final uri = Uri.parse(path);
+    final request = http.Request(method, uri);
+
+    request.headers.addAll({
+      'Content-Type': 'application/octet-stream',
+      ...(headers ?? {}),
+    });
+
+    final fileStream = chunk.file.openRead(chunk.start, chunk.end);
+    final allBytes = <int>[];
+    final chunkLength = chunk.end - chunk.start;
+
+    await for (final chunk in fileStream) {
+      allBytes.addAll(chunk);
+    }
+
+    request.bodyBytes = allBytes;
+
+    onProgress?.call(chunkLength, chunkLength);
+
+    return send(request).then(http.Response.fromStream);
   }
 }
