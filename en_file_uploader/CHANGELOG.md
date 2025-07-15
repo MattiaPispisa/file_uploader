@@ -3,7 +3,9 @@
 ### Changed
 
 - chore: setup .github/workflows and update coverage links
- 
+- chore: update README.md
+- chore: more tests
+
 ### Fixed
 
 - fix `count` in `onProgress` callback
