@@ -19,7 +19,7 @@ class _ChunkedFileUploadController extends FileUploadController {
     _logger?.info('uploading file ${_handler.file.path}');
 
     final size = await _handler.file.length();
-    var count = 0;
+    var sizeSent = 0;
 
     await _chunksIterator(
       _handler.file,
@@ -31,10 +31,11 @@ class _ChunkedFileUploadController extends FileUploadController {
           await _handler.uploadChunk(
             chunk,
             onProgress: (chunkCount, _) {
-              count += chunkCount;
-              onProgress?.call(count, size);
+              onProgress?.call(sizeSent + chunkCount, size);
             },
           );
+          // when chunk is complete, add its size to count
+          sizeSent += chunk.end - chunk.start;
         } catch (error, stackTrace) {
           _logger?.error(
             'error uploading chunk $i of ${_handler.file.path}',
@@ -65,7 +66,7 @@ class _ChunkedFileUploadController extends FileUploadController {
     _logger?.info('retry uploading file ${_handler.file.path}');
 
     final size = await _handler.file.length();
-    var count = 0;
+    var sizeSent = 0;
 
     await _chunksIterator(
       _handler.file,
@@ -77,10 +78,11 @@ class _ChunkedFileUploadController extends FileUploadController {
           await _handler.uploadChunk(
             chunk,
             onProgress: (chunkCount, _) {
-              count += chunkCount;
-              onProgress?.call(count, size);
+              onProgress?.call(sizeSent + chunkCount, size);
             },
           );
+          // when chunk is complete, add its size to count
+          sizeSent += chunk.end - chunk.start;
         } catch (error, stackTrace) {
           _logger?.error(
             'error retry uploading chunk $i of ${_handler.file.path}',

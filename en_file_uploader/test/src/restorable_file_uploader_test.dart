@@ -177,6 +177,13 @@ void main() {
             expect(counts[3], greaterThan(counts[2]));
             expect(counts.last, size);
             expect(counts.last, total);
+
+            // Ensure no progress value exceeds total file size
+            expect(counts.every((count) => count <= size), isTrue);
+            // Ensure progress is monotonic (never decreases)
+            for (int i = 1; i < counts.length; i++) {
+              expect(counts[i], greaterThanOrEqualTo(counts[i - 1]));
+            }
           });
 
           test('should call progress on retry', () async {
@@ -215,6 +222,55 @@ void main() {
             expect(counts[2], greaterThan(counts[1]));
             expect(counts.last, size);
             expect(counts.last, total);
+
+            expect(counts.every((count) => count <= size), isTrue);
+            // Ensure progress is monotonic (never decreases)
+            for (int i = 1; i < counts.length; i++) {
+              expect(counts[i], greaterThanOrEqualTo(counts[i - 1]));
+            }
+          });
+
+          test('should handle multiple progress calls per chunk (Dio-style)',
+              () async {
+            const size = 1024 * 1027;
+            var onProgressCount = 0;
+            final counts = <int>[];
+            late int total;
+
+            r = Robot()
+              ..createFile(length: size)
+              ..createController((file) {
+                final builder =
+                    MockRestorableChunkedFileUploadHandlerBuilder(file)
+                      ..chunkSize = size ~/ 3
+                      ..simulateMultipleProgressCalls =
+                          true; // Simulate Dio behavior
+                return handler = builder.build();
+              });
+
+            await r.expectUpload(
+              onProgress: (c, t) {
+                onProgressCount++;
+                counts.add(c);
+                total = t;
+              },
+            );
+
+            // With multiple calls per chunk, should have more progress calls
+            expect(onProgressCount, greaterThan(5));
+
+            // Progress should always increase or stay the same (never decrease)
+            for (int i = 1; i < counts.length; i++) {
+              expect(counts[i], greaterThanOrEqualTo(counts[i - 1]));
+            }
+
+            // Final count should equal total size
+            expect(counts.last, size);
+            expect(counts.last, total);
+
+            // Check that we don't have incorrect accumulation
+            // With old buggy logic, this would fail because counts would be way too high
+            expect(counts.every((count) => count <= size), isTrue);
           });
         },
       );

@@ -1,3 +1,13 @@
+## [2.1.1] - 2025-07-15
+
+### Changed
+
+- chore: setup .github/workflows and update coverage links
+ 
+### Fixed
+
+- fix `count` in `onProgress` callback
+
 ## [2.1.0] - 2025-07-11
 
 ### Added

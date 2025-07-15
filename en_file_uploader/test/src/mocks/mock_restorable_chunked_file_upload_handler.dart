@@ -20,6 +20,9 @@ class MockRestorableChunkedFileUploadHandlerBuilder {
 
   int? chunkSize;
 
+  /// If true, simulates behavior with multiple progress calls per chunk
+  bool simulateMultipleProgressCalls = false;
+
   RestorableChunkedFileUploadHandler build() {
     final handler = MockRestorableChunkedFileUploadHandler();
 
@@ -48,10 +51,17 @@ class MockRestorableChunkedFileUploadHandlerBuilder {
           invocation.namedArguments[const Symbol('onProgress')] as void
               Function(int, int)?;
 
-      onProgressCallback?.call(
-        chunk.end - chunk.start,
-        0,
-      );
+      final chunkTotalSize = chunk.end - chunk.start;
+
+      if (simulateMultipleProgressCalls) {
+        // Simulate multiple progress calls per chunk
+        onProgressCallback?.call(chunkTotalSize ~/ 3, chunkTotalSize);
+        onProgressCallback?.call((chunkTotalSize * 2) ~/ 3, chunkTotalSize);
+        onProgressCallback?.call(chunkTotalSize, chunkTotalSize);
+      } else {
+        // Simulate single progress call per chunk
+        onProgressCallback?.call(chunkTotalSize, chunkTotalSize);
+      }
 
       return chunkFn?.call() ?? Future.value();
     });

@@ -18,6 +18,9 @@ class MockChunkedFileUploadHandlerBuilder {
 
   int? chunkSize;
 
+  /// If true, simulates Dio behavior with multiple progress calls per chunk
+  bool simulateMultipleProgressCalls = false;
+
   ChunkedFileUploadHandler build() {
     final handler = MockChunkedFileUploadHandler();
 
@@ -35,10 +38,17 @@ class MockChunkedFileUploadHandlerBuilder {
           invocation.namedArguments[const Symbol('onProgress')] as void
               Function(int, int)?;
 
-      onProgressCallback?.call(
-        chunk.end - chunk.start,
-        0,
-      );
+      final chunkTotalSize = chunk.end - chunk.start;
+
+      if (simulateMultipleProgressCalls) {
+        // Simulate multiple progress calls per chunk
+        onProgressCallback?.call(chunkTotalSize ~/ 3, chunkTotalSize);
+        onProgressCallback?.call((chunkTotalSize * 2) ~/ 3, chunkTotalSize);
+        onProgressCallback?.call(chunkTotalSize, chunkTotalSize);
+      } else {
+        // Simulate single progress call per chunk
+        onProgressCallback?.call(chunkTotalSize, chunkTotalSize);
+      }
 
       return chunkFn?.call() ?? Future.value();
     });
