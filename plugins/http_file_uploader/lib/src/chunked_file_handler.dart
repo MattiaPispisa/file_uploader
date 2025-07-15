@@ -21,17 +21,36 @@ class HttpChunkedFileHandler extends SocketChunkedFileHandler<http.Response> {
     super.chunkSize,
     super.fileKey,
     super.chunkParser,
+    this.streamedRequest = true,
   }) : _client = client;
 
   final http.Client _client;
+
+  /// if `true` use a [http.StreamedRequest] to upload the chunk
+  /// else use a [http.Request].
+  ///
+  /// default is `true`
+  final bool streamedRequest;
 
   @override
   Future<void> uploadChunk(
     FileChunk chunk, {
     ProgressCallback? onProgress,
   }) async {
+    if (streamedRequest) {
+      return _client
+          .sendStreamedChunk(
+            method: method,
+            path: path,
+            chunk: chunk,
+            fileKey: fileKey,
+            headers: headers?.call(chunk),
+            onProgress: onProgress,
+          )
+          .then(chunkParser);
+    }
     return _client
-        .sendStreamedChunk(
+        .sendSimpleChunk(
           method: method,
           path: path,
           chunk: chunk,

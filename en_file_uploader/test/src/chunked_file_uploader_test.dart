@@ -177,8 +177,7 @@ void main() {
             }
           });
 
-          test('should handle multiple progress calls per chunk',
-              () async {
+          test('should handle multiple progress calls per chunk', () async {
             const size = 1024 * 1027;
             var onProgressCount = 0;
             final counts = <int>[];
@@ -189,8 +188,7 @@ void main() {
               ..createController((file) {
                 final builder = MockChunkedFileUploadHandlerBuilder(file)
                   ..chunkSize = size ~/ 3
-                  ..simulateMultipleProgressCalls =
-                      true;
+                  ..simulateMultipleProgressCalls = true;
                 return handler = builder.build();
               });
 

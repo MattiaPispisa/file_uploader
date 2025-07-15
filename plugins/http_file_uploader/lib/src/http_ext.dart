@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 ///
 /// - [sendUnStream]
 /// - [sendStreamedChunk]
+/// - [sendSimpleChunk]
 extension HttpExtension on http.Client {
   /// wrap around [http.Client.send] to send request unStream with
   /// optional parameters
