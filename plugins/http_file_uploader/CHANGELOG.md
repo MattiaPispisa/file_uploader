@@ -1,3 +1,19 @@
+## [3.1.0] - 2025-07-15
+
+### Added
+
+- Added `streamedRequest` parameter to `HttpChunkedFileHandler` and `HttpRestorableChunkedFileHandler` to allow using `Request` instead of `StreamedRequest`
+
+### Fixed
+
+- Fixed `StreamedRequest` send
+
+### Changed
+
+- chore: setup .github/workflows and update coverage links
+- chore: update README.md
+- chore: more tests
+
 ## [3.0.0] - 2025-07-10
 
 **Breaking**:

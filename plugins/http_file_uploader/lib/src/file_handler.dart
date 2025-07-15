@@ -27,7 +27,7 @@ class HttpFileHandler extends SocketFileHandler<http.Response> {
     final chunk = FileChunk(file: file, start: 0, end: await file.length());
 
     return _client
-        .sendChunk(
+        .sendStreamedChunk(
           method: method,
           path: path,
           chunk: chunk,

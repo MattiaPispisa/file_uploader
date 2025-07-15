@@ -23,7 +23,7 @@ class MockFileUploadHandlerBuilder {
 
     when(
       () => handler.upload(
-        onProgress: any(named: 'onProgress'),
+        onProgress: any<ProgressCallback>(named: 'onProgress'),
       ),
     ).thenAnswer((_) async {
       return uploadFn?.call() ?? Future.value();

@@ -24,8 +24,10 @@ class ThrowingChunkedFileUploadHandler extends ChunkedFileUploadHandler {
   bool _isRetry = false;
 
   @override
-  Future<void> uploadChunk(FileChunk chunk,
-      {ProgressCallback? onProgress}) async {
+  Future<void> uploadChunk(
+    FileChunk chunk, {
+    ProgressCallback? onProgress,
+  }) async {
     if (shouldFailOnUpload && !_isRetry) {
       throw Exception('Upload chunk failed');
     }
@@ -59,7 +61,8 @@ class ThrowingRestorableChunkedFileUploadHandler
 
   @override
   Future<FileUploadStatusResponse> status(
-      FileUploadPresentationResponse presentation) async {
+    FileUploadPresentationResponse presentation,
+  ) async {
     return FileUploadStatusResponse(nextChunkOffset: nextChunkOffset);
   }
 
@@ -108,11 +111,13 @@ void main() {
         );
 
         verify(() => mockLogger.info('uploading file ${file.path}')).called(1);
-        verify(() => mockLogger.error(
-              'error uploading file ${file.path}',
-              exception,
-              any(),
-            )).called(1);
+        verify(
+          () => mockLogger.error(
+            'error uploading file ${file.path}',
+            exception,
+            any<dynamic>(),
+          ),
+        ).called(1);
       });
 
       test('should log error and rethrow exception on retry failure', () async {
@@ -134,11 +139,13 @@ void main() {
 
         verify(() => mockLogger.info('retry uploading file ${file.path}'))
             .called(1);
-        verify(() => mockLogger.error(
-              'error retry uploading file ${file.path}',
-              exception,
-              any(),
-            )).called(1);
+        verify(
+          () => mockLogger.error(
+            'error retry uploading file ${file.path}',
+            exception,
+            any<dynamic>(),
+          ),
+        ).called(1);
       });
     });
 
@@ -165,11 +172,13 @@ void main() {
         verify(() => mockLogger.info('uploading file ${file.path}')).called(1);
         verify(() => mockLogger.info('uploading chunk 0 of ${file.path}'))
             .called(1);
-        verify(() => mockLogger.error(
-              'error uploading chunk 0 of ${file.path}',
-              exception,
-              any(),
-            )).called(1);
+        verify(
+          () => mockLogger.error(
+            'error uploading chunk 0 of ${file.path}',
+            exception,
+            any<dynamic>(),
+          ),
+        ).called(1);
       });
 
       test('should log error and rethrow exception on chunk retry failure',
@@ -195,11 +204,13 @@ void main() {
             .called(1);
         verify(() => mockLogger.info('retry uploading chunk 0 of ${file.path}'))
             .called(1);
-        verify(() => mockLogger.error(
-              'error retry uploading chunk 0 of ${file.path}',
-              exception,
-              any(),
-            )).called(1);
+        verify(
+          () => mockLogger.error(
+            'error retry uploading chunk 0 of ${file.path}',
+            exception,
+            any<dynamic>(),
+          ),
+        ).called(1);
       });
     });
 
@@ -223,16 +234,18 @@ void main() {
         );
 
         verify(() => mockLogger.info('uploading file ${file.path}')).called(1);
-        verify(() => mockLogger.error(
-              'error presenting file ${file.path}',
-              exception,
-              any(),
-            )).called(1);
+        verify(
+          () => mockLogger.error(
+            'error presenting file ${file.path}',
+            exception,
+            any<dynamic>(),
+          ),
+        ).called(1);
       });
 
       test(
-          'should log error and rethrow exception on presentation retrieval failure during retry',
-          () async {
+          'should log error and rethrow exception on presentation'
+          ' retrieval failure during retry', () async {
         final file = createFile();
         final exception = Exception('Presentation retrieval failed');
 
@@ -251,11 +264,13 @@ void main() {
 
         verify(() => mockLogger.info('retry uploading file ${file.path}'))
             .called(1);
-        verify(() => mockLogger.error(
-              'error retrieving presentation for file ${file.path}',
-              exception,
-              any(),
-            )).called(1);
+        verify(
+          () => mockLogger.error(
+            'error retrieving presentation for file ${file.path}',
+            exception,
+            any<dynamic>(),
+          ),
+        ).called(1);
       });
 
       test('should log error and rethrow exception on chunk upload failure',
@@ -280,11 +295,13 @@ void main() {
         verify(() => mockLogger.info('uploading file ${file.path}')).called(1);
         verify(() => mockLogger.info('uploading chunk 0 of ${file.path}'))
             .called(1);
-        verify(() => mockLogger.error(
-              'error uploading chunk 0 of ${file.path}',
-              exception,
-              any(),
-            )).called(1);
+        verify(
+          () => mockLogger.error(
+            'error uploading chunk 0 of ${file.path}',
+            exception,
+            any<dynamic>(),
+          ),
+        ).called(1);
       });
 
       test('should log error and rethrow exception on chunk retry failure',
@@ -294,9 +311,14 @@ void main() {
 
         final handler = MockRestorableChunkedFileUploadHandlerBuilder(file)
           ..chunkSize = 1024
-          ..statusFn = () =>
-              Future.value(const FileUploadStatusResponse(nextChunkOffset: 0));
-        handler.chunkFn = () => throw exception;
+          ..statusFn = () {
+            return Future.value(
+              const FileUploadStatusResponse(nextChunkOffset: 0),
+            );
+          }
+          ..chunkFn = () {
+            throw exception;
+          };
 
         final controller = FileUploadController(
           handler.build(),
@@ -308,17 +330,26 @@ void main() {
           throwsA(equals(exception)),
         );
 
-        verify(() => mockLogger.info('retry uploading file ${file.path}'))
-            .called(1);
-        verify(() => mockLogger.info(any(
-            that: contains('retry uploading file ${file.path} from offset:'))));
-        verify(() => mockLogger.info('retry uploading chunk 0 of ${file.path}'))
-            .called(1);
-        verify(() => mockLogger.error(
-              'error retry uploading chunk 0 of ${file.path}',
-              exception,
-              any(),
-            )).called(1);
+        verify(
+          () => mockLogger.info('retry uploading file ${file.path}'),
+        ).called(1);
+        verify(
+          () => mockLogger.info(
+            any<String>(
+              that: contains('retry uploading file ${file.path} from offset:'),
+            ),
+          ),
+        );
+        verify(
+          () => mockLogger.info('retry uploading chunk 0 of ${file.path}'),
+        ).called(1);
+        verify(
+          () => mockLogger.error(
+            'error retry uploading chunk 0 of ${file.path}',
+            exception,
+            any<dynamic>(),
+          ),
+        ).called(1);
       });
     });
 

@@ -62,6 +62,35 @@ void main() {
       await robot.expectRetry();
       expect(requestCount, 2);
     });
+
+    test(
+        'should upload chunked file using sendSimpleChunk'
+        ' when streamedRequest is false', () async {
+      const fileSize = 1024 * 1024;
+      var requestCount = 0;
+
+      final robot = HttpRobot((request) {
+        requestCount++;
+        return Future.value(Response('', 200));
+      })
+        ..createFile(length: fileSize)
+        ..createController((client, file) {
+          return HttpChunkedFileHandler(
+            client: client,
+            file: file,
+            path: 'profile/image',
+            chunkSize: fileSize ~/ 2,
+            streamedRequest: false, // This will use sendSimpleChunk
+            headers: (_) => {
+              'Authorization': 'Bearer <your_token_here>',
+              'Content-Type': 'application/json; charset=utf-8',
+            },
+          );
+        });
+
+      await robot.expectRetry();
+      expect(requestCount, 2);
+    });
   });
 
   group('restorable chunked file handler', () {
@@ -195,6 +224,132 @@ void main() {
       expect(chunkCount, 1);
       expect(statusCount, 1);
       expect(totalCount(), 3);
+    });
+
+    test(
+        'should upload restorable chunked file using sendSimpleChunk'
+        ' when streamedRequest is false', () async {
+      const fileSize = 1024 * 1024;
+      var requestCount = 0;
+
+      final robot = HttpRobot((request) {
+        requestCount++;
+        return Future.value(Response('', 200));
+      })
+        ..createFile(length: fileSize)
+        ..createController((client, file) {
+          return HttpRestorableChunkedFileHandler(
+            client: client,
+            file: file,
+            presentPath: 'presentation',
+            presentParser: (response) =>
+                const FileUploadPresentationResponse(id: 'custom_id'),
+            presentBody: jsonEncode({'file_name': 'name'}),
+            chunkPath: (presentation, _) => 'chunks/${presentation.id}',
+            statusPath: (presentation) => 'status/${presentation.id}',
+            statusParser: (response) =>
+                const FileUploadStatusResponse(nextChunkOffset: 1),
+            chunkSize: fileSize ~/ 2,
+            streamedRequest: false, // This will use sendSimpleChunk
+            presentHeaders: {
+              'Authorization': 'Bearer <your_token_here>',
+              'Content-Type': 'application/json; charset=utf-8',
+            },
+            chunkHeaders: (_, __) => {
+              'Authorization': 'Bearer <your_token_here>',
+              'Content-Type': 'application/json; charset=utf-8',
+            },
+          );
+        });
+
+      await robot.expectUpload();
+      expect(requestCount, 3); // 1 presentation + 2 chunks
+    });
+
+    test('should handle error in sendUnStream during presentation', () async {
+      const fileSize = 1024;
+
+      final robot = HttpRobot((request) {
+        if (request.url.path.contains('presentation')) {
+          return Future.value(Response('Server Error', 500));
+        }
+        return Future.value(Response('', 200));
+      })
+        ..createFile()
+        ..createController((client, file) {
+          return HttpRestorableChunkedFileHandler(
+            client: client,
+            file: file,
+            presentPath: 'presentation',
+            presentParser: (response) {
+              if (response.statusCode != 200) {
+                throw Exception('Presentation failed');
+              }
+              return const FileUploadPresentationResponse(id: 'custom_id');
+            },
+            chunkPath: (presentation, _) => 'chunks/${presentation.id}',
+            statusPath: (presentation) => 'status/${presentation.id}',
+            statusParser: (response) =>
+                const FileUploadStatusResponse(nextChunkOffset: 1),
+            chunkSize: fileSize,
+          );
+        });
+
+      expect(robot.expectUpload, throwsA(isA<Exception>()));
+    });
+
+    test('should handle stream error in sendStreamedChunk', () async {
+      const fileSize = 1024;
+
+      final robot = HttpRobot((request) {
+        if (request.url.path.contains('chunks/')) {
+          // Simulate an error in the stream processing
+          throw Exception('Stream processing error');
+        }
+        return Future.value(Response('', 200));
+      })
+        ..createFile()
+        ..createController((client, file) {
+          return HttpRestorableChunkedFileHandler(
+            client: client,
+            file: file,
+            presentPath: 'presentation',
+            presentParser: (response) =>
+                const FileUploadPresentationResponse(id: 'custom_id'),
+            chunkPath: (presentation, _) => 'chunks/${presentation.id}',
+            statusPath: (presentation) => 'status/${presentation.id}',
+            statusParser: (response) =>
+                const FileUploadStatusResponse(nextChunkOffset: 1),
+            chunkSize: fileSize,
+          );
+        });
+
+      expect(robot.expectUpload, throwsA(isA<Exception>()));
+    });
+
+    test('should handle file stream read error in sendStreamedChunk', () async {
+      const fileSize = 1024;
+
+      final robot = HttpRobot((request) {
+        return Future.value(Response('', 200));
+      })
+        ..createBrokenFile()
+        ..createController((client, file) {
+          return HttpRestorableChunkedFileHandler(
+            client: client,
+            file: file,
+            presentPath: 'presentation',
+            presentParser: (response) =>
+                const FileUploadPresentationResponse(id: 'custom_id'),
+            chunkPath: (presentation, _) => 'chunks/${presentation.id}',
+            statusPath: (presentation) => 'status/${presentation.id}',
+            statusParser: (response) =>
+                const FileUploadStatusResponse(nextChunkOffset: 1),
+            chunkSize: fileSize,
+          );
+        });
+
+      expect(robot.expectUpload, throwsA(isA<Exception>()));
     });
   });
 }

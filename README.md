@@ -1,5 +1,11 @@
 # File uploader
 
+<p align="center">
+  <a href="https://github.com/invertase/melos">
+    <img src="https://img.shields.io/badge/maintained%20with-melos-f700ff.svg?style=flat-square" alt="Maintained with Melos" />
+  </a>
+</p>
+
 ## Core
 
 - [en_file_uploader](https://github.com/MattiaPispisa/file_uploader/tree/main/en_file_uploader): core library that handle file upload.

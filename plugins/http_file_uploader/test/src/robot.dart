@@ -29,6 +29,10 @@ class HttpRobot {
     _file = utils.createFile(length: length);
   }
 
+  void createBrokenFile() {
+    _file = utils.createBrokenFile();
+  }
+
   void createController(
     IFileUploadHandler Function(Client client, XFile file) handler,
   ) {

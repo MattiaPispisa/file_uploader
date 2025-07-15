@@ -31,7 +31,7 @@ class _RestorableChunkedFileUploadController extends FileUploadController {
     }
 
     final size = await _handler.file.length();
-    var count = 0;
+    var sizeSent = 0;
 
     await _chunksIterator(
       _handler.file,
@@ -44,10 +44,11 @@ class _RestorableChunkedFileUploadController extends FileUploadController {
             _presentationResponse!,
             chunk,
             onProgress: (chunkCount, _) {
-              count += chunkCount;
-              onProgress?.call(count, size);
+              onProgress?.call(sizeSent + chunkCount, size);
             },
           );
+          // when chunk is complete, add its size to count
+          sizeSent += chunk.end - chunk.start;
         } catch (error, stackTrace) {
           _logger?.error(
             'error uploading chunk $i of ${_handler.file.path}',
@@ -92,11 +93,13 @@ class _RestorableChunkedFileUploadController extends FileUploadController {
     final status = await _handler.status(_presentationResponse!);
 
     final size = await _handler.file.length();
-    var count = math.max(status.nextChunkOffset - 1, 0) *
+    var sizeSent = math.max(status.nextChunkOffset - 1, 0) *
         (_handler.chunkSize ?? defaultChunkSize);
 
     _logger?.info(
-        'retry uploading file ${_handler.file.path} from offset: ${status.nextChunkOffset}');
+      'retry uploading file ${_handler.file.path}'
+      ' from offset: ${status.nextChunkOffset}',
+    );
 
     // use [status.nextChunkOffset] to skip already uploaded chunks
     await _chunksIterator(
@@ -111,10 +114,11 @@ class _RestorableChunkedFileUploadController extends FileUploadController {
             _presentationResponse!,
             chunk,
             onProgress: (chunkCount, _) {
-              count += chunkCount;
-              onProgress?.call(count, size);
+              onProgress?.call(sizeSent + chunkCount, size);
             },
           );
+          // when chunk is complete, add its size to count
+          sizeSent += chunk.end - chunk.start;
         } catch (error, stackTrace) {
           _logger?.error(
             'error retry uploading chunk $i of ${_handler.file.path}',

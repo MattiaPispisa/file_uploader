@@ -1,0 +1,26 @@
+name: Monorepo CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  en_file_uploader:
+    uses: ./.github/workflows/dart_package.yaml
+    with:
+      working_directory: ./en_file_uploader
+      min_coverage: 100
+      package_name: en_file_uploader
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  http_file_uploader:
+    uses: ./.github/workflows/dart_package.yaml
+    with:
+      working_directory: ./plugins/http_file_uploader
+      min_coverage: 100
+      package_name: http_file_uploader
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

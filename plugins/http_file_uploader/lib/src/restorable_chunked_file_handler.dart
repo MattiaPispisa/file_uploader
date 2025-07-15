@@ -33,9 +33,16 @@ class HttpRestorableChunkedFileHandler
     super.chunkSize,
     super.fileKey,
     super.chunkParser,
+    this.streamedRequest = true,
   }) : _client = client;
 
   final http.Client _client;
+
+  /// if `true` use a [http.StreamedRequest] to upload the chunk
+  /// else use a [http.Request].
+  ///
+  /// default is `true`
+  final bool streamedRequest;
 
   @override
   Future<FileUploadPresentationResponse> present() {
@@ -55,8 +62,20 @@ class HttpRestorableChunkedFileHandler
     FileChunk chunk, {
     ProgressCallback? onProgress,
   }) async {
+    if (streamedRequest) {
+      return _client
+          .sendStreamedChunk(
+            method: chunkMethod,
+            path: chunkPath(presentation, chunk),
+            chunk: chunk,
+            fileKey: fileKey,
+            headers: chunkHeaders?.call(presentation, chunk),
+            onProgress: onProgress,
+          )
+          .then(chunkParser);
+    }
     return _client
-        .sendChunk(
+        .sendSimpleChunk(
           method: chunkMethod,
           path: chunkPath(presentation, chunk),
           chunk: chunk,
