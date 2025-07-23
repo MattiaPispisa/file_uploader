@@ -93,6 +93,10 @@ class PrinterLogger implements FileUploaderLogger {
 
 **If you're looking for a library to handle logging in your project, you can check out another library I created: [en_logger](https://pub.dev/packages/en_logger).**
 
+### File
+
+File are handled with the `XFile` class from the [cross_file](https://pub.dev/packages/cross_file) package. This abstraction allow the library to be used across multiple platforms.
+
 ## How to use
 
 Create a `FileUploadController` by passing a concrete implementation of `FileUploadHandler`, `ChunkedFileUploadHandler`, or `RestorableChunkedFileUploadHandler` as the handler. 
