@@ -15,7 +15,8 @@ import 'package:en_file_uploader/en_file_uploader.dart';
 /// Attach the handler to a [FileUploadController] to upload the file.
 ///
 /// ```dart
-/// final controller = FileUploadController(MyChunkedFileUploadHandler(file: file));
+/// final controller =
+///   FileUploadController(MyChunkedFileUploadHandler(file: file));
 /// controller.upload();
 /// ```
 abstract class ChunkedFileUploadHandler extends IFileUploadHandler {
@@ -35,8 +36,12 @@ abstract class ChunkedFileUploadHandler extends IFileUploadHandler {
 
   /// method to handle the upload of a [FileChunk]
   ///
-  /// [onProgress] is a callback that will be called with the progress of the upload.
-  /// The callback will receive the current progress and the total size of the file.
+  /// [chunk] is the chunk to upload.
+  ///
+  /// [onProgress] is a callback that will be called
+  /// with the progress of the upload. The callback
+  /// will receive the current progress
+  /// and the total size of the file.
   ///
   /// ```dart
   /// controller.uploadChunk(chunk, onProgress: (progress, total) {

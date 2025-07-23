@@ -26,8 +26,10 @@ abstract class FileUploadHandler extends IFileUploadHandler {
 
   /// Method for uploading the entire file.
   ///
-  /// [onProgress] is a callback that will be called with the progress of the upload.
-  /// The callback will receive the current progress and the total size of the file.
+  /// [onProgress] is a callback that will be called
+  /// with the progress of the upload. The callback
+  /// will receive the current progress
+  /// and the total size of the file.
   ///
   /// ```dart
   /// controller.upload(onProgress: (progress, total) {
