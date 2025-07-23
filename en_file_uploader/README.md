@@ -2,9 +2,11 @@
 
 [![Pub Version][pub_badge]][pub_link]
 [![pub points][pub_points]][pub_link]
+[![pub likes][pub_likes]][pub_link]
 [![codecov][codecov_badge]][codecov_link]
 [![ci_badge][ci_badge]][ci_link]
 [![License: MIT][license_badge]][license_link]
+[![pub publisher][pub_publisher]][pub_publisher_link]
 
 This Dart package provides a **file upload functionality that is implementation-agnostic**.
 
@@ -93,16 +95,72 @@ class PrinterLogger implements FileUploaderLogger {
 
 ## How to use
 
-Create a `FileUploadController` by passing a concrete implementation of `FileUploadHandler`, `ChunkedFileUploadHandler`, or `RestorableChunkedFileUploadHandler` as the handler. The controller will have the capabilities to upload a file and retry the upload.
+Create a `FileUploadController` by passing a concrete implementation of `FileUploadHandler`, `ChunkedFileUploadHandler`, or `RestorableChunkedFileUploadHandler` as the handler. 
+
+```dart
+class MyFileUploadHandler extends FileUploadHandler {
+  MyFileUploadHandler({required super.file});
+
+  @override
+  Future<void> upload({ProgressCallback? onProgress}) {
+    // TODO: implement upload
+    // Ex. http.post(url, body: file);
+  }
+}
+
+class MyChunkedFileUploadHandler extends ChunkedFileUploadHandler {
+  MyChunkedFileUploadHandler({required super.file});
+
+  @override
+  Future<void> uploadChunk(FileChunk chunk, {ProgressCallback? onProgress}) {
+    // TODO: implement uploadChunk
+    // Ex. http.post(url, body: chunk);
+  }
+}
+
+class MyRestorableChunkedFileUploadHandler extends RestorableChunkedFileUploadHandler {
+  MyRestorableChunkedFileUploadHandler({required super.file});
+
+  @override
+  Future<void> uploadChunk(FileChunk chunk, {ProgressCallback? onProgress}) {
+    // TODO: implement uploadChunk
+    // Ex. http.post(url, body: chunk);
+  }
+
+  @override
+  Future<FileUploadPresentationResponse> present() {
+    // TODO: implement present
+    // Ex. http.post(url, body: file);
+  }
+
+  @override
+  Future<FileUploadStatusResponse> status(FileUploadPresentationResponse presentation) {
+    // TODO: implement status
+    // Ex. http.get(url, body: presentation);
+  }
+}
+```
+
+The controller will have the capabilities to upload a file and retry the upload.
+
+```dart
+final handler = getHandler();
+final controller = FileUploadController(handler);
+
+controller.upload(); // upload the file
+controller.retry(); // retry the upload
+controller.uploaded // check if the file is uploaded
+```
 
 ## Example
 
 In the [example](https://github.com/MattiaPispisa/file_uploader/blob/main/file_uploader/example/lib/main.dart), there is an implementation of `RestorableChunkedFileUploadHandler` handler that sends chunks to a mock server (`InMemoryBackend`).
 
-Other examples are provided in the tests to ensure the correct functionality of the library.
+Other examples are provided in the [tests](https://github.com/MattiaPispisa/file_uploader/tree/main/en_file_uploader/test/src) to ensure the correct functionality of the library.
 
 [license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [license_link]: https://opensource.org/licenses/MIT
+[pub_likes]: https://img.shields.io/pub/likes/en_file_uploader
 [pub_link]: https://pub.dev/packages/en_file_uploader
 [pub_badge]: https://img.shields.io/pub/v/en_file_uploader
 [codecov_badge]: https://img.shields.io/codecov/c/github/MattiaPispisa/file_uploader/main?flag=en_file_uploader&logo=codecov
@@ -110,3 +168,5 @@ Other examples are provided in the tests to ensure the correct functionality of 
 [ci_badge]: https://img.shields.io/github/actions/workflow/status/MattiaPispisa/file_uploader/main.yaml
 [ci_link]: https://github.com/MattiaPispisa/file_uploader/actions/workflows/main.yaml
 [pub_points]: https://img.shields.io/pub/points/en_file_uploader
+[pub_publisher]: https://img.shields.io/pub/publisher/en_file_uploader
+[pub_publisher_link]: https://pub.dev/packages?q=publisher%3Amattiapispisa.it
