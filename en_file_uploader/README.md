@@ -156,6 +156,35 @@ controller.retry(); // retry the upload
 controller.uploaded // check if the file is uploaded
 ```
 
+### Tip
+
+Implement your own specific **handler as an internal, private** component and configure your business logic around the `FileUploadController`. The **controller** should be the only interface used **to manage and display upload state**, while keeping the handler implementation hidden.
+
+```dart
+class MyBusinessLogic extends ChangeNotifier {
+  MyBusinessLogic({required this.controller});
+
+  factory MyBusinessLogic.handler(FileUploadHandler handler) {
+    return MyBusinessLogic(controller: FileUploadController(handler));
+  }
+
+  final FileUploadController controller;
+  bool _isUploading = false;
+  bool get isUploading => _isUploading;
+
+  void uploadFile() {
+    _isUploading = true;
+    notifyListeners();
+
+    controller.upload(onProgress: (progress, total) {
+      ...
+    });
+
+    ...
+  }
+}
+```
+
 ## Example
 
 In the [example](https://github.com/MattiaPispisa/file_uploader/blob/main/file_uploader/example/lib/main.dart), there is an implementation of `RestorableChunkedFileUploadHandler` handler that sends chunks to a mock server (`InMemoryBackend`).

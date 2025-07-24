@@ -10,7 +10,7 @@ abstract class FileUploaderException implements Exception {}
 
 /// unexpected handler exception
 ///
-/// [FileUploadController] is not able 
+/// [FileUploadController] is not able
 /// to handle the [IFileUploadHandler] passed.
 class UnexpectedHandlerException implements FileUploaderException {
   /// unexpected handler exception

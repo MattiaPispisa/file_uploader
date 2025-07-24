@@ -4,7 +4,7 @@
 /// ## How to use
 ///
 /// Extends this class to implement a logger.
-/// 
+///
 /// ```dart
 /// // It's just an example, not a production-ready version.
 /// // Every log is printed
