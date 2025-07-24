@@ -1,7 +1,10 @@
-/// an abstract logger used inside the library to report
-/// info, warning and errors
+/// An abstract logger used inside the library to report
+/// info, warning and errors.
 ///
-/// Concrete example:
+/// ## How to use
+///
+/// Extends this class to implement a logger.
+///
 /// ```dart
 /// // It's just an example, not a production-ready version.
 /// // Every log is printed

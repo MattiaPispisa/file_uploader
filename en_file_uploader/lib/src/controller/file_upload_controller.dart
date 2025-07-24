@@ -15,6 +15,9 @@ part '_restorable_chunked_file_upload_controller.dart';
 /// upload a file ([FileUploadController.upload])
 /// and retry the upload ([FileUploadController.retry]).
 ///
+/// Use [FileUploadController.uploaded] to check if
+/// the file has already been uploaded.
+///
 /// ## Example
 ///
 /// ```dart
@@ -56,9 +59,15 @@ part '_restorable_chunked_file_upload_controller.dart';
 ///```
 
 abstract class FileUploadController {
-  /// [handler]
+  /// [handler] is the handler that will be used to upload the file.
   ///
-  /// [logger] a logger report info/warning/errors about upload behavior
+  /// [handler] must be a concrete implementation of [FileUploadHandler],
+  /// [ChunkedFileUploadHandler] or [RestorableChunkedFileUploadHandler]
+  /// else an [UnexpectedHandlerException] is thrown.
+  ///
+  /// [logger] a logger report info/warning/errors about upload behavior.
+  ///
+  ///
   factory FileUploadController(
     IFileUploadHandler handler, {
     FileUploaderLogger? logger,
@@ -84,7 +93,9 @@ abstract class FileUploadController {
   bool _uploaded = false;
 
   /// return `true` if the file has already been uploaded.
-  /// A file that has been uploaded cannot be uploaded again.
+  ///
+  /// A file that has been uploaded cannot be uploaded again
+  /// else an [FileAlreadyUploadedException] is thrown.
   bool get uploaded => _uploaded;
 
   /// set the file as uploaded
@@ -101,6 +112,17 @@ abstract class FileUploadController {
   /// upload the file
   ///
   /// use [onProgress] to check the upload progress
+  ///
+  /// if the file has already been uploaded,
+  /// an [FileAlreadyUploadedException] is thrown.
+  ///
+  /// ```dart
+  /// controller.upload(
+  ///   onProgress: (progress, total) {
+  ///     print('Upload progress: $progress of $total');
+  ///   },
+  /// );
+  /// ```
   Future<FileUploadResult> upload({
     ProgressCallback? onProgress,
   });
@@ -108,6 +130,17 @@ abstract class FileUploadController {
   /// retry the file upload
   ///
   /// use [onProgress] to check the upload progress
+  ///
+  /// if the file has been already uploaded,
+  /// an [FileAlreadyUploadedException] is thrown.
+  ///
+  /// ```dart
+  /// controller.retry(
+  ///   onProgress: (progress, total) {
+  ///     print('Upload progress: $progress of $total');
+  ///   },
+  /// );
+  /// ```
   Future<FileUploadResult> retry({
     ProgressCallback? onProgress,
   });

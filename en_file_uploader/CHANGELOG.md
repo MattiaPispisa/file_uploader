@@ -1,3 +1,9 @@
+## [2.1.2] - 2025-07-24
+
+### Changed
+
+- chore: Update README.md and added more documentation.
+
 ## [2.1.1] - 2025-07-15
 
 ### Changed
