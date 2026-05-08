@@ -1,5 +1,5 @@
 import 'package:example/examples/examples.dart';
-import 'package:example/l10n/l10n.dart';
+import 'package:example/l10n/arb/app_localizations.dart';
 import 'package:example/settings/model.dart';
 import 'package:example/settings/ui.dart';
 import 'package:example/utils.dart';
