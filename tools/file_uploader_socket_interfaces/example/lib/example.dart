@@ -1,8 +1,10 @@
+// ignore_for_file: avoid_print just for example
+
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:file_uploader_socket_interfaces/file_uploader_socket_interfaces.dart';
 import 'package:file_uploader_utils/file_uploader_utils.dart' as utils;
 
-main() async {
+void main() async {
   final file = utils.createIoFile();
 
   final restorableHandler = ImplSocketFileHandler(
@@ -16,10 +18,12 @@ main() async {
   );
   await controller.upload();
 
-  print("done!");
+  print('done!');
 }
 
+/// example implementation of the [SocketFileHandler]
 class ImplSocketFileHandler extends SocketFileHandler<Object> {
+  /// create an [ImplSocketFileHandler]
   ImplSocketFileHandler({
     required super.file,
     required super.path,

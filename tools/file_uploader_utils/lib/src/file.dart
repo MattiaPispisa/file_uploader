@@ -29,6 +29,7 @@ XFile createFile({
   return XFile(file.path);
 }
 
+/// create a file that always fail to open and return exception from openRead
 XFile createBrokenFile() {
   return _BrokenXFile();
 }
