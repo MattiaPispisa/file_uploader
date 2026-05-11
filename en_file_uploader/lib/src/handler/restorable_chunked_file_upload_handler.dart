@@ -44,7 +44,7 @@ abstract class RestorableChunkedFileUploadHandler extends IFileUploadHandler {
   ///
   /// [FileUploadPresentationResponse.id] will be used as a reference
   /// for chunk uploads.
-  Future<FileUploadPresentationResponse> present();
+  Future<FileUploadPresentationResponse> present(XFile file);
 
   /// method to handle the upload of a [FileChunk].
   ///
