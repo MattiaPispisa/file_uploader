@@ -28,16 +28,16 @@ void main() {
 }
 
 class ThrowFileUploadHandler extends FileUploadHandler {
-  ThrowFileUploadHandler({required super.file});
+  const ThrowFileUploadHandler({required super.file});
 
   @override
-  Future<void> upload({ProgressCallback? onProgress}) {
+  Future<void> upload(XFile file, {ProgressCallback? onProgress}) {
     throw UnimplementedError();
   }
 }
 
 class ThrowChunkedFileUploadHandler extends ChunkedFileUploadHandler {
-  ThrowChunkedFileUploadHandler({
+  const ThrowChunkedFileUploadHandler({
     required super.file,
     super.chunkSize,
   });
@@ -53,13 +53,13 @@ class ThrowChunkedFileUploadHandler extends ChunkedFileUploadHandler {
 
 class ThrowRestorableChunkedFileUploadHandler
     extends RestorableChunkedFileUploadHandler {
-  ThrowRestorableChunkedFileUploadHandler({
+  const ThrowRestorableChunkedFileUploadHandler({
     required super.file,
     super.chunkSize,
   });
 
   @override
-  Future<FileUploadPresentationResponse> present() {
+  Future<FileUploadPresentationResponse> present(XFile file) {
     throw UnimplementedError();
   }
 

@@ -21,5 +21,5 @@ void main() {
 }
 
 class UnknownHandler extends IFileUploadHandler {
-  UnknownHandler({required super.file});
+  const UnknownHandler({required super.file});
 }

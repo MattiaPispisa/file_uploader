@@ -55,7 +55,7 @@ class ThrowingRestorableChunkedFileUploadHandler
   bool _isRetry = false;
 
   @override
-  Future<FileUploadPresentationResponse> present() async {
+  Future<FileUploadPresentationResponse> present(XFile file) async {
     return const FileUploadPresentationResponse(id: 'test-id');
   }
 

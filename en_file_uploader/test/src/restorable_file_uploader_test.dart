@@ -127,7 +127,7 @@ void main() {
                 onProgress: any<ProgressCallback>(named: 'onProgress'),
               ),
             ).called(3);
-            verify(() => handler.present()).called(1);
+            verify(() => handler.present(any<XFile>())).called(1);
             verifyNever(
               () => handler.status(
                 any<FileUploadPresentationResponse>(),
@@ -146,7 +146,7 @@ void main() {
             ).called(2);
 
             // not necessary
-            verifyNever(() => handler.present());
+            verifyNever(() => handler.present(any<XFile>()));
 
             // called on retry
             verify(
