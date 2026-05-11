@@ -4,28 +4,40 @@ class _ChunkedFileUploadController extends FileUploadController {
   _ChunkedFileUploadController({
     required ChunkedFileUploadHandler handler,
     FileUploaderLogger? logger,
+    List<FileTransformer> transformers = const [],
   })  : _handler = handler,
         _logger = logger,
+        _transformers = transformers,
         super._();
 
   final ChunkedFileUploadHandler _handler;
   final FileUploaderLogger? _logger;
+  final List<FileTransformer> _transformers;
 
   @override
   Future<FileUploadResult> upload({
     ProgressCallback? onProgress,
+    ProgressCallback? onTransformationProgress,
   }) async {
     _ensureNotUploaded();
-    _logger?.info('uploading file ${_handler.file.path}');
+    
+    final fileToUpload = await _applyTransformers(
+      handler: _handler,
+      transformers: _transformers,
+      logger: _logger,
+      onTransformationProgress: onTransformationProgress,
+    );
 
-    final size = await _handler.file.length();
+    _logger?.info('uploading file ${fileToUpload.path}');
+
+    final size = await fileToUpload.length();
     var sizeSent = 0;
 
     await _chunksIterator(
-      _handler.file,
+      fileToUpload,
       chunkSize: _handler.chunkSize,
       chunkCallback: (chunk, i) async {
-        _logger?.info('uploading chunk $i of ${_handler.file.path}');
+        _logger?.info('uploading chunk $i of ${fileToUpload.path}');
 
         try {
           await _handler.uploadChunk(
@@ -38,7 +50,7 @@ class _ChunkedFileUploadController extends FileUploadController {
           sizeSent += chunk.end - chunk.start;
         } catch (error, stackTrace) {
           _logger?.error(
-            'error uploading chunk $i of ${_handler.file.path}',
+            'error uploading chunk $i of ${fileToUpload.path}',
             error,
             stackTrace,
           );
@@ -50,29 +62,42 @@ class _ChunkedFileUploadController extends FileUploadController {
     _setUploaded();
     onProgress?.call(size, size);
 
-    _logger?.info('file uploaded ${_handler.file.path}');
+    _logger?.info('file uploaded ${fileToUpload.path}');
 
-    return FileUploadResult(
+    final result = FileUploadResult(
       file: _handler.file,
       id: _generateUniqueId(),
     );
+
+    await _cleanupTransformedFiles();
+
+    return result;
   }
 
   @override
   Future<FileUploadResult> retry({
     ProgressCallback? onProgress,
+    ProgressCallback? onTransformationProgress,
   }) async {
     _ensureNotUploaded();
-    _logger?.info('retry uploading file ${_handler.file.path}');
+    
+    final fileToUpload = await _applyTransformers(
+      handler: _handler,
+      transformers: _transformers,
+      logger: _logger,
+      onTransformationProgress: onTransformationProgress,
+    );
 
-    final size = await _handler.file.length();
+    _logger?.info('retry uploading file ${fileToUpload.path}');
+
+    final size = await fileToUpload.length();
     var sizeSent = 0;
 
     await _chunksIterator(
-      _handler.file,
+      fileToUpload,
       chunkSize: _handler.chunkSize,
       chunkCallback: (chunk, i) async {
-        _logger?.info('retry uploading chunk $i of ${_handler.file.path}');
+        _logger?.info('retry uploading chunk $i of ${fileToUpload.path}');
 
         try {
           await _handler.uploadChunk(
@@ -85,7 +110,7 @@ class _ChunkedFileUploadController extends FileUploadController {
           sizeSent += chunk.end - chunk.start;
         } catch (error, stackTrace) {
           _logger?.error(
-            'error retry uploading chunk $i of ${_handler.file.path}',
+            'error retry uploading chunk $i of ${fileToUpload.path}',
             error,
             stackTrace,
           );
@@ -97,11 +122,15 @@ class _ChunkedFileUploadController extends FileUploadController {
     _setUploaded();
     onProgress?.call(size, size);
 
-    _logger?.info('file upload retry completed ${_handler.file.path}');
+    _logger?.info('file upload retry completed ${fileToUpload.path}');
 
-    return FileUploadResult(
+    final result = FileUploadResult(
       file: _handler.file,
       id: _generateUniqueId(),
     );
+
+    await _cleanupTransformedFiles();
+
+    return result;
   }
 }

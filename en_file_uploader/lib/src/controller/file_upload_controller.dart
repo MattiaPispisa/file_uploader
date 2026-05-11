@@ -63,7 +63,7 @@ abstract class FileUploadController {
   /// {@macro file_upload_controller}
   ///
   /// **Constructor**
-  /// 
+  ///
   /// [handler] is the handler that will be used to upload the file.
   ///
   /// [handler] must be a concrete implementation of [FileUploadHandler],
@@ -106,6 +106,7 @@ abstract class FileUploadController {
   FileUploadController._();
 
   bool _uploaded = false;
+
   final List<Future<void> Function()> _cleanupTasks = [];
   XFile? _transformedFile;
   bool get _transformersApplied => _transformedFile != null;
@@ -149,11 +150,11 @@ abstract class FileUploadController {
         }
 
         currentFile = transformedFile;
-      } catch (e) {
+      } catch (e, s) {
         if (transformer.continueOnFailure) {
           logger?.warning(
             'Transformer ${transformer.runtimeType} failed '
-            'on ${currentFile.path}, continuing with previous file\n$e',
+            'on ${currentFile.path}, continuing with previous file\n$e\n$s',
           );
         } else {
           rethrow;
@@ -171,12 +172,14 @@ abstract class FileUploadController {
   }
 
   /// Clean up the transformed files created during the pipeline.
-  Future<void> _cleanupTransformedFiles() async {
+  Future<void> _cleanupTransformedFiles({
+    FileUploaderLogger? logger,
+  }) async {
     for (final cleanupTask in _cleanupTasks) {
       try {
         await cleanupTask();
-      } catch (e) {
-        // ignore
+      } catch (e, s) {
+        logger?.warning('Something went wrong during files cleanup\n$e\n$s');
       }
     }
     _cleanupTasks.clear();
