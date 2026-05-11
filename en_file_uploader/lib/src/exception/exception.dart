@@ -8,12 +8,14 @@ import 'package:en_file_uploader/en_file_uploader.dart';
 /// - [FileAlreadyUploadedException]
 abstract class FileUploaderException implements Exception {}
 
+/// {@template unexpected_handler_exception}
 /// unexpected handler exception
 ///
 /// [FileUploadController] is not able
 /// to handle the [IFileUploadHandler] passed.
+/// {@endtemplate}
 class UnexpectedHandlerException implements FileUploaderException {
-  /// unexpected handler exception
+  /// {@macro unexpected_handler_exception}
   const UnexpectedHandlerException({
     required this.handler,
   }) : super();
@@ -27,11 +29,13 @@ class UnexpectedHandlerException implements FileUploaderException {
   }
 }
 
+/// {@template file_already_uploaded_exception}
 /// file already uploaded exception
 ///
 /// a file that has been uploaded cannot be uploaded again.
+/// {@endtemplate}
 class FileAlreadyUploadedException implements FileUploaderException {
-  /// file already uploaded exception
+  /// {@macro file_already_uploaded_exception}
   const FileAlreadyUploadedException() : super();
 
   @override

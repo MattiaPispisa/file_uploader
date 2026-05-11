@@ -1,6 +1,8 @@
+/// {@template file_upload_status_response}
 /// The response of the file presentation.
+/// {@endtemplate}
 class FileUploadStatusResponse {
-  /// constructor
+  /// {@macro file_upload_status_response}
   const FileUploadStatusResponse({
     required this.nextChunkOffset,
   });

@@ -1,8 +1,10 @@
 import 'package:en_file_uploader/en_file_uploader.dart';
 
+/// {@template file_chunk}
 /// Represents a chunk of the file.
+/// {@endtemplate}
 class FileChunk {
-  /// constructor
+  /// {@macro file_chunk}
   const FileChunk({
     required this.file,
     required this.start,
