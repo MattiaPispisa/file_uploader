@@ -9,13 +9,13 @@ import 'package:file_uploader_utils/file_uploader_utils.dart' as utils;
 class InMemoryRestorableChunkedFileUploadHandler
     extends RestorableChunkedFileUploadHandler {
   /// constructor
-  InMemoryRestorableChunkedFileUploadHandler({
+  const InMemoryRestorableChunkedFileUploadHandler({
     required super.file,
     super.chunkSize,
   });
 
   @override
-  Future<FileUploadPresentationResponse> present() {
+  Future<FileUploadPresentationResponse> present(XFile file) {
     final id = backend.handleIncomingFile();
     return Future.value(FileUploadPresentationResponse(id: id));
   }

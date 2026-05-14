@@ -3,10 +3,10 @@ import 'package:en_file_uploader/en_file_uploader.dart';
 /// wait some milliseconds and call `onProgress`
 /// with different `count` to simulate a progression
 class FakeFileHandler extends FileUploadHandler {
-  FakeFileHandler({required super.file});
+  const FakeFileHandler({required super.file});
 
   @override
-  Future<void> upload({ProgressCallback? onProgress}) async {
+  Future<void> upload(XFile file, {ProgressCallback? onProgress}) async {
     final fileLength = await file.length();
     onProgress?.call(0, fileLength);
     await Future.delayed(const Duration(milliseconds: 200));

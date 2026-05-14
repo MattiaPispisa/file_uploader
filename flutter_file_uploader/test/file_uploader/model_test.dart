@@ -110,7 +110,7 @@ void main() {
           final handler = MockFileUploadHandler();
           final file = utils.createFile();
 
-          when(() => handler.upload(onProgress: any(named: 'onProgress')))
+          when(() => handler.upload(any(), onProgress: any(named: 'onProgress')))
               .thenAnswer((_) async => {});
           when(() => handler.file).thenReturn(file);
 
@@ -137,7 +137,7 @@ void main() {
           final handler = MockFileUploadHandler();
           final file = utils.createFile();
 
-          when(() => handler.upload(onProgress: any(named: 'onProgress')))
+          when(() => handler.upload(any(), onProgress: any(named: 'onProgress')))
               .thenAnswer((_) async => {});
           when(() => handler.file).thenReturn(file);
 
@@ -165,7 +165,7 @@ void main() {
           final handler = MockFileUploadHandler();
           final file = utils.createFile();
 
-          when(() => handler.upload(onProgress: any(named: 'onProgress')))
+          when(() => handler.upload(any(), onProgress: any(named: 'onProgress')))
               .thenAnswer((_) async => {});
           when(() => handler.file).thenReturn(file);
 
@@ -192,7 +192,7 @@ void main() {
           final handler = MockFileUploadHandler();
           final file = utils.createFile();
 
-          when(() => handler.upload(onProgress: any(named: 'onProgress')))
+          when(() => handler.upload(any(), onProgress: any(named: 'onProgress')))
               .thenAnswer((_) async => {});
           when(() => handler.file).thenReturn(file);
 
@@ -220,7 +220,7 @@ void main() {
           final handler = MockFileUploadHandler();
           final file = utils.createFile();
 
-          when(() => handler.upload(onProgress: any(named: 'onProgress')))
+          when(() => handler.upload(any(), onProgress: any(named: 'onProgress')))
               .thenAnswer((_) async => {});
           when(() => handler.file).thenReturn(file);
 

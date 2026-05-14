@@ -17,7 +17,7 @@ class _FileUploadController extends FileUploadController {
   @override
   Future<FileUploadResult> upload({
     ProgressCallback? onProgress,
-    ProgressCallback? onTransformationProgress,
+    TransformationProgressCallback? onTransformationProgress,
   }) async {
     _ensureNotUploaded();
 
@@ -52,7 +52,7 @@ class _FileUploadController extends FileUploadController {
       id: _generateUniqueId(),
     );
 
-    await _cleanupTransformedFiles();
+    await _cleanupTransformedFiles(logger: _logger);
 
     return result;
   }
@@ -60,7 +60,7 @@ class _FileUploadController extends FileUploadController {
   @override
   Future<FileUploadResult> retry({
     ProgressCallback? onProgress,
-    ProgressCallback? onTransformationProgress,
+    TransformationProgressCallback? onTransformationProgress,
   }) async {
     _ensureNotUploaded();
 
@@ -95,7 +95,7 @@ class _FileUploadController extends FileUploadController {
       id: _generateUniqueId(),
     );
 
-    await _cleanupTransformedFiles();
+    await _cleanupTransformedFiles(logger: _logger);
 
     return result;
   }

@@ -17,7 +17,7 @@ abstract class FileTransformer {
   /// You can report the transformation progress using [onProgress].
   Future<XFile> transform(
     XFile file, {
-    ProgressCallback? onProgress,
+    TransformationProgressCallback? onProgress,
   });
 
   /// Clean up the transformed [file] when it's no longer needed.

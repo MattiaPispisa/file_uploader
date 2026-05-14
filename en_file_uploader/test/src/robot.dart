@@ -14,7 +14,9 @@ class Robot {
   Robot();
 
   late XFile _file;
+  final List<FileTransformer> _transformers = [];
   late FileUploadController _controller;
+  FileUploaderLogger? logger;
 
   /// create a [XFile] of [length]
   void createFile({
@@ -23,16 +25,28 @@ class Robot {
     _file = utils.createFile(length: length);
   }
 
+  void addTransformer(FileTransformer Function() transformer) {
+    _transformers.add(transformer());
+  }
+
   /// Create a [FileUploadController] using [handler]
-  void createController(
-    IFileUploadHandler Function(XFile file) handler,
-  ) {
-    _controller = FileUploadController(handler(_file));
+  void createController(IFileUploadHandler Function(XFile file) handler) {
+    _controller = FileUploadController(
+      handler(_file),
+      transformers: _transformers,
+      logger: logger,
+    );
   }
 
   /// Call [FileUploadController.upload] expecting returnsNormally
-  Future<void> expectUpload({void Function(int, int)? onProgress}) async {
-    await _controller.upload(onProgress: onProgress);
+  Future<void> expectUpload({
+    ProgressCallback? onProgress,
+    TransformationProgressCallback? onTransformationProgress,
+  }) async {
+    await _controller.upload(
+      onProgress: onProgress,
+      onTransformationProgress: onTransformationProgress,
+    );
 
     expect(_controller.uploaded, true);
     expect(
@@ -42,8 +56,14 @@ class Robot {
   }
 
   /// Call [FileUploadController.retry] expecting returnsNormally
-  Future<void> expectRetry({void Function(int, int)? onProgress}) async {
-    await _controller.retry(onProgress: onProgress);
+  Future<void> expectRetry({
+    ProgressCallback? onProgress,
+    TransformationProgressCallback? onTransformationProgress,
+  }) async {
+    await _controller.retry(
+      onProgress: onProgress,
+      onTransformationProgress: onTransformationProgress,
+    );
 
     expect(_controller.uploaded, true);
     expect(

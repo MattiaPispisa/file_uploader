@@ -115,7 +115,7 @@ abstract class FileUploadController {
     required IFileUploadHandler handler,
     required List<FileTransformer> transformers,
     FileUploaderLogger? logger,
-    ProgressCallback? onTransformationProgress,
+    TransformationProgressCallback? onTransformationProgress,
   }) async {
     if (transformers.isEmpty) {
       return handler.file;
@@ -125,6 +125,7 @@ abstract class FileUploadController {
     }
 
     var currentFile = handler.file;
+    var currentProgress = 0.0;
 
     logger?.info('applying transformers to ${currentFile.path}');
     final totalTransformers = transformers.length;
@@ -134,12 +135,13 @@ abstract class FileUploadController {
       try {
         final transformedFile = await transformer.transform(
           currentFile,
-          onProgress: (count, total) {
+          onProgress: (count) {
             if (onTransformationProgress != null) {
-              final fraction = total == 0 ? 0.0 : count / total;
-              final currentProgress = (i * 100) + (fraction * 100);
-              final overallTotal = totalTransformers * 100;
-              onTransformationProgress(currentProgress.toInt(), overallTotal);
+              currentProgress = _roundTo(
+                (i + count.clamp(0, 1)) / totalTransformers,
+                to: 2,
+              );
+              onTransformationProgress(currentProgress);
             }
           },
         );
@@ -162,9 +164,9 @@ abstract class FileUploadController {
       }
     }
 
-    if (onTransformationProgress != null) {
-      final overallTotal = totalTransformers * 100;
-      onTransformationProgress(overallTotal, overallTotal);
+    if (onTransformationProgress != null && currentProgress < 1) {
+      // ensure always end at 1
+      onTransformationProgress(1);
     }
 
     _transformedFile = currentFile;
@@ -221,7 +223,7 @@ abstract class FileUploadController {
   /// ```
   Future<FileUploadResult> upload({
     ProgressCallback? onProgress,
-    ProgressCallback? onTransformationProgress,
+    TransformationProgressCallback? onTransformationProgress,
   });
 
   /// retry the file upload
@@ -242,7 +244,7 @@ abstract class FileUploadController {
   /// ```
   Future<FileUploadResult> retry({
     ProgressCallback? onProgress,
-    ProgressCallback? onTransformationProgress,
+    TransformationProgressCallback? onTransformationProgress,
   });
 }
 
@@ -296,4 +298,8 @@ String _generateUniqueId() {
   final timestamp = DateTime.now().millisecondsSinceEpoch;
   final randomValue = random.nextInt(100000);
   return '$timestamp$randomValue';
+}
+
+double _roundTo(double value, {required int to}) {
+  return double.parse(value.toStringAsFixed(2));
 }

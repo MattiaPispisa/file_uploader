@@ -3,12 +3,11 @@ import 'package:file_uploader_utils/file_uploader_utils.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
+import 'mocks/logger.dart';
 import 'mocks/mock_chunked_file_upload_handler.dart';
+import 'mocks/mock_file_transformer.dart';
 import 'mocks/mock_file_upload_handler.dart';
 import 'mocks/mock_restorable_chunked_file_upload_handler.dart';
-
-// Mock logger to verify logging calls
-class MockLogger extends Mock implements FileUploaderLogger {}
 
 // Concrete test handlers that guarantee exceptions reach the right catch blocks
 class ThrowingChunkedFileUploadHandler extends ChunkedFileUploadHandler {

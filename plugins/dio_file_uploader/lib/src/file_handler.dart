@@ -26,7 +26,8 @@ class DioFileHandler extends SocketFileHandler<dio.Response<dynamic>> {
   final dio.CancelToken? cancelToken;
 
   @override
-  Future<void> upload({
+  Future<void> upload(
+    XFile file, {
     ProgressCallback? onProgress,
   }) async {
     final chunk = FileChunk(
