@@ -1,3 +1,9 @@
+## [4.0.0] - 2026-05-14
+
+### Changed
+
+- **Breaking**, updated to reflect the breaking changes introduced in `en_file_uploader`.
+
 ## [3.1.0] - 2025-07-15
 
 ### Added

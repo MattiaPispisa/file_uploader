@@ -118,13 +118,13 @@ abstract class FileUploadController {
     TransformationProgressCallback? onTransformationProgress,
   }) async {
     if (transformers.isEmpty) {
-      return handler.file;
+      return handler.originalFile;
     }
     if (_transformersApplied) {
       return _transformedFile!;
     }
 
-    var currentFile = handler.file;
+    var currentFile = handler.originalFile;
     var currentProgress = 0.0;
 
     logger?.info('applying transformers to ${currentFile.path}');

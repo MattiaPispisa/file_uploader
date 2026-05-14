@@ -226,6 +226,44 @@ void main() {
         expect(counts, orderedEquals([0.33, 0.5, 1]));
       });
 
+      test('should remain consistent with multiple transformer', () async {
+        var onTransformationProgressCount = 0;
+        final counts = <double>[];
+
+        r = Robot()
+          ..createFile()
+          ..addTransformer(() {
+            final builder = MockFileTransformerBuilder()
+              ..progressChunkCount = 3;
+            return builder.build();
+          })
+          ..addTransformer(() {
+            final builder = MockFileTransformerBuilder()
+              ..progressChunkCount = 2;
+            return builder.build();
+          })
+          ..createController(
+            (file) {
+              final builder = MockFileUploadHandlerBuilder(file)
+                ..uploadFn = () {
+                  return Future.value();
+                };
+
+              return handler = builder.build();
+            },
+          );
+
+        await r.expectUpload(
+          onTransformationProgress: (c) {
+            onTransformationProgressCount++;
+            counts.add(c);
+          },
+        );
+
+        expect(onTransformationProgressCount, 5);
+        expect(counts, orderedEquals([0.17, 0.25, 0.5, 0.75, 1.0]));
+      });
+
       test('should transform and cleanup after retry', () async {
         var onTransformationProgressCount = 0;
         var count = 0.0;

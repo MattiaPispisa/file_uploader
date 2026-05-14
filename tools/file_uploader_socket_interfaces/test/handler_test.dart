@@ -1,7 +1,4 @@
-import 'package:en_file_uploader/src/entity/file_chunk.dart';
-import 'package:en_file_uploader/src/entity/file_upload_presentation_response.dart';
-import 'package:en_file_uploader/src/entity/file_upload_status_response.dart';
-import 'package:en_file_uploader/src/entity/progress.dart';
+import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:file_uploader_socket_interfaces/file_uploader_socket_interfaces.dart';
 import 'package:file_uploader_socket_interfaces/src/default.dart';
 import 'package:file_uploader_utils/file_uploader_utils.dart' as utils;
@@ -40,7 +37,7 @@ void main() {
           expect(handler.fileParser, isNotNull);
 
           // constructor
-          expect(handler.file, file);
+          expect(handler.originalFile, file);
           expect(handler.path, '/upload');
         },
       );
@@ -61,7 +58,7 @@ void main() {
           expect(handler.chunkParser, isNotNull);
 
           // constructor
-          expect(handler.file, file);
+          expect(handler.originalFile, file);
           expect(handler.path, '/upload');
           expect(handler.chunkSize, 100);
         },
@@ -92,7 +89,7 @@ void main() {
           expect(handler.chunkParser, isNotNull);
 
           // constructor
-          expect(handler.file, file);
+          expect(handler.originalFile, file);
           expect(handler.presentPath, '/present');
           expect(
             handler.chunkPath(
@@ -120,7 +117,7 @@ class MockSocketFileHandler extends SocketFileHandler<int> {
   });
 
   @override
-  Future<void> upload({ProgressCallback? onProgress}) {
+  Future<void> upload(XFile file, {ProgressCallback? onProgress}) {
     throw UnimplementedError();
   }
 }
@@ -167,7 +164,7 @@ class MockSocketRestorableChunkedFileHandler
   });
 
   @override
-  Future<FileUploadPresentationResponse> present() {
+  Future<FileUploadPresentationResponse> present(XFile file) {
     throw UnimplementedError();
   }
 

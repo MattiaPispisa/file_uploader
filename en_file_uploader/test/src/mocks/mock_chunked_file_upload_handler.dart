@@ -53,7 +53,7 @@ class MockChunkedFileUploadHandlerBuilder {
       return chunkFn?.call() ?? Future.value();
     });
 
-    when(() => handler.file).thenReturn(file);
+    when(() => handler.originalFile).thenReturn(file);
 
     when(() => handler.chunkSize).thenReturn(chunkSize);
 

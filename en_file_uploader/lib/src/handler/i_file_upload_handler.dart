@@ -10,12 +10,18 @@ import 'package:en_file_uploader/en_file_uploader.dart';
 abstract class IFileUploadHandler {
   /// {@macro i_file_upload_handler}
   const IFileUploadHandler({
-    required this.file,
-  });
+    required XFile file,
+  }) : originalFile = file;
 
+  /// {@macro original_file}
+  @Deprecated('instead use originalFile')
+  XFile get file => originalFile;
+
+  /// {@template original_file}
   /// The file to upload.
   ///
   /// The file may differ from the one that will be sent
   /// if any transformations have been applied.
-  final XFile file;
+  /// {@endtemplate}
+  final XFile originalFile;
 }

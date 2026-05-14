@@ -8,6 +8,7 @@ void main() {
       final file = createFile();
       final fileUploadHandler = ThrowFileUploadHandler(file: file);
       expect(fileUploadHandler.file, file);
+      expect(fileUploadHandler.originalFile, file);
 
       final chunkedFileUploadHandler = ThrowChunkedFileUploadHandler(
         file: file,

@@ -65,7 +65,7 @@ class _ChunkedFileUploadController extends FileUploadController {
     _logger?.info('file uploaded ${fileToUpload.path}');
 
     final result = FileUploadResult(
-      file: _handler.file,
+      file: _handler.originalFile,
       id: _generateUniqueId(),
     );
 
@@ -125,7 +125,7 @@ class _ChunkedFileUploadController extends FileUploadController {
     _logger?.info('file upload retry completed ${fileToUpload.path}');
 
     final result = FileUploadResult(
-      file: _handler.file,
+      file: _handler.originalFile,
       id: _generateUniqueId(),
     );
 

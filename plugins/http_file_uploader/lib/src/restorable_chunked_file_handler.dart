@@ -45,13 +45,15 @@ class HttpRestorableChunkedFileHandler
   final bool streamedRequest;
 
   @override
-  Future<FileUploadPresentationResponse> present() {
+  Future<FileUploadPresentationResponse> present(XFile file) {
     return _client
         .sendUnStream(
           method: presentMethod,
           path: presentPath,
           body: presentBody,
-          headers: presentHeaders,
+          headers: presentHeadersCallback != null
+              ? presentHeadersCallback!(file)
+              : presentHeaders,
         )
         .then(presentParser);
   }

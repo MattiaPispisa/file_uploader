@@ -33,7 +33,7 @@ class MockFileUploadHandlerBuilder {
       return uploadFn?.call() ?? Future.value();
     });
 
-    when(() => handler.file).thenReturn(file);
+    when(() => handler.originalFile).thenReturn(file);
 
     return handler;
   }

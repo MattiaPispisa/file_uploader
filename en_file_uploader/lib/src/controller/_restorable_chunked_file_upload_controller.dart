@@ -78,7 +78,7 @@ class _RestorableChunkedFileUploadController extends FileUploadController {
     _logger?.info('file uploaded ${fileToUpload.path}');
 
     final result = FileUploadResult(
-      file: _handler.file,
+      file: _handler.originalFile,
       id: _presentationResponse!.id,
     );
 
@@ -161,7 +161,7 @@ class _RestorableChunkedFileUploadController extends FileUploadController {
     _logger?.info('file upload retry completed ${fileToUpload.path}');
 
     final result = FileUploadResult(
-      file: _handler.file,
+      file: _handler.originalFile,
       id: _presentationResponse!.id,
     );
 

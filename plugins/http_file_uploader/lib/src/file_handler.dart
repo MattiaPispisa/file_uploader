@@ -21,7 +21,8 @@ class HttpFileHandler extends SocketFileHandler<http.Response> {
   final http.Client _client;
 
   @override
-  Future<void> upload({
+  Future<void> upload(
+    XFile file, {
     ProgressCallback? onProgress,
   }) async {
     final chunk = FileChunk(file: file, start: 0, end: await file.length());
@@ -31,7 +32,7 @@ class HttpFileHandler extends SocketFileHandler<http.Response> {
           method: method,
           path: path,
           chunk: chunk,
-          headers: headers,
+          headers: headersCallback != null ? headersCallback!(file) : headers,
           fileKey: fileKey,
           onProgress: onProgress,
         )
