@@ -3,8 +3,12 @@ import 'package:http/http.dart' as http;
 import 'package:http_file_uploader/http_file_uploader.dart';
 import 'package:http_file_uploader/src/http_ext.dart';
 
+/// {@template http_chunked_file_handler}
 /// [HttpChunkedFileHandler] handle the file upload in chunks
+/// {@endtemplate}
 class HttpChunkedFileHandler extends SocketChunkedFileHandler<http.Response> {
+  /// {@macro http_chunked_file_handler}
+  /// 
   /// [client] used to upload the file
   ///
   /// [path], [method], [headers], [body] are [http.Client.send] parameters

@@ -3,8 +3,12 @@ import 'package:http/http.dart' as http;
 import 'package:http_file_uploader/http_file_uploader.dart';
 import 'package:http_file_uploader/src/http_ext.dart';
 
+/// {@template http_file_handler}
 /// [HttpFileHandler] handle the file upload using the [http.Client]
+/// {@endtemplate}
 class HttpFileHandler extends SocketFileHandler<http.Response> {
+  /// {@macro http_file_handler}
+  /// 
   /// [client] used to upload the file
   ///
   /// [path], [method], [headers], [body] are [http.Client.send] parameters

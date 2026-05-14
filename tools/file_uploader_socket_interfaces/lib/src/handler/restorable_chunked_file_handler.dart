@@ -2,10 +2,14 @@ import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:file_uploader_socket_interfaces/file_uploader_socket_interfaces.dart';
 import 'package:file_uploader_socket_interfaces/src/default.dart';
 
+/// {@template socket_restorable_chunked_file_handler}
 /// A common interface for any plugin that wants to handle
 /// file uploads using a socket client.
+/// {@endtemplate}
 abstract class SocketRestorableChunkedFileHandler<ResponseType>
     extends RestorableChunkedFileUploadHandler {
+  /// {@macro socket_restorable_chunked_file_handler}
+  /// 
   /// set [chunkSize] to choose the size of the chunks else
   /// [defaultChunkSize] is used
   const SocketRestorableChunkedFileHandler({
