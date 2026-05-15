@@ -2,30 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 import 'package:flutter_file_uploader/src/_constants.dart';
 
-const _kAnimationDuration = Duration(milliseconds: 250);
+const _kAnimationDuration = Duration(milliseconds: 300);
+const _kFastAnimationDuration = Duration(milliseconds: 150);
 
+/// {@template file_card}
 /// An agnostic file upload widget.
 ///
 /// Use [ProvidedFileCard] to build [FileCard] with business logic
+/// {@endtemplate}
 class FileCard extends StatelessWidget {
-  /// Constructor to build an agnostic file upload widget.
+  /// {@macro file_card}
+  ///
+  /// **Constructor**
   const FileCard({
     required this.content,
     required this.status,
     this.progress = 0.0,
+    this.transformationProgress = 0.0,
     this.retryIcon = Icons.rotate_left_rounded,
-    this.removeIcon = Icons.delete,
+    this.removeIcon = Icons.delete_outline_rounded,
     this.borderRadius,
     this.elevation,
     this.onRemove,
     this.onRetry,
-    this.padding = const EdgeInsets.all(8),
-    this.progressHeight = 10,
+    this.padding = const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+    this.progressHeight = 4,
     this.removeColor,
     this.retryColor,
-    this.uploadIcon = Icons.upload,
+    this.uploadIcon = Icons.upload_rounded,
     this.onUpload,
     this.uploadColor,
+    this.uploadProgressColor,
+    this.transformationProgressColor,
     super.key,
   });
 
@@ -41,7 +49,12 @@ class FileCard extends StatelessWidget {
   /// upload progress (0..1)
   final double progress;
 
-  /// height of the progress indicator
+  /// transformation progress (0..1)
+  ///
+  /// Only shown while [status] is [FileUploadStatus.transforming].
+  final double transformationProgress;
+
+  /// height of the progress indicators
   final double progressHeight;
 
   /// card child
@@ -81,16 +94,32 @@ class FileCard extends StatelessWidget {
   /// upload status
   final FileUploadStatus status;
 
+  /// color of the upload progress bar.
+  ///
+  /// Defaults to [ColorScheme.primary].
+  final Color? uploadProgressColor;
+
+  /// color of the transformation progress bar.
+  ///
+  /// Defaults to a teal/amber accent distinct from the upload color.
+  final Color? transformationProgressColor;
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final radius = borderRadius ?? BorderRadius.circular(kFileUploaderRadius);
+    final effectiveUploadColor =
+        uploadProgressColor ?? theme.colorScheme.primary;
+    final effectiveTransformColor =
+        transformationProgressColor ?? theme.colorScheme.tertiary;
 
     return AnimatedOpacity(
       duration: _kAnimationDuration,
-      opacity: status._disabled ? 0.8 : 1,
+      opacity: status._disabled ? 0.75 : 1,
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: radius),
-        elevation: elevation,
+        elevation: elevation ?? 1,
+        margin: EdgeInsets.zero,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -110,10 +139,14 @@ class FileCard extends StatelessWidget {
                 retryColor: retryColor,
               ),
             ),
-            _FileCardProgress(
+            _FileCardProgressSection(
               radius: radius,
+              status: status,
               progress: progress,
+              transformationProgress: transformationProgress,
               height: progressHeight,
+              uploadColor: effectiveUploadColor,
+              transformColor: effectiveTransformColor,
             ),
           ],
         ),
@@ -158,7 +191,8 @@ class _FileCardContent extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        content,
+        Expanded(child: content),
+        const SizedBox(width: 8),
         AnimatedSwitcher(
           duration: _kAnimationDuration,
           child: _action(context),
@@ -195,7 +229,7 @@ class _FileCardContent extends StatelessWidget {
       );
     }
 
-    // fake button for layout
+    // Status indicator while transforming or uploading (no action available)
     return _FileCardButton(
       key: const ValueKey('fake_button'),
       iconData: uploadIcon,
@@ -204,16 +238,85 @@ class _FileCardContent extends StatelessWidget {
   }
 }
 
+/// Shows the dual progress section: transformation bar (if transforming)
+/// followed by upload bar (if uploading/done).
+class _FileCardProgressSection extends StatelessWidget {
+  const _FileCardProgressSection({
+    required this.radius,
+    required this.status,
+    required this.progress,
+    required this.transformationProgress,
+    required this.height,
+    required this.uploadColor,
+    required this.transformColor,
+  });
+
+  final BorderRadius radius;
+  final FileUploadStatus status;
+  final double progress;
+  final double transformationProgress;
+  final double height;
+  final Color uploadColor;
+  final Color transformColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final isTransforming = status == FileUploadStatus.transforming;
+    final isUploading = status == FileUploadStatus.uploading ||
+        status == FileUploadStatus.done;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Transformation progress bar — only visible while transforming
+        AnimatedSize(
+          duration: _kAnimationDuration,
+          curve: Curves.easeInOut,
+          child: isTransforming
+              ? _FileCardProgress(
+                  key: const ValueKey('_file_card_transformation_progress'),
+                  progress: transformationProgress,
+                  radius: isUploading ? BorderRadius.zero : radius,
+                  bottomRadius: isUploading ? BorderRadius.zero : radius,
+                  height: height,
+                  color: transformColor,
+                  backgroundColor:
+                      transformColor.withValues(alpha: 0.15),
+                )
+              : const SizedBox.shrink(),
+        ),
+        // Upload progress bar — visible while uploading or done
+        _FileCardProgress(
+          key: const ValueKey('_file_card_progress'),
+          progress: isUploading ? progress : 0,
+          radius: isTransforming ? BorderRadius.zero : radius,
+          bottomRadius: radius,
+          height: height,
+          color: uploadColor,
+          backgroundColor: uploadColor.withValues(alpha: 0.12),
+        ),
+      ],
+    );
+  }
+}
+
 class _FileCardProgress extends StatefulWidget {
   const _FileCardProgress({
     required this.progress,
     required this.radius,
+    required this.bottomRadius,
     required this.height,
-  }) : super(key: const ValueKey('_file_card_progress'));
+    required this.color,
+    required this.backgroundColor,
+    super.key,
+  });
 
   final double progress;
   final BorderRadius radius;
+  final BorderRadius bottomRadius;
   final double height;
+  final Color color;
+  final Color backgroundColor;
 
   @override
   State<_FileCardProgress> createState() => _FileCardProgressState();
@@ -236,8 +339,6 @@ class _FileCardProgressState extends State<_FileCardProgress> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return TweenAnimationBuilder(
       duration: _kAnimationDuration,
       tween: Tween(begin: _lastProgress, end: widget.progress),
@@ -245,11 +346,11 @@ class _FileCardProgressState extends State<_FileCardProgress> {
         return LinearProgressIndicator(
           value: tweenProgress,
           minHeight: widget.height,
-          backgroundColor: theme.colorScheme.secondary,
-          color: theme.colorScheme.primary,
+          backgroundColor: widget.backgroundColor,
+          color: widget.color,
           borderRadius: BorderRadius.only(
-            bottomLeft: widget.radius.bottomLeft,
-            bottomRight: widget.radius.bottomRight,
+            bottomLeft: widget.bottomRadius.bottomLeft,
+            bottomRight: widget.bottomRadius.bottomRight,
           ),
         );
       },
@@ -281,27 +382,32 @@ class _FileCardButton extends StatelessWidget {
         iconColor: stateColor,
         shadowColor: stateColor,
         overlayColor: WidgetStatePropertyAll(
-          color.withOpacity(0.1),
+          color.withValues(alpha: 0.1),
         ),
         side: WidgetStatePropertyAll(
-          BorderSide(
-            color: color,
-          ),
+          BorderSide(color: color),
         ),
+        padding: const WidgetStatePropertyAll(
+          EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        ),
+        minimumSize: const WidgetStatePropertyAll(Size(44, 44)),
       ),
       onPressed: onPressed,
-      child: Icon(iconData),
+      child: Icon(iconData, size: 18),
     );
   }
 }
 
 /// The various states of the upload
 enum FileUploadStatus {
-  /// upload in progress
-  uploading,
-
   /// waiting to start the upload
   waiting,
+
+  /// file transformation in progress (before upload)
+  transforming,
+
+  /// upload in progress
+  uploading,
 
   /// upload failed
   failed,
@@ -315,5 +421,7 @@ enum FileUploadStatus {
 
   bool get _showUpload => this == FileUploadStatus.waiting;
 
-  bool get _disabled => this == FileUploadStatus.uploading;
+  bool get _disabled =>
+      this == FileUploadStatus.uploading ||
+      this == FileUploadStatus.transforming;
 }

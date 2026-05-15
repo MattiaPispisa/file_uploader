@@ -42,17 +42,29 @@ class FileUploadControllerModelRobot {
     final ref = MockFileUploaderRef();
     final modelNotifier = MockCallbackFunction();
 
+    // stub hasTransformers / transformersApplied so the model does not
+    // enter transforming state by default
+    when(() => ref.hasTransformers).thenReturn(false);
+    when(() => ref.transformersApplied).thenReturn(false);
+
     // when
     final whenUpload = when(
-      () => ref.upload(onProgress: any(named: 'onProgress')),
+      () => ref.upload(
+        onProgress: any(named: 'onProgress'),
+        onTransformationProgress: any(named: 'onTransformationProgress'),
+      ),
     );
     if (throwErrorOnUpload) {
       whenUpload.thenThrow(Exception());
     } else {
       whenUpload.thenAnswer(onUpload ?? defaultOnUpload);
     }
-    when(() => ref.retry(onProgress: any(named: 'onProgress')))
-        .thenAnswer(onRetry ?? defaultOnRetry);
+    when(
+      () => ref.retry(
+        onProgress: any(named: 'onProgress'),
+        onTransformationProgress: any(named: 'onTransformationProgress'),
+      ),
+    ).thenAnswer(onRetry ?? defaultOnRetry);
     when(() => ref.onRemoved).thenReturn(onRemoved ?? defaultOnRemoved);
 
     final model = FileUploadControllerModel(
@@ -119,6 +131,10 @@ class FileUploadControllerModelRobot {
     expect(_model.progress, progress);
   }
 
+  void expectTransformationProgress(double progress) {
+    expect(_model.transformationProgress, progress);
+  }
+
   void expectUploadCompleted() {
     expectStatus(FileUploadStatus.done);
     expectProgress(1);
@@ -129,6 +145,7 @@ class FileUploadControllerModelRobot {
       verifyNever(
         () => _ref.upload(
           onProgress: any(named: 'onProgress'),
+          onTransformationProgress: any(named: 'onTransformationProgress'),
         ),
       );
       return;
@@ -136,6 +153,7 @@ class FileUploadControllerModelRobot {
     verify(
       () => _ref.upload(
         onProgress: any(named: 'onProgress'),
+        onTransformationProgress: any(named: 'onTransformationProgress'),
       ),
     ).called(number);
   }
@@ -145,6 +163,7 @@ class FileUploadControllerModelRobot {
       verifyNever(
         () => _ref.retry(
           onProgress: any(named: 'onProgress'),
+          onTransformationProgress: any(named: 'onTransformationProgress'),
         ),
       );
       return;
@@ -152,6 +171,7 @@ class FileUploadControllerModelRobot {
     verify(
       () => _ref.retry(
         onProgress: any(named: 'onProgress'),
+        onTransformationProgress: any(named: 'onTransformationProgress'),
       ),
     ).called(number);
   }

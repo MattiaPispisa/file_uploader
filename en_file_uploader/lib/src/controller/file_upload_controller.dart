@@ -57,7 +57,38 @@ part '_restorable_chunked_file_upload_controller.dart';
 ///    return client.sendChunkToBackend(presentation, chunk);
 ///  }
 ///}
-///```
+///
+/// ### File Transformation
+///
+/// You can apply a pipeline of [FileTransformer]s to the file before it is
+/// uploaded. This is useful for tasks such as image compression or
+/// adding metadata.
+///
+/// Transformers are executed in order. The output of one transformer is
+/// passed as the input to the next.
+///
+/// The final transformed file is cached after the first successful
+/// transformation. Subsequent calls to [upload] or [retry] will use the
+/// cached file unless the controller is recreated.
+///
+/// Use [transformersApplied] to check if the transformation phase has
+/// completed.
+///
+/// ```dart
+/// final controller = FileUploadController(
+///   handler,
+///   transformers: [MyTransformer()],
+/// );
+///
+/// await controller.upload(
+///   onTransformationProgress: (progress) {
+///     // Handle transformation progress (0.0 to 1.0)
+///   },
+///   onProgress: (sent, total) {
+///     // Handle upload progress
+///   },
+/// );
+/// ```
 /// {@endtemplate}
 abstract class FileUploadController {
   /// {@macro file_upload_controller}
@@ -109,7 +140,16 @@ abstract class FileUploadController {
 
   final List<Future<void> Function()> _cleanupTasks = [];
   XFile? _transformedFile;
-  bool get _transformersApplied => _transformedFile != null;
+
+  /// Returns `true` if this controller has at least one [FileTransformer].
+  ///
+  /// Can be used by UI code to decide whether to show a transformation
+  /// progress indicator.
+  bool get hasTransformers;
+
+  /// Returns `true` once the transformers have been applied at least once
+  /// (i.e. the transformed file is cached and ready for upload/retry).
+  bool get transformersApplied => _transformedFile != null;
 
   Future<XFile> _applyTransformers({
     required IFileUploadHandler handler,
@@ -120,7 +160,7 @@ abstract class FileUploadController {
     if (transformers.isEmpty) {
       return handler.originalFile;
     }
-    if (_transformersApplied) {
+    if (transformersApplied) {
       return _transformedFile!;
     }
 

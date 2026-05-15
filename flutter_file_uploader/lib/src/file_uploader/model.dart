@@ -2,21 +2,27 @@ import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 
+/// {@template file_uploader_model}
 /// The model that manages file uploads and removals.
+/// {@endtemplate}
 class FileUploaderModel with ChangeNotifier {
-  /// The model that manages file uploads and removals.
+  /// {@macro file_uploader_model}
+  ///
+  /// **Constructor**
   FileUploaderModel({
     FileUploaderLogger? logger,
     OnFileUploaded? onFileUploaded,
     OnFileRemoved? onFileRemoved,
     this.limit,
+    List<FileTransformer> transformers = const [],
   })  : _processingFiles = false,
         _controllers = List<FileUploadController>.unmodifiable([]),
         _logger = logger,
         _filesUploaded = {},
         _errorOnFiles = null,
         _onFileUploaded = onFileUploaded,
-        _onFileRemoved = onFileRemoved;
+        _onFileRemoved = onFileRemoved,
+        _transformers = transformers;
 
   bool _processingFiles;
 
@@ -49,6 +55,9 @@ class FileUploaderModel with ChangeNotifier {
 
   /// maximum number of files that can be uploaded
   final int? limit;
+
+  /// transformers applied to each file before upload
+  final List<FileTransformer> _transformers;
 
   /// files uploaded reach the available limit
   bool get reachedLimit {
@@ -126,7 +135,11 @@ class FileUploaderModel with ChangeNotifier {
 
   /// [FileUploadController] builder
   FileUploadController _controllerBuilder(IFileUploadHandler handler) {
-    return FileUploadController(handler, logger: _logger);
+    return FileUploadController(
+      handler,
+      logger: _logger,
+      transformers: _transformers,
+    );
   }
 
   /// [FileUploaderRef] builder

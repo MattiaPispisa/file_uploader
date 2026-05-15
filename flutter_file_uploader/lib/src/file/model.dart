@@ -3,16 +3,22 @@ import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 
+/// {@template file_upload_controller_model}
 /// The model that manages the upload state of a file. State is composed of:
 ///
 /// - [FileUploadControllerModel.progress], track the file upload progress
+/// - [FileUploadControllerModel.transformationProgress], track the file
+///   transformation progress
 /// - [FileUploadControllerModel.status], file upload status
 ///
 /// Expose [uploadCallback] and [retryCallback] to run the file upload.
 /// [upload] and [retry] run the same functions as
 /// [uploadCallback] and [retryCallback]
+/// {@endtemplate}
 class FileUploadControllerModel with ChangeNotifier {
-  /// The model that manages the upload state of a file
+  /// {@macro file_upload_controller_model}
+  ///
+  /// **Constructor**
   ///
   /// [startOnInit] to run the upload immediately
   FileUploadControllerModel({
@@ -23,6 +29,7 @@ class FileUploadControllerModel with ChangeNotifier {
   })  : _ref = ref,
         _startOnInit = startOnInit,
         _progress = math.min(progress, 1),
+        _transformationProgress = 0,
         _status = status {
     _startup();
   }
@@ -32,8 +39,15 @@ class FileUploadControllerModel with ChangeNotifier {
 
   double _progress;
 
-  /// file upload progress
+  /// file upload progress (0..1)
   double get progress => _progress;
+
+  double _transformationProgress;
+
+  /// file transformation progress (0..1).
+  ///
+  /// Only meaningful while [status] is [FileUploadStatus.transforming].
+  double get transformationProgress => _transformationProgress;
 
   FileUploadStatus _status;
 
@@ -96,18 +110,38 @@ class FileUploadControllerModel with ChangeNotifier {
     }
   }
 
+  /// notify transformation progress changes
+  void _updateTransformationProgress(double value) {
+    _transformationProgress = value.clamp(0.0, 1.0);
+    notifyListeners();
+  }
+
   Future<void> _upload(bool retry) async {
     try {
       if (!_canUpload()) {
         return;
       }
 
-      _status = FileUploadStatus.uploading;
-      notifyListeners();
+      // If the ref has transformers and they haven't been applied yet,
+      // start in the `transforming` state. Otherwise go straight to uploading.
+      if (_ref.hasTransformers && !_ref.transformersApplied) {
+        _status = FileUploadStatus.transforming;
+        _transformationProgress = 0;
+        notifyListeners();
+      } else {
+        _status = FileUploadStatus.uploading;
+        notifyListeners();
+      }
 
       final result = await (retry
-          ? _ref.retry(onProgress: _updateProgress)
-          : _ref.upload(onProgress: _updateProgress));
+          ? _ref.retry(
+              onProgress: _updateProgress,
+              onTransformationProgress: _onTransformationProgress,
+            )
+          : _ref.upload(
+              onProgress: _updateProgress,
+              onTransformationProgress: _onTransformationProgress,
+            ));
       _status = FileUploadStatus.done;
       _result = result;
 
@@ -116,6 +150,22 @@ class FileUploadControllerModel with ChangeNotifier {
       _status = FileUploadStatus.failed;
       notifyListeners();
     }
+  }
+
+  /// Called by the controller during the transformation phase.
+  void _onTransformationProgress(double value) {
+    if (_status != FileUploadStatus.transforming) {
+      // Switch to transforming state if we are not already there
+      _status = FileUploadStatus.transforming;
+    }
+    _transformationProgress = value.clamp(0.0, 1.0);
+
+    // When transformation completes (value == 1.0), switch to uploading
+    if (_transformationProgress >= 1.0) {
+      _status = FileUploadStatus.uploading;
+      _transformationProgress = 0;
+    }
+    notifyListeners();
   }
 
   bool _canUpload() {

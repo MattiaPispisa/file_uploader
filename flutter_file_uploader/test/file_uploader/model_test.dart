@@ -131,34 +131,6 @@ void main() {
       );
 
       test(
-        'should upload file (deprecated)',
-        () async {
-          final model = FileUploaderModel();
-          final handler = MockFileUploadHandler();
-          final file = utils.createFile();
-
-          when(() => handler.upload(any(), onProgress: any(named: 'onProgress')))
-              .thenAnswer((_) async => {});
-          when(() => handler.file).thenReturn(file);
-
-          final callback = model.onPressedAddFiles(
-            onFileAdded: (file) async {
-              return handler;
-            },
-            onPressedAddFiles: () async {
-              return [file];
-            },
-          );
-          await callback?.call();
-
-          final first = model.refs.first;
-          final fileResult = await first.controller.upload();
-          first.onUpload(fileResult);
-          expect(first.uploaded, true);
-        },
-      );
-
-      test(
         'should retry file',
         () async {
           final model = FileUploaderModel();
@@ -181,34 +153,6 @@ void main() {
 
           final first = model.refs.first;
           await first.retry();
-          expect(first.uploaded, true);
-        },
-      );
-
-      test(
-        'should retry file (deprecated)',
-        () async {
-          final model = FileUploaderModel();
-          final handler = MockFileUploadHandler();
-          final file = utils.createFile();
-
-          when(() => handler.upload(any(), onProgress: any(named: 'onProgress')))
-              .thenAnswer((_) async => {});
-          when(() => handler.file).thenReturn(file);
-
-          final callback = model.onPressedAddFiles(
-            onFileAdded: (file) async {
-              return handler;
-            },
-            onPressedAddFiles: () async {
-              return [file];
-            },
-          );
-          await callback?.call();
-
-          final first = model.refs.first;
-          final fileResult = await first.controller.retry();
-          first.onUpload(fileResult);
           expect(first.uploaded, true);
         },
       );
@@ -241,6 +185,37 @@ void main() {
           expect(model.refs, isEmpty);
         },
       );
+
+      test(
+        'should pass transformers to controller',
+        () async {
+          final model = FileUploaderModel(
+            transformers: [_NoOpTransformer()],
+          );
+          final handler = MockFileUploadHandler();
+          final file = utils.createFile();
+
+          when(() => handler.upload(any(), onProgress: any(named: 'onProgress')))
+              .thenAnswer((_) async => {});
+          when(() => handler.file).thenReturn(file);
+
+          final callback = model.onPressedAddFiles(
+            onFileAdded: (_) async => handler,
+            onPressedAddFiles: () async => [file],
+          );
+          await callback?.call();
+
+          // The ref should report hasTransformers = true
+          expect(model.refs.first.hasTransformers, true);
+        },
+      );
     },
   );
+}
+
+class _NoOpTransformer extends FileTransformer {
+  @override
+  Future<XFile> transform(XFile file, {TransformationProgressCallback? onProgress}) async {
+    return file;
+  }
 }

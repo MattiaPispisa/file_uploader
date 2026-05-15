@@ -16,6 +16,9 @@ class _RestorableChunkedFileUploadController extends FileUploadController {
   FileUploadPresentationResponse? _presentationResponse;
 
   @override
+  bool get hasTransformers => _transformers.isNotEmpty;
+
+  @override
   Future<FileUploadResult> upload({
     ProgressCallback? onProgress,
     TransformationProgressCallback? onTransformationProgress,

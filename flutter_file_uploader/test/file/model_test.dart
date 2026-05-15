@@ -1,14 +1,12 @@
+import 'dart:async';
+
+import 'package:en_file_uploader/en_file_uploader.dart';
+import 'package:file_uploader_utils/file_uploader_utils.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
 import 'file_upload_controller_model_robot.dart';
-
-class MockFileUploaderRef extends Mock implements FileUploaderRef {}
-
-class MockCallbackFunction extends Mock {
-  void call();
-}
 
 void main() {
   group(
@@ -26,6 +24,7 @@ void main() {
           robot = FileUploadControllerModelRobot()
             ..expectStatus(FileUploadStatus.waiting)
             ..expectProgress(0)
+            ..expectTransformationProgress(0)
             ..expectUploadCalled(0)
             ..expectRetryCalled(0);
         },
@@ -130,6 +129,59 @@ void main() {
             ..expectCanRemove()
             ..model.removeCallback()?.call()
             ..expectRemoveCalled();
+        },
+      );
+
+      test(
+        'should transition through transforming → uploading → done',
+        () async {
+          final transformationDone = Completer<void>();
+
+          final ref = MockFileUploaderRef();
+          when(() => ref.hasTransformers).thenReturn(true);
+          when(() => ref.transformersApplied).thenReturn(false);
+          when(() => ref.onRemoved).thenReturn(() {});
+
+          final uploadResult = FileUploadResult(
+            id: 'id',
+            file: createFile(),
+          );
+
+          when(
+            () => ref.upload(
+              onProgress: any(named: 'onProgress'),
+              onTransformationProgress: any(named: 'onTransformationProgress'),
+            ),
+          ).thenAnswer((inv) async {
+            final onTp =
+                inv.namedArguments[const Symbol('onTransformationProgress')]
+                    as void Function(double)?;
+            onTp?.call(0.5);
+            onTp?.call(1.0);
+            transformationDone.complete();
+            final onProg = inv.namedArguments[const Symbol('onProgress')]
+                as void Function(int, int)?;
+            onProg?.call(100, 100);
+            return uploadResult;
+          });
+
+          final statuses = <FileUploadStatus>[];
+          late FileUploadControllerModel model;
+          // ignore: prefer_final_locals
+          model = FileUploadControllerModel(ref: ref, startOnInit: false)
+            ..addListener(() => statuses.add(model.status));
+
+          model.upload();
+          expect(model.status, FileUploadStatus.transforming);
+
+          await transformationDone.future;
+          await Future<void>.delayed(const Duration(milliseconds: 1));
+
+          expect(statuses, contains(FileUploadStatus.transforming));
+          expect(statuses, contains(FileUploadStatus.uploading));
+          expect(statuses.last, FileUploadStatus.done);
+
+          model.dispose();
         },
       );
     },

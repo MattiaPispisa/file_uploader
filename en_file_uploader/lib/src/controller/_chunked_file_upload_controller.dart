@@ -15,6 +15,9 @@ class _ChunkedFileUploadController extends FileUploadController {
   final List<FileTransformer> _transformers;
 
   @override
+  bool get hasTransformers => _transformers.isNotEmpty;
+
+  @override
   Future<FileUploadResult> upload({
     ProgressCallback? onProgress,
     TransformationProgressCallback? onTransformationProgress,

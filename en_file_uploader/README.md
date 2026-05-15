@@ -97,6 +97,32 @@ class PrinterLogger implements FileUploaderLogger {
 
 File are handled with the `XFile` class from the [cross_file](https://pub.dev/packages/cross_file) package. This abstraction allow the library to be used across multiple platforms.
 
+### File Transformers
+
+You can apply a pipeline of `FileTransformer`s to a file before it is uploaded. This is useful for tasks like image compression, video transcoding, or adding metadata.
+
+```dart
+class MyTransformer extends FileTransformer {
+  @override
+  Future<XFile> transform(XFile file, {TransformationProgressCallback? onProgress}) async {
+    // Perform transformation
+    // Use onProgress?.call(value) to report progress (0.0 to 1.0)
+    return transformedFile;
+  }
+}
+```
+
+When creating a `FileUploadController`, you can provide a list of transformers:
+
+```dart
+final controller = FileUploadController(
+  handler,
+  transformers: [MyTransformer()],
+);
+```
+
+Transformers are executed in order. The output of one transformer is passed as the input to the next. The final transformed file is then cached and used for the upload (and any subsequent retries).
+
 ## How to use
 
 Create a `FileUploadController` by passing a concrete implementation of `FileUploadHandler`, `ChunkedFileUploadHandler`, or `RestorableChunkedFileUploadHandler` as the handler. 

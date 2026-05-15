@@ -27,8 +27,14 @@ typedef OnFileUploaded = void Function(FileUploadResult file);
 /// on file removed, more on [FileUploader]
 typedef OnFileRemoved = void Function(FileUploadResult file);
 
+/// {@template file_uploader}
 /// A button that handles file uploads.
+/// {@endtemplate}
 class FileUploader extends StatelessWidget {
+  /// {@macro file_uploader}
+  ///
+  /// **Constructor**
+  ///
   /// Upon tapping, the [onPressedAddFiles] function is triggered,
   /// and then [onFileAdded] is called for each file.
   ///
@@ -51,6 +57,9 @@ class FileUploader extends StatelessWidget {
   /// set either [onPressedAddFiles] or [onFileAdded] to disable the `onTap`
   ///
   /// use [color] to customize [border] color and tap effects.
+  ///
+  /// use [transformers] to apply a pipeline of [FileTransformer]s to every
+  /// file before it is uploaded.
   const FileUploader({
     required this.builder,
     super.key,
@@ -70,6 +79,7 @@ class FileUploader extends StatelessWidget {
     this.loadingBuilder,
     this.hideOnLimit,
     this.color,
+    this.transformers = const [],
   });
 
   /// height of the button
@@ -144,6 +154,11 @@ class FileUploader extends StatelessWidget {
   /// default is [ColorScheme.secondary].
   final Color? color;
 
+  /// transformers applied to every file before upload.
+  ///
+  /// Each [FileTransformer] is applied in order before the upload starts.
+  final List<FileTransformer> transformers;
+
   @override
   Widget build(BuildContext context) {
     return _Provider(
@@ -152,6 +167,7 @@ class FileUploader extends StatelessWidget {
       onFileUploaded: onFileUploaded,
       logger: logger,
       limit: limit,
+      transformers: transformers,
       child: Column(
         children: [
           _builder(context),
@@ -300,6 +316,7 @@ class _Provider extends StatelessWidget {
     required this.onFileRemoved,
     required this.onFileUploaded,
     this.limit,
+    this.transformers = const [],
     super.key,
   });
 
@@ -308,6 +325,7 @@ class _Provider extends StatelessWidget {
   final OnFileUploaded? onFileUploaded;
   final OnFileRemoved? onFileRemoved;
   final int? limit;
+  final List<FileTransformer> transformers;
 
   @override
   Widget build(BuildContext context) {
@@ -317,6 +335,7 @@ class _Provider extends StatelessWidget {
         onFileRemoved: onFileRemoved,
         onFileUploaded: onFileUploaded,
         limit: limit,
+        transformers: transformers,
       ),
       child: child,
     );
