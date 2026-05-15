@@ -9,7 +9,7 @@ environment:
   sdk: ">=2.18.0 <4.0.0"
 
 dependencies:
-  en_file_uploader: "^2.0.0"
+  en_file_uploader: "^3.0.0"
 
 dev_dependencies:
   file_uploader_utils:

@@ -14,7 +14,7 @@ dependencies:
   intl: ^0.20.0
   flutter_file_uploader:
     path: ../
-  en_file_uploader: ^2.0.0
+  en_file_uploader: ^3.0.0
   http:
   file_uploader_utils:
     path: ../../tools/file_uploader_utils

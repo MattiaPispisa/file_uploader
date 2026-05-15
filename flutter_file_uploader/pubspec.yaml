@@ -10,7 +10,7 @@ environment:
   flutter: ">=3.10.0"
 
 dependencies:
-  en_file_uploader: ^2.0.0
+  en_file_uploader: ^3.0.0
   flutter:
     sdk: flutter
   mobkit_dashed_border: ^0.0.6
