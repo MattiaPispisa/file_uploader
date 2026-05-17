@@ -20,7 +20,7 @@ import 'package:en_file_uploader/en_file_uploader.dart';
 /// {@endtemplate}
 abstract class FileUploadHandler extends IFileUploadHandler {
   /// {@macro file_upload_handler}
-  /// 
+  ///
   /// **Constructor**
   ///
   /// [file] is the file to upload

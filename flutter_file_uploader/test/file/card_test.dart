@@ -78,7 +78,8 @@ void main() {
         robot.expectTransformingProgress(0.5);
       });
 
-      testWidgets('should update transforming progress indicator', (tester) async {
+      testWidgets('should update transforming progress indicator',
+          (tester) async {
         final robot = FileCardRobot(tester: tester);
         await robot.pumpFileCard(
           status: FileUploadStatus.transforming,
@@ -86,10 +87,10 @@ void main() {
         );
         await robot.pumpFileCard(
           status: FileUploadStatus.transforming,
-          transformationProgress: 1.0,
+          transformationProgress: 1,
         );
         await robot.settle();
-        robot.expectTransformingProgress(1.0);
+        robot.expectTransformingProgress(1);
       });
 
       testWidgets('should set upload progress indicator', (tester) async {
@@ -124,7 +125,8 @@ void main() {
 
           await robot.pumpFileCard(status: FileUploadStatus.uploading);
 
-          // Before timer is completed, it should still show transforming indicator
+          // Before timer is completed,
+          // it should still show transforming indicator
           robot.expectTransformingIndicator();
 
           // Wait for the animation delay to finish
@@ -135,7 +137,8 @@ void main() {
       );
 
       testWidgets(
-        'should cancel timer if unmounted during transforming -> uploading transition',
+        'should cancel timer if unmounted during '
+        'transforming -> uploading transition',
         (tester) async {
           final robot = FileCardRobot(tester: tester);
           await robot.pumpFileCard(status: FileUploadStatus.transforming);

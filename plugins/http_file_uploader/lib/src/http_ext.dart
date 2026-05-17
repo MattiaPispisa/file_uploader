@@ -65,7 +65,7 @@ extension HttpExtension on http.Client {
         completer.completeError(error, stackTrace);
       },
       onDone: () {
-        request.sink.close();
+        unawaited(request.sink.close());
         completer.complete();
       },
       cancelOnError: true,
@@ -102,9 +102,7 @@ extension HttpExtension on http.Client {
     final allBytes = <int>[];
     final chunkLength = chunk.end - chunk.start;
 
-    await for (final chunk in fileStream) {
-      allBytes.addAll(chunk);
-    }
+    await fileStream.forEach(allBytes.addAll);
 
     request.bodyBytes = allBytes;
 

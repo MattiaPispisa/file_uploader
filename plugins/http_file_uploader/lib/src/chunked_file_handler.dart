@@ -8,7 +8,7 @@ import 'package:http_file_uploader/src/http_ext.dart';
 /// {@endtemplate}
 class HttpChunkedFileHandler extends SocketChunkedFileHandler<http.Response> {
   /// {@macro http_chunked_file_handler}
-  /// 
+  ///
   /// [client] used to upload the file
   ///
   /// [path], [method], [headers], [body] are [http.Client.send] parameters

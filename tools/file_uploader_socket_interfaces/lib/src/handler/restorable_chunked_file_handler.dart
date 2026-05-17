@@ -9,7 +9,7 @@ import 'package:file_uploader_socket_interfaces/src/default.dart';
 abstract class SocketRestorableChunkedFileHandler<ResponseType>
     extends RestorableChunkedFileUploadHandler {
   /// {@macro socket_restorable_chunked_file_handler}
-  /// 
+  ///
   /// set [chunkSize] to choose the size of the chunks else
   /// [defaultChunkSize] is used
   const SocketRestorableChunkedFileHandler({

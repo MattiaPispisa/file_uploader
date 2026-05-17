@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
@@ -62,12 +64,12 @@ class FileUploadControllerModel with ChangeNotifier {
 
   /// upload the file
   void upload() {
-    _upload(false);
+    unawaited(_upload(false));
   }
 
   /// retry the file upload
   void retry() {
-    _upload(true);
+    unawaited(_upload(true));
   }
 
   /// return [upload] if is available else null

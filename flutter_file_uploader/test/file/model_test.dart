@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:file_uploader_utils/file_uploader_utils.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
 import 'file_upload_controller_model_robot.dart';
@@ -144,8 +143,6 @@ void main() {
 
           robot = FileUploadControllerModelRobot(
             hasTransformers: true,
-            transformersApplied: false,
-            startOnInit: false,
             onUpload: (inv) async {
               final onTp =
                   inv.namedArguments[const Symbol('onTransformationProgress')]

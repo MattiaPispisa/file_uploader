@@ -6,8 +6,6 @@ import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockFileUploadController extends Mock implements FileUploadController {}
-
 class MockFileUploadHandler extends Mock implements FileUploadHandler {}
 
 class MockFile extends Mock implements XFile {}

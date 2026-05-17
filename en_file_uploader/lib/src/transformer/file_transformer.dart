@@ -23,7 +23,7 @@ abstract class FileTransformer {
   /// Clean up the transformed [file] when it's no longer needed.
   ///
   /// This is called automatically by the upload controller after a successful
-  /// upload, 
+  /// upload,
   /// or when a temporary file is replaced by subsequent transformations.
   Future<void> cleanup(XFile file) async {}
 }

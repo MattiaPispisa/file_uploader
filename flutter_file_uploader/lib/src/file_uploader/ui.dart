@@ -263,7 +263,7 @@ class _Button extends StatelessWidget {
         final border = this.border ??
             DashedBorder.all(
               dashLength: 10,
-              color: model.reachedLimit ? color.withOpacity(0.3) : color,
+              color: model.reachedLimit ? color.withValues(alpha: 0.3) : color,
             );
         final hide = model.reachedLimit && (hideOnLimit ?? false);
 
@@ -275,10 +275,10 @@ class _Button extends StatelessWidget {
                   key: const ValueKey('file_uploader_button_inkwell'),
                   onTap: onTap,
                   radius: kFileUploaderRadius,
-                  hoverColor: color.withOpacity(0.1),
-                  focusColor: color.withOpacity(0.1),
-                  splashColor: color.withOpacity(0.1),
-                  highlightColor: color.withOpacity(0.2),
+                  hoverColor: color.withValues(alpha: 0.1),
+                  focusColor: color.withValues(alpha: 0.1),
+                  splashColor: color.withValues(alpha: 0.1),
+                  highlightColor: color.withValues(alpha: 0.2),
                   child: Container(
                     width: width,
                     height: height,

@@ -12,7 +12,7 @@ import 'package:http_file_uploader/src/http_ext.dart';
 class HttpRestorableChunkedFileHandler
     extends SocketRestorableChunkedFileHandler<http.Response> {
   /// {@macro http_restorable_chunked_file_handler}
-  /// 
+  ///
   /// [client] used to upload the file
   ///
   /// set [chunkSize] to choose the size of the chunks else

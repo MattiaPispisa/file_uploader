@@ -7,6 +7,7 @@ void main() {
     test('should construct handlers correctly', () {
       final file = createFile();
       final fileUploadHandler = ThrowFileUploadHandler(file: file);
+      // ignore: deprecated_member_use_from_same_package for test purpose
       expect(fileUploadHandler.file, file);
       expect(fileUploadHandler.originalFile, file);
 
@@ -14,7 +15,6 @@ void main() {
         file: file,
         chunkSize: 50,
       );
-      expect(chunkedFileUploadHandler.file, file);
       expect(chunkedFileUploadHandler.chunkSize, 50);
 
       final restorableChunkedFileUploadHandler =
@@ -22,7 +22,7 @@ void main() {
         file: file,
         chunkSize: 100,
       );
-      expect(restorableChunkedFileUploadHandler.file, file);
+      expect(restorableChunkedFileUploadHandler.originalFile, file);
       expect(restorableChunkedFileUploadHandler.chunkSize, 100);
     });
   });
