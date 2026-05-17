@@ -5,7 +5,6 @@ import 'package:test/test.dart';
 
 import 'mocks/logger.dart';
 import 'mocks/mock_chunked_file_upload_handler.dart';
-import 'mocks/mock_file_transformer.dart';
 import 'mocks/mock_file_upload_handler.dart';
 import 'mocks/mock_restorable_chunked_file_upload_handler.dart';
 

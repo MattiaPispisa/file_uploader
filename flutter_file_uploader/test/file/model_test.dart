@@ -157,7 +157,7 @@ void main() {
                 inv.namedArguments[const Symbol('onTransformationProgress')]
                     as void Function(double)?;
             onTp?.call(0.5);
-            onTp?.call(1.0);
+            onTp?.call(1);
             transformationDone.complete();
             final onProg = inv.namedArguments[const Symbol('onProgress')]
                 as void Function(int, int)?;
@@ -169,9 +169,8 @@ void main() {
           late FileUploadControllerModel model;
           // ignore: prefer_final_locals
           model = FileUploadControllerModel(ref: ref, startOnInit: false)
-            ..addListener(() => statuses.add(model.status));
-
-          model.upload();
+            ..addListener(() => statuses.add(model.status))
+            ..upload();
           expect(model.status, FileUploadStatus.transforming);
 
           await transformationDone.future;

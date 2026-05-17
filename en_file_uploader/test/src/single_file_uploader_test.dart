@@ -143,7 +143,7 @@ void main() {
           },
         );
 
-        expect(onTransformationProgressCount, 1);
+        expect(onTransformationProgressCount, 2);
         verify(
           () => transformer.transform(
             any<XFile>(),
@@ -222,8 +222,8 @@ void main() {
           },
         );
 
-        expect(onTransformationProgressCount, 3);
-        expect(counts, orderedEquals([0.33, 0.5, 1]));
+        expect(onTransformationProgressCount, 4);
+        expect(counts, orderedEquals([0.0, 0.33, 0.5, 1]));
       });
 
       test('should remain consistent with multiple transformer', () async {
@@ -260,8 +260,8 @@ void main() {
           },
         );
 
-        expect(onTransformationProgressCount, 5);
-        expect(counts, orderedEquals([0.17, 0.25, 0.5, 0.75, 1.0]));
+        expect(onTransformationProgressCount, 6);
+        expect(counts, orderedEquals([0.0, 0.17, 0.25, 0.5, 0.75, 1.0]));
       });
 
       test('should transform and cleanup after retry', () async {
@@ -294,7 +294,7 @@ void main() {
           },
         );
 
-        expect(onTransformationProgressCount, 1);
+        expect(onTransformationProgressCount, 2);
         verify(
           () => transformer.transform(
             any<XFile>(),

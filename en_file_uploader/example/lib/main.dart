@@ -37,7 +37,7 @@ class ExampleRestorableChunkedFileUploadHandler
   });
 
   @override
-  Future<FileUploadPresentationResponse> present() {
+  Future<FileUploadPresentationResponse> present(XFile file) {
     final id = backend.handleIncomingFile();
     return Future.value(FileUploadPresentationResponse(id: id));
   }

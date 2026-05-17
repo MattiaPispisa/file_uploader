@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 import 'package:provider/provider.dart';
 
+/// {@template file_upload_controller_provider}
 /// [ChangeNotifierProvider] with [FileUploadControllerModel]
 ///
 /// ```dart
@@ -16,7 +17,10 @@ import 'package:provider/provider.dart';
 ///           return ...
 ///         ...
 /// ```
+/// {@endtemplate}
 class FileUploadControllerProvider extends StatelessWidget {
+  /// {@macro file_upload_controller_provider}
+  ///
   /// [ChangeNotifierProvider] with [FileUploadControllerModel]
   const FileUploadControllerProvider({
     required this.ref,
@@ -46,8 +50,12 @@ class FileUploadControllerProvider extends StatelessWidget {
   }
 }
 
+/// {@template file_upload_controller_selector}
 /// [Selector] with [FileUploadControllerModel]
+/// {@endtemplate}
 class FileUploadControllerSelector<T> extends StatelessWidget {
+  /// {@macro file_upload_controller_selector}
+  ///
   /// [Selector] with [FileUploadControllerModel]
   const FileUploadControllerSelector({
     required this.selector,
@@ -87,8 +95,12 @@ class FileUploadControllerSelector<T> extends StatelessWidget {
   }
 }
 
+/// {@template file_upload_controller_consumer}
 /// [Consumer] with [FileUploadControllerModel]
+/// {@endtemplate}
 class FileUploadControllerConsumer extends StatelessWidget {
+  /// {@macro file_upload_controller_consumer}
+  ///
   /// [Consumer] with [FileUploadControllerModel]
   const FileUploadControllerConsumer({
     required this.builder,

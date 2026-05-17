@@ -8,6 +8,8 @@ environment:
 
 dependencies:
   en_file_uploader: "^3.0.0"
+  en_logger: ^1.0.0
+  image_pipeline: 0.0.1
 
 dev_dependencies:
   test: ^1.25.2

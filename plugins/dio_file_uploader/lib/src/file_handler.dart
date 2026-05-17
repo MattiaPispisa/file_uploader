@@ -7,7 +7,7 @@ import 'package:en_file_uploader/en_file_uploader.dart';
 class DioFileHandler extends SocketFileHandler<dio.Response<dynamic>> {
   /// [client] used to upload the file
   ///
-  /// [path], [method], [headers], [body] are [http.Client.send] parameters
+  /// [path], [method], [headers], [body] are send parameters
   const DioFileHandler({
     required dio.Dio client,
     required super.file,

@@ -37,7 +37,7 @@ void main() async {
 
   final controller = FileUploadController(
     restorableHandler,
-    logger: utils.PrintLogger(),
+    logger: utils.fileUploaderLogger,
   );
   await controller.upload();
 

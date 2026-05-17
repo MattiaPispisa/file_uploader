@@ -1,4 +1,4 @@
-name: example
+name: http_file_uploader_example
 description: A Very Good Project created by Very Good CLI.
 version: 0.1.0+1
 publish_to: none
@@ -13,5 +13,3 @@ dependencies:
   http: ^1.0.0
   http_file_uploader:
     path: ../
-
-

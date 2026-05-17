@@ -7,6 +7,7 @@ part '_file_upload_controller.dart';
 part '_restorable_chunked_file_upload_controller.dart';
 
 /// {@template file_upload_controller}
+///
 /// ## How to use
 /// Create a [FileUploadController] by passing a concrete implementation of
 /// [FileUploadHandler]; [ChunkedFileUploadHandler] or
@@ -56,7 +57,8 @@ part '_restorable_chunked_file_upload_controller.dart';
 ///  }) async {
 ///    return client.sendChunkToBackend(presentation, chunk);
 ///  }
-///}
+/// }
+/// ```
 ///
 /// ### File Transformation
 ///
@@ -89,6 +91,7 @@ part '_restorable_chunked_file_upload_controller.dart';
 ///   },
 /// );
 /// ```
+///
 /// {@endtemplate}
 abstract class FileUploadController {
   /// {@macro file_upload_controller}
@@ -134,7 +137,13 @@ abstract class FileUploadController {
     throw UnexpectedHandlerException(handler: handler);
   }
 
-  FileUploadController._();
+  FileUploadController._(
+    this._transformers,
+    this._logger,
+  );
+
+  final List<FileTransformer> _transformers;
+  final FileUploaderLogger? _logger;
 
   bool _uploaded = false;
 
@@ -145,7 +154,7 @@ abstract class FileUploadController {
   ///
   /// Can be used by UI code to decide whether to show a transformation
   /// progress indicator.
-  bool get hasTransformers;
+  bool get hasTransformers => _transformers.isNotEmpty;
 
   /// Returns `true` once the transformers have been applied at least once
   /// (i.e. the transformed file is cached and ready for upload/retry).
@@ -153,11 +162,9 @@ abstract class FileUploadController {
 
   Future<XFile> _applyTransformers({
     required IFileUploadHandler handler,
-    required List<FileTransformer> transformers,
-    FileUploaderLogger? logger,
     TransformationProgressCallback? onTransformationProgress,
   }) async {
-    if (transformers.isEmpty) {
+    if (_transformers.isEmpty) {
       return handler.originalFile;
     }
     if (transformersApplied) {
@@ -167,11 +174,13 @@ abstract class FileUploadController {
     var currentFile = handler.originalFile;
     var currentProgress = 0.0;
 
-    logger?.info('applying transformers to ${currentFile.path}');
-    final totalTransformers = transformers.length;
+    _logger?.info('applying transformers to ${currentFile.path}');
+    final totalTransformers = _transformers.length;
+
+    onTransformationProgress?.call(currentProgress);
 
     for (var i = 0; i < totalTransformers; i++) {
-      final transformer = transformers[i];
+      final transformer = _transformers[i];
       try {
         final transformedFile = await transformer.transform(
           currentFile,
@@ -194,7 +203,7 @@ abstract class FileUploadController {
         currentFile = transformedFile;
       } catch (e, s) {
         if (transformer.continueOnFailure) {
-          logger?.warning(
+          _logger?.warning(
             'Transformer ${transformer.runtimeType} failed '
             'on ${currentFile.path}, continuing with previous file\n$e\n$s',
           );
@@ -204,9 +213,9 @@ abstract class FileUploadController {
       }
     }
 
-    if (onTransformationProgress != null && currentProgress < 1) {
+    if (currentProgress < 1) {
       // ensure always end at 1
-      onTransformationProgress(1);
+      onTransformationProgress?.call(1);
     }
 
     _transformedFile = currentFile;
@@ -214,14 +223,12 @@ abstract class FileUploadController {
   }
 
   /// Clean up the transformed files created during the pipeline.
-  Future<void> _cleanupTransformedFiles({
-    FileUploaderLogger? logger,
-  }) async {
+  Future<void> _cleanupTransformedFiles() async {
     for (final cleanupTask in _cleanupTasks) {
       try {
         await cleanupTask();
       } catch (e, s) {
-        logger?.warning('Something went wrong during files cleanup\n$e\n$s');
+        _logger?.warning('Something went wrong during files cleanup\n$e\n$s');
       }
     }
     _cleanupTasks.clear();

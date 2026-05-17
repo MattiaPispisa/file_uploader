@@ -113,14 +113,14 @@ class FileUploaderModel with ChangeNotifier {
   ///
   /// call [_onFileRemoved]
   void _onRemoved(FileUploadController controller) {
-    final file = _filesUploaded[controller];
-    if (file == null) {
-      return;
+    _controllers = List.unmodifiable([..._controllers]..remove(controller));
+
+    final file = _filesUploaded.remove(controller);
+
+    if (file != null) {
+      _onFileRemoved?.call(file);
     }
 
-    _controllers = List.unmodifiable([..._controllers]..remove(controller));
-    _filesUploaded.remove(controller);
-    _onFileRemoved?.call(file);
     notifyListeners();
   }
 

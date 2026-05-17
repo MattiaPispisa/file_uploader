@@ -5,10 +5,16 @@ sdkPath: .fvm/flutter_sdk
 
 packages:
   - "en_file_uploader"
+  - "en_file_uploader/example"
   - "flutter_file_uploader"
   - "flutter_file_uploader/example"
-  - "plugins/*"
-  - "tools/*"
+  - "plugins/dio_file_uploader"
+  - "plugins/dio_file_uploader/example"
+  - "plugins/http_file_uploader"
+  - "plugins/http_file_uploader/example"
+  - "tools/file_uploader_socket_interfaces"
+  - "tools/file_uploader_socket_interfaces/example"
+  - "tools/file_uploader_utils"
 
 scripts:
   test:

@@ -6,16 +6,9 @@ class _FileUploadController extends FileUploadController {
     FileUploaderLogger? logger,
     List<FileTransformer> transformers = const [],
   })  : _handler = handler,
-        _logger = logger,
-        _transformers = transformers,
-        super._();
+        super._(transformers, logger);
 
   final FileUploadHandler _handler;
-  final FileUploaderLogger? _logger;
-  final List<FileTransformer> _transformers;
-
-  @override
-  bool get hasTransformers => _transformers.isNotEmpty;
 
   @override
   Future<FileUploadResult> upload({
@@ -26,8 +19,6 @@ class _FileUploadController extends FileUploadController {
 
     final fileToUpload = await _applyTransformers(
       handler: _handler,
-      transformers: _transformers,
-      logger: _logger,
       onTransformationProgress: onTransformationProgress,
     );
 
@@ -55,7 +46,7 @@ class _FileUploadController extends FileUploadController {
       id: _generateUniqueId(),
     );
 
-    await _cleanupTransformedFiles(logger: _logger);
+    await _cleanupTransformedFiles();
 
     return result;
   }
@@ -69,8 +60,6 @@ class _FileUploadController extends FileUploadController {
 
     final fileToUpload = await _applyTransformers(
       handler: _handler,
-      transformers: _transformers,
-      logger: _logger,
       onTransformationProgress: onTransformationProgress,
     );
 
@@ -98,7 +87,7 @@ class _FileUploadController extends FileUploadController {
       id: _generateUniqueId(),
     );
 
-    await _cleanupTransformedFiles(logger: _logger);
+    await _cleanupTransformedFiles();
 
     return result;
   }

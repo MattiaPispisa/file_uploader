@@ -14,7 +14,7 @@ void main() async {
 
   final controller = FileUploadController(
     restorableHandler,
-    logger: utils.PrintLogger(),
+    logger: utils.fileUploaderLogger,
   );
   await controller.upload();
 
@@ -35,7 +35,7 @@ class ImplSocketFileHandler extends SocketFileHandler<Object> {
   });
 
   @override
-  Future<void> upload({ProgressCallback? onProgress}) {
+  Future<void> upload(XFile file, {ProgressCallback? onProgress}) {
     return Future.delayed(const Duration(seconds: 1));
   }
 }

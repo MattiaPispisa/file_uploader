@@ -79,6 +79,7 @@ class FileUploader extends StatelessWidget {
     this.loadingBuilder,
     this.hideOnLimit,
     this.color,
+    this.loadingColor,
     this.transformers = const [],
   });
 
@@ -124,6 +125,10 @@ class FileUploader extends StatelessWidget {
   final Widget Function(
     BuildContext context,
   )? loadingBuilder;
+
+  /// color of loading progress indicator when [loadingBuilder] is null
+  /// and default loading is used
+  final Color? loadingColor;
 
   /// border radius of [FileUploader]
   final BorderRadiusGeometry? borderRadius;
@@ -184,6 +189,7 @@ class FileUploader extends StatelessWidget {
             errorBuilder: errorBuilder,
             placeholder: placeholder,
             hideOnLimit: hideOnLimit,
+            loadingColor: loadingColor,
             color: color,
           ),
         ],
@@ -223,6 +229,7 @@ class _Button extends StatelessWidget {
     required this.borderRadius,
     required this.hideOnLimit,
     required this.color,
+    required this.loadingColor,
     super.key,
   });
 
@@ -238,6 +245,7 @@ class _Button extends StatelessWidget {
   final Widget? placeholder;
   final bool? hideOnLimit;
   final Color? color;
+  final Color? loadingColor;
 
   @override
   Widget build(BuildContext context) {
@@ -291,6 +299,7 @@ class _Button extends StatelessWidget {
       return _Loading(
         key: const ValueKey('file_uploader_loading'),
         loading: loadingBuilder?.call(context),
+        loadingColor: loadingColor,
       );
     }
 
@@ -377,15 +386,17 @@ class _Error extends StatelessWidget {
 class _Loading extends StatelessWidget {
   const _Loading({
     required this.loading,
+    required this.loadingColor,
     super.key,
   });
 
   final Widget? loading;
+  final Color? loadingColor;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: loading ?? const CircularProgressIndicator(),
+      child: loading ?? CircularProgressIndicator(color: loadingColor),
     );
   }
 }

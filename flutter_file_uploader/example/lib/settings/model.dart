@@ -20,11 +20,21 @@ class ExampleSettings extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool get canDecrementLimit => _limit != null && _limit! > _minLimit;
+  bool get canIncrementLimit => true;
+
   void incrementLimit() {
-    limit = (_limit ?? _minLimit) + 1;
+    if (_limit == null) {
+      limit = _minLimit;
+      return;
+    }
+    limit = _limit! + 1;
   }
 
   void decrementLimit() {
+    if (_limit == null) {
+      return;
+    }
     limit = max((_limit ?? _minLimit) - 1, _minLimit);
   }
 

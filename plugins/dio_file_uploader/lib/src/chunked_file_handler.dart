@@ -8,7 +8,7 @@ class DioChunkedFileHandler
     extends SocketChunkedFileHandler<dio.Response<dynamic>> {
   /// [client] used to upload the file
   ///
-  /// [path], [method], [headers], [body] are [http.Client.send] parameters
+  /// [path], [method], [headers], [body] are send parameters
   ///
   /// set [chunkSize] to choose the size of the chunks else
   /// [defaultChunkSize] is used

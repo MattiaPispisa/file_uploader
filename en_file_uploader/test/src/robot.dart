@@ -91,5 +91,13 @@ class Robot {
     expect(_controller.uploaded, true);
   }
 
+  void expectHasTransformers() {
+    expect(_controller.hasTransformers, isTrue);
+  }
+
+  void expectHasNoTransformers() {
+    expect(_controller.hasTransformers, isFalse);
+  }
+
   void dispose() {}
 }

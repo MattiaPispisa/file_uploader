@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 import 'package:flutter_file_uploader_example/handlers/handlers.dart';
 import 'package:flutter_file_uploader_example/settings/read.dart';
+import 'package:flutter_file_uploader_example/transformers/transformers.dart';
 
-/// [FileUploader] and [ProvidedFileCard]
-/// with [InMemoryRestorableChunkedFileUploadHandler].
-class DefaultRestorableChunkedFilesUpload extends StatelessWidget {
-  const DefaultRestorableChunkedFilesUpload({super.key});
+/// The simplest case that uses [FileUploader] and [ProvidedFileCard].
+class TransformersFilesUpload extends StatelessWidget {
+  const TransformersFilesUpload({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class DefaultRestorableChunkedFilesUpload extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('DEFAULT RESTORABLE CHUNKED'),
+        title: Text('DEFAULT WITH '),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -27,13 +27,18 @@ class DefaultRestorableChunkedFilesUpload extends StatelessWidget {
               children: [
                 Center(
                   child: FileUploader(
+                    logger: utils.fileUploaderLogger,
                     limit: settings.limit,
                     hideOnLimit: settings.hideOnLimit,
                     color: settings.color,
+                    loadingColor: settings.color,
+                    transformers: [NoOpTransformer(), NoOpTransformer()],
                     builder: (context, ref) {
                       return ProvidedFileCard(
                         ref: ref,
                         content: Text("filename"),
+                        uploadProgressColor: settings.color,
+                        transformationProgressColor: settings.color,
                       );
                     },
                     onPressedAddFiles: () async {
@@ -42,7 +47,7 @@ class DefaultRestorableChunkedFilesUpload extends StatelessWidget {
                     },
                     onFileAdded: (file) async {
                       await Future.delayed(const Duration(milliseconds: 500));
-                      return InMemoryRestorableChunkedFileUploadHandler(
+                      return FakeFileHandler(
                         file: file,
                       );
                     },
