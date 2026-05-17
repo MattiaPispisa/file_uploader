@@ -3,7 +3,6 @@
 ### Added
 
 - Added support for file transformations before upload. It is now possible to provide a list of `FileTransformer`s that will process the file sequentially, in order. A new `onTransformationProgress` callback has been added to track the progress of file transformations.
- 
 
 ### Changed
 

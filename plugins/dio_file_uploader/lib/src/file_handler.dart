@@ -17,6 +17,7 @@ class DioFileHandler extends SocketFileHandler<dio.Response<dynamic>> {
     super.body,
     super.fileKey,
     super.fileParser,
+    super.headersCallback,
     this.cancelToken,
   }) : _client = client;
 

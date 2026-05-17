@@ -134,7 +134,8 @@ void main() {
 
               return handler = builder.build();
             },
-          );
+          )
+          ..expectTransformersNotApplied();
 
         await r.expectUpload(
           onTransformationProgress: (c) {
@@ -142,6 +143,8 @@ void main() {
             count = c;
           },
         );
+
+        r.expectTransformersApplied();
 
         expect(onTransformationProgressCount, 2);
         verify(
@@ -180,6 +183,8 @@ void main() {
           );
 
         await r.expectUploadError<void>();
+
+        r.expectTransformersNotApplied();
 
         verify(
           () => transformer.transform(
@@ -293,6 +298,8 @@ void main() {
             count = c;
           },
         );
+
+        r.expectTransformersApplied();
 
         expect(onTransformationProgressCount, 2);
         verify(

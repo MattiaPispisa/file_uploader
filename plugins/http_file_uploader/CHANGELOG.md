@@ -1,5 +1,10 @@
 ## [4.0.0] - 2026-05-14
 
+### Added
+
+- Added `headersCallback` to `HttpFileHandler`
+- Added `presentHeadersCallback` to `HttpRestorableChunkedFileHandler`
+
 ### Changed
 
 - **Breaking**, updated to reflect the breaking changes introduced in `en_file_uploader`. For the breaking changes, see the [changelog of `en_file_uploader`](https://pub.dev/packages/en_file_uploader/changelog).

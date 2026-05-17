@@ -25,6 +25,7 @@ class HttpRestorableChunkedFileHandler
     required super.statusPath,
     required super.presentParser,
     required super.statusParser,
+    super.presentHeadersCallback,
     super.presentMethod,
     super.chunkMethod,
     super.statusMethod,

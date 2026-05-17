@@ -1,0 +1,4 @@
+# melos_managed_dependency_overrides: en_file_uploader
+dependency_overrides:
+  en_file_uploader:
+    path: ../../en_file_uploader

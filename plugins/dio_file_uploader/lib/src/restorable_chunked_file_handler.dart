@@ -33,6 +33,7 @@ class DioRestorableChunkedFileHandler
     super.chunkSize,
     super.fileKey,
     super.chunkParser,
+    super.presentHeadersCallback,
     this.cancelToken,
   }) : _client = client;
 

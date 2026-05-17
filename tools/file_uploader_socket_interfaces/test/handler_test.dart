@@ -29,6 +29,9 @@ void main() {
           final handler = MockSocketFileHandler(
             file: file,
             path: '/upload',
+            headersCallback: (file) {
+              return {'test': 'test'};
+            },
           );
 
           // defaults
@@ -39,6 +42,7 @@ void main() {
           // constructor
           expect(handler.originalFile, file);
           expect(handler.path, '/upload');
+          expect(handler.headersCallback?.call(file), {'test': 'test'});
         },
       );
 
@@ -76,6 +80,9 @@ void main() {
             chunkPath: (_, __) => '/chunk',
             statusPath: (_) => '/status',
             presentParser: (_) => presentationResponse,
+            presentHeadersCallback: (file) {
+              return {'test': 'test'};
+            },
             statusParser: (_) =>
                 const FileUploadStatusResponse(nextChunkOffset: 0),
             file: file,
@@ -99,6 +106,7 @@ void main() {
             '/chunk',
           );
           expect(handler.statusPath(presentationResponse), '/status');
+          expect(handler.presentHeadersCallback?.call(file), {'test': 'test'});
         },
       );
     },
@@ -114,6 +122,7 @@ class MockSocketFileHandler extends SocketFileHandler<int> {
     super.fileParser,
     super.headers,
     super.method,
+    super.headersCallback,
   });
 
   @override
@@ -161,6 +170,7 @@ class MockSocketRestorableChunkedFileHandler
     super.statusBody,
     super.statusHeaders,
     super.statusMethod,
+    super.presentHeadersCallback,
   });
 
   @override

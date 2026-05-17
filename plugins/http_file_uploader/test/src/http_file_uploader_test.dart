@@ -133,6 +133,10 @@ void main() {
             client: client,
             file: file,
             presentPath: 'presentation',
+            presentHeadersCallback: (_) => {
+              'Authorization': 'Bearer <your_token_here>',
+              'Content-Type': 'application/json; charset=utf-8',
+            },
             presentParser: (response) =>
                 const FileUploadPresentationResponse(id: 'custom_id'),
             presentBody: jsonEncode({'file_name': 'name'}),
@@ -141,10 +145,6 @@ void main() {
             statusParser: (response) =>
                 const FileUploadStatusResponse(nextChunkOffset: 1),
             chunkSize: fileSize ~/ 2,
-            presentHeaders: {
-              'Authorization': 'Bearer <your_token_here>',
-              'Content-Type': 'application/json; charset=utf-8',
-            },
             chunkHeaders: (_, __) => {
               'Authorization': 'Bearer <your_token_here>',
               'Content-Type': 'application/json; charset=utf-8',

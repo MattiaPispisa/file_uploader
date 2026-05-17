@@ -20,6 +20,8 @@ class HttpFileHandler extends SocketFileHandler<http.Response> {
     super.headers,
     super.body,
     super.fileKey,
+    super.headersCallback,
+    super.fileParser,
   }) : _client = client;
 
   final http.Client _client;
