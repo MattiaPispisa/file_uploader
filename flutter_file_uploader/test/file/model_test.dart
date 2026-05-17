@@ -137,50 +137,42 @@ void main() {
         () async {
           final transformationDone = Completer<void>();
 
-          final ref = MockFileUploaderRef();
-          when(() => ref.hasTransformers).thenReturn(true);
-          when(() => ref.transformersApplied).thenReturn(false);
-          when(() => ref.onRemoved).thenReturn(() {});
-
           final uploadResult = FileUploadResult(
             id: 'id',
             file: createFile(),
           );
 
-          when(
-            () => ref.upload(
-              onProgress: any(named: 'onProgress'),
-              onTransformationProgress: any(named: 'onTransformationProgress'),
-            ),
-          ).thenAnswer((inv) async {
-            final onTp =
-                inv.namedArguments[const Symbol('onTransformationProgress')]
-                    as void Function(double)?;
-            onTp?.call(0.5);
-            onTp?.call(1);
-            transformationDone.complete();
-            final onProg = inv.namedArguments[const Symbol('onProgress')]
-                as void Function(int, int)?;
-            onProg?.call(100, 100);
-            return uploadResult;
-          });
+          robot = FileUploadControllerModelRobot(
+            hasTransformers: true,
+            transformersApplied: false,
+            startOnInit: false,
+            onUpload: (inv) async {
+              final onTp =
+                  inv.namedArguments[const Symbol('onTransformationProgress')]
+                      as void Function(double)?;
+              await Future<void>.delayed(const Duration(milliseconds: 10));
+              onTp?.call(0.5);
+              onTp?.call(1);
+              transformationDone.complete();
+              final onProg = inv.namedArguments[const Symbol('onProgress')]
+                  as void Function(int, int)?;
+              await Future<void>.delayed(const Duration(milliseconds: 10));
+              onProg?.call(100, 100);
+              return uploadResult;
+            },
+          );
 
           final statuses = <FileUploadStatus>[];
-          late FileUploadControllerModel model;
-          // ignore: prefer_final_locals
-          model = FileUploadControllerModel(ref: ref, startOnInit: false)
-            ..addListener(() => statuses.add(model.status))
-            ..upload();
-          expect(model.status, FileUploadStatus.transforming);
+          robot.model.addListener(() => statuses.add(robot.model.status));
+          robot.model.upload();
+          expect(robot.model.status, FileUploadStatus.transforming);
 
           await transformationDone.future;
-          await Future<void>.delayed(const Duration(milliseconds: 1));
+          await Future<void>.delayed(const Duration(milliseconds: 20));
 
           expect(statuses, contains(FileUploadStatus.transforming));
           expect(statuses, contains(FileUploadStatus.uploading));
           expect(statuses.last, FileUploadStatus.done);
-
-          model.dispose();
         },
       );
     },

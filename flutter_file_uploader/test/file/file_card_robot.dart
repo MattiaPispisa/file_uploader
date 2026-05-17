@@ -16,6 +16,7 @@ class FileCardRobot {
     required FileUploadStatus status,
     Widget content = const SizedBox(),
     double progress = 0,
+    double transformationProgress = 0,
   }) {
     return _tester.pumpWidget(
       Directionality(
@@ -24,6 +25,7 @@ class FileCardRobot {
           key: const ValueKey('_stateful_file_card'),
           status: status,
           progress: progress,
+          transformationProgress: transformationProgress,
           content: content,
         ),
       ),
@@ -52,6 +54,36 @@ class FileCardRobot {
 
   void expectUploadButton() {
     expect(find.byKey(const ValueKey('upload_button')), findsOneWidget);
+  }
+
+  void expectTransformingIndicator() {
+    expect(
+      find.byKey(const ValueKey('transforming_indicator_progress')),
+      findsOneWidget,
+    );
+  }
+
+  void expectNoTransformingIndicator() {
+    expect(
+      find.byKey(const ValueKey('transforming_indicator_progress')),
+      findsNothing,
+    );
+  }
+
+  void expectTransformingProgress(double progress) {
+    final progressWidgetFinder =
+        find.byKey(const ValueKey('transforming_indicator_progress'));
+    final progressIndicatorFinder = find.descendant(
+      of: progressWidgetFinder,
+      matching: find.byType(CircularProgressIndicator),
+    );
+
+    final progressIndicator = _tester.widget(progressIndicatorFinder);
+    expect(
+      progressIndicator,
+      isA<CircularProgressIndicator>()
+          .having((i) => i.value, 'value', progress),
+    );
   }
 
   void expectNoUploadButton() {
@@ -86,6 +118,12 @@ class FileCardRobot {
     await _tester.pumpAndSettle();
     expectProgress(to);
   }
+
+  void expectDebugFillProperties(FileUploadStatus status) {
+    final stringDeep = _tester.element(find.byType(FileCard)).toStringDeep();
+    expect(stringDeep, isNotNull);
+    expect(stringDeep, contains('_displayStatus: ${status.name}'));
+  }
 }
 
 class _StateFulFileCard extends StatefulWidget {
@@ -94,11 +132,13 @@ class _StateFulFileCard extends StatefulWidget {
     this.content = const SizedBox(),
     this.progress = 0,
     super.key,
+    this.transformationProgress = 0,
   });
 
   final Widget content;
   final FileUploadStatus status;
   final double progress;
+  final double transformationProgress;
 
   @override
   State<_StateFulFileCard> createState() => _StateFulFileCardState();
@@ -106,11 +146,24 @@ class _StateFulFileCard extends StatefulWidget {
 
 class _StateFulFileCardState extends State<_StateFulFileCard> {
   late double _lastProgress;
+  late double _lastTransformationProgress;
 
   @override
   void initState() {
     _lastProgress = widget.progress;
+    _lastTransformationProgress = widget.transformationProgress;
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant _StateFulFileCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.progress != oldWidget.progress) {
+      _lastProgress = widget.progress;
+    }
+    if (widget.transformationProgress != oldWidget.transformationProgress) {
+      _lastTransformationProgress = widget.transformationProgress;
+    }
   }
 
   void updateProgress(double progress) {
@@ -124,6 +177,7 @@ class _StateFulFileCardState extends State<_StateFulFileCard> {
       content: widget.content,
       status: widget.status,
       progress: _lastProgress,
+      transformationProgress: _lastTransformationProgress,
     );
   }
 }

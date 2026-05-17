@@ -71,7 +71,7 @@ class FileUploadControllerModel with ChangeNotifier {
   }
 
   /// return [upload] if is available else null
-  void Function()? uploadCallback() {
+  VoidCallback? uploadCallback() {
     if (!_canUpload()) {
       return null;
     }
@@ -79,7 +79,7 @@ class FileUploadControllerModel with ChangeNotifier {
   }
 
   /// return [retry] if is available else null
-  void Function()? retryCallback() {
+  VoidCallback? retryCallback() {
     if (!_canUpload()) {
       return null;
     }
@@ -87,7 +87,7 @@ class FileUploadControllerModel with ChangeNotifier {
   }
 
   /// callback to remove the file uploaded
-  void Function()? removeCallback() {
+  VoidCallback? removeCallback() {
     if (_result == null) {
       return null;
     }

@@ -17,6 +17,8 @@ class FileUploadControllerModelRobot {
     void Function()? onRemoved,
     bool startOnInit = false,
     bool throwErrorOnUpload = false,
+    bool hasTransformers = false,
+    bool transformersApplied = false,
   }) {
     final file = createFile();
     final result = FileUploadResult(id: 'id', file: file);
@@ -41,13 +43,11 @@ class FileUploadControllerModelRobot {
 
     final ref = MockFileUploaderRef();
     final modelNotifier = MockCallbackFunction();
+    final onRemovedMock = MockCallbackFunction();
 
-    // stub hasTransformers / transformersApplied so the model does not
-    // enter transforming state by default
-    when(() => ref.hasTransformers).thenReturn(false);
-    when(() => ref.transformersApplied).thenReturn(false);
+    when(() => ref.hasTransformers).thenReturn(hasTransformers);
+    when(() => ref.transformersApplied).thenReturn(transformersApplied);
 
-    // when
     final whenUpload = when(
       () => ref.upload(
         onProgress: any(named: 'onProgress'),
@@ -65,25 +65,36 @@ class FileUploadControllerModelRobot {
         onTransformationProgress: any(named: 'onTransformationProgress'),
       ),
     ).thenAnswer(onRetry ?? defaultOnRetry);
-    when(() => ref.onRemoved).thenReturn(onRemoved ?? defaultOnRemoved);
+    when(() => ref.onRemoved).thenReturn(onRemovedMock.call);
+
+    when(onRemovedMock.call).thenAnswer(
+      (_) => onRemoved != null ? onRemoved() : defaultOnRemoved(),
+    );
 
     final model = FileUploadControllerModel(
       ref: ref,
       startOnInit: startOnInit,
     )..addListener(modelNotifier.call);
 
-    return FileUploadControllerModelRobot._(ref, model, modelNotifier);
+    return FileUploadControllerModelRobot._(
+      ref,
+      model,
+      modelNotifier,
+      onRemovedMock,
+    );
   }
 
   const FileUploadControllerModelRobot._(
     this._ref,
     this._model,
     this._modelNotifier,
+    this._onRemovedMock,
   );
 
   final FileUploaderRef _ref;
   final FileUploadControllerModel _model;
   final MockCallbackFunction _modelNotifier;
+  final MockCallbackFunction _onRemovedMock;
 
   FileUploadControllerModel get model => _model;
 
@@ -178,12 +189,9 @@ class FileUploadControllerModelRobot {
 
   void expectRemoveCalled([int number = 1]) {
     if (number <= 0) {
-      // ignore: unnecessary_lambdas
-      verifyNever(() => _ref.onRemoved());
-
+      verifyNever(_onRemovedMock.call);
       return;
     }
-    // ignore: unnecessary_lambdas
-    verify(() => _ref.onRemoved()).called(number);
+    verify(_onRemovedMock.call).called(number);
   }
 }

@@ -2,7 +2,7 @@
 
 ### Changed
 
-- **Breaking**, updated to reflect the breaking changes introduced in `en_file_uploader`.
+- **Breaking**, updated to reflect the breaking changes introduced in `en_file_uploader`. For the breaking changes, see the [changelog of `en_file_uploader`](https://pub.dev/packages/en_file_uploader/changelog).
 
 ## [3.1.0] - 2025-07-15
 
@@ -31,7 +31,7 @@
 - Update `README.md`
 
 ## [2.1.3] - 2024-08-19
- 
+
 ### Changed
 
 - Update README.md

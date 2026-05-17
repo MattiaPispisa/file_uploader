@@ -10,10 +10,16 @@ class MockFileUploadController extends Mock implements FileUploadController {}
 
 class MockFileUploadHandler extends Mock implements FileUploadHandler {}
 
+class MockFile extends Mock implements XFile {}
+
 void main() {
   group(
     'FileUploaderModel',
     () {
+      setUpAll(() {
+        registerFallbackValue(MockFile());
+      });
+
       test(
         'should construct correctly',
         () {
@@ -110,9 +116,13 @@ void main() {
           final handler = MockFileUploadHandler();
           final file = utils.createFile();
 
-          when(() => handler.upload(any(), onProgress: any(named: 'onProgress')))
-              .thenAnswer((_) async => {});
-          when(() => handler.file).thenReturn(file);
+          when(
+            () => handler.upload(
+              any<XFile>(),
+              onProgress: any(named: 'onProgress'),
+            ),
+          ).thenAnswer((_) async => {});
+          when(() => handler.originalFile).thenReturn(file);
 
           final callback = model.onPressedAddFiles(
             onFileAdded: (file) async {
@@ -137,9 +147,10 @@ void main() {
           final handler = MockFileUploadHandler();
           final file = utils.createFile();
 
-          when(() => handler.upload(any(), onProgress: any(named: 'onProgress')))
-              .thenAnswer((_) async => {});
-          when(() => handler.file).thenReturn(file);
+          when(
+            () => handler.upload(any(), onProgress: any(named: 'onProgress')),
+          ).thenAnswer((_) async => {});
+          when(() => handler.originalFile).thenReturn(file);
 
           final callback = model.onPressedAddFiles(
             onFileAdded: (file) async {
@@ -164,9 +175,10 @@ void main() {
           final handler = MockFileUploadHandler();
           final file = utils.createFile();
 
-          when(() => handler.upload(any(), onProgress: any(named: 'onProgress')))
-              .thenAnswer((_) async => {});
-          when(() => handler.file).thenReturn(file);
+          when(
+            () => handler.upload(any(), onProgress: any(named: 'onProgress')),
+          ).thenAnswer((_) async => {});
+          when(() => handler.originalFile).thenReturn(file);
 
           final callback = model.onPressedAddFiles(
             onFileAdded: (file) async {
@@ -187,7 +199,7 @@ void main() {
       );
 
       test(
-        'should pass transformers to controller',
+        'should apply transformers',
         () async {
           final model = FileUploaderModel(
             transformers: [_NoOpTransformer()],
@@ -195,9 +207,13 @@ void main() {
           final handler = MockFileUploadHandler();
           final file = utils.createFile();
 
-          when(() => handler.upload(any(), onProgress: any(named: 'onProgress')))
-              .thenAnswer((_) async => {});
-          when(() => handler.file).thenReturn(file);
+          when(
+            () => handler.upload(
+              any<XFile>(),
+              onProgress: any(named: 'onProgress'),
+            ),
+          ).thenAnswer((_) async => {});
+          when(() => handler.originalFile).thenReturn(file);
 
           final callback = model.onPressedAddFiles(
             onFileAdded: (_) async => handler,
@@ -205,8 +221,12 @@ void main() {
           );
           await callback?.call();
 
-          // The ref should report hasTransformers = true
-          expect(model.refs.first.hasTransformers, true);
+          final first = model.refs.first;
+
+          expect(first.hasTransformers, true);
+
+          await first.upload();
+          expect(first.transformersApplied, true);
         },
       );
     },
@@ -215,7 +235,10 @@ void main() {
 
 class _NoOpTransformer extends FileTransformer {
   @override
-  Future<XFile> transform(XFile file, {TransformationProgressCallback? onProgress}) async {
+  Future<XFile> transform(
+    XFile file, {
+    TransformationProgressCallback? onProgress,
+  }) async {
     return file;
   }
 }

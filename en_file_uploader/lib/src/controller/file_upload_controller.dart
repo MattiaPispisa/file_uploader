@@ -156,9 +156,11 @@ abstract class FileUploadController {
   /// progress indicator.
   bool get hasTransformers => _transformers.isNotEmpty;
 
-  /// Returns `true` once the transformers have been applied at least once
+  bool _transformersApplied = false;
+
+  /// Returns `true` once the transformers have been applied
   /// (i.e. the transformed file is cached and ready for upload/retry).
-  bool get transformersApplied => _transformedFile != null;
+  bool get transformersApplied => _transformersApplied;
 
   Future<XFile> _applyTransformers({
     required IFileUploadHandler handler,
@@ -167,7 +169,7 @@ abstract class FileUploadController {
     if (_transformers.isEmpty) {
       return handler.originalFile;
     }
-    if (transformersApplied) {
+    if (_transformersApplied && _transformedFile != null) {
       return _transformedFile!;
     }
 
@@ -219,6 +221,7 @@ abstract class FileUploadController {
     }
 
     _transformedFile = currentFile;
+    _transformersApplied = true;
     return currentFile;
   }
 

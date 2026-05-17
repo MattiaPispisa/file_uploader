@@ -231,28 +231,19 @@ class _FileCardContent extends StatefulWidget {
 
   @override
   State<_FileCardContent> createState() => _FileCardContentState();
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(EnumProperty<FileUploadStatus>('semantic', status))
-      ..add(DoubleProperty('transformationProgress', transformationProgress))
-      ..add(ColorProperty('transformColor', transformColor));
-  }
 }
 
 class _FileCardContentState extends State<_FileCardContent> {
   // We use local state variables to control what is displayed.
   // This allows us to briefly ignore upstream changes to let animations finish.
-  late FileUploadStatus _displaySemantic;
+  late FileUploadStatus _displayStatus;
   late double _displayTransformProgress;
   Timer? _uiDelayTimer;
 
   @override
   void initState() {
     super.initState();
-    _displaySemantic = widget.status;
+    _displayStatus = widget.status;
     _displayTransformProgress = widget.transformationProgress;
   }
 
@@ -260,30 +251,27 @@ class _FileCardContentState extends State<_FileCardContent> {
   void didUpdateWidget(covariant _FileCardContent oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // If the business logic rapidly switches from transforming -> uploading,
-    // we want to hold the UI in the 'transforming' state just long enough
-    // for the circular progress indicator to animate to 100%.
+    // Wait transformation completion before chaning status UI
     if (oldWidget.status == FileUploadStatus.transforming &&
         widget.status == FileUploadStatus.uploading) {
-      // Force visual progress to 100% so the circle completes
       _displayTransformProgress = 1.0;
 
       _uiDelayTimer?.cancel();
       _uiDelayTimer = Timer(_kAnimationDuration, () {
         if (mounted) {
-          setState(() {
-            // After the timer, sync back with the real business logic state
-            _displaySemantic = widget.status;
-            _displayTransformProgress = widget.transformationProgress;
-          });
+          setState(_syncState);
         }
       });
-    } else {
-      // Normal state update
-      _uiDelayTimer?.cancel();
-      _displaySemantic = widget.status;
-      _displayTransformProgress = widget.transformationProgress;
+      return;
     }
+
+    _uiDelayTimer?.cancel();
+    _syncState();
+  }
+
+  void _syncState() {
+    _displayStatus = widget.status;
+    _displayTransformProgress = widget.transformationProgress;
   }
 
   @override
@@ -297,10 +285,8 @@ class _FileCardContentState extends State<_FileCardContent> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // The main content expands to fill available horizontal space.
         Expanded(child: widget.content),
         const SizedBox(width: _kActionSpacing),
-        // BLOCCHIAMO l'area dell'azione a 44x44 fissi.
         AnimatedSwitcher(
           duration: _kAnimationDuration,
           child: _action(context),
@@ -309,11 +295,12 @@ class _FileCardContentState extends State<_FileCardContent> {
     );
   }
 
-  /// Determines which action widget to display based on the local [_displaySemantic] state.
+  /// Determines which action widget to display
+  /// based on the local [_displayStatus] state.
   Widget _action(BuildContext context) {
     final theme = Theme.of(context);
 
-    if (_displaySemantic._showRemove) {
+    if (_displayStatus._showRemove) {
       return _FileCardButton(
         key: const ValueKey('remove_button'),
         iconData: widget.removeIcon,
@@ -321,7 +308,7 @@ class _FileCardContentState extends State<_FileCardContent> {
         color: widget.removeColor ?? theme.colorScheme.error,
       );
     }
-    if (_displaySemantic._showRetry) {
+    if (_displayStatus._showRetry) {
       return _FileCardButton(
         key: const ValueKey('retry_button'),
         iconData: widget.retryIcon,
@@ -329,7 +316,7 @@ class _FileCardContentState extends State<_FileCardContent> {
         color: widget.retryColor ?? theme.colorScheme.error,
       );
     }
-    if (_displaySemantic._showUpload) {
+    if (_displayStatus._showUpload) {
       return _FileCardButton(
         key: const ValueKey('upload_button'),
         iconData: widget.uploadIcon,
@@ -338,16 +325,15 @@ class _FileCardContentState extends State<_FileCardContent> {
       );
     }
 
-    // When a local transformation is running, display an animated circular
-    // indicator instead of an actionable button.
-    if (_displaySemantic == FileUploadStatus.transforming) {
+    if (_displayStatus == FileUploadStatus.transforming) {
       return SizedBox(
-        key: const ValueKey('transforming_indicator'),
+        key: const ValueKey('transforming_indicator_sized_box'),
         width: _kActionSize,
         height: _kActionSize,
         child: Padding(
           padding: const EdgeInsets.all(_kIndicatorPadding),
           child: _FileCardCircularProgress(
+            key: const ValueKey('transforming_indicator_progress'),
             progress: _displayTransformProgress,
             color: widget.transformColor,
           ),
@@ -355,8 +341,6 @@ class _FileCardContentState extends State<_FileCardContent> {
       );
     }
 
-    // Render an empty box of the same size to maintain layout constraints
-    // while uploading (since the linear bar is active below).
     return const SizedBox(
       key: ValueKey('fake_button'),
       width: _kActionSize,
@@ -367,17 +351,17 @@ class _FileCardContentState extends State<_FileCardContent> {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(
-      EnumProperty<FileUploadStatus>('displaySemantic', _displaySemantic),
-    );
-    properties.add(
-      DoubleProperty('displayTransformProgress', _displayTransformProgress),
-    );
-    properties.add(DiagnosticsProperty<Timer?>('uiDelayTimer', _uiDelayTimer));
+    properties
+      ..add(EnumProperty<FileUploadStatus>('_displayStatus', _displayStatus))
+      ..add(
+        DoubleProperty('displayTransformProgress', _displayTransformProgress),
+      )
+      ..add(DiagnosticsProperty<Timer?>('uiDelayTimer', _uiDelayTimer));
   }
 }
 
-/// A stateful widget that handles the smooth animation of the circular progress indicator.
+/// A stateful widget that handles the smooth animation
+/// of the circular progress indicator.
 class _FileCardCircularProgress extends StatefulWidget {
   const _FileCardCircularProgress({
     required this.progress,
@@ -395,8 +379,9 @@ class _FileCardCircularProgress extends StatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DoubleProperty('progress', progress));
-    properties.add(ColorProperty('color', color));
+    properties
+      ..add(DoubleProperty('progress', progress))
+      ..add(ColorProperty('color', color));
   }
 }
 
@@ -450,19 +435,10 @@ class _FileCardProgressSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Invece di SizedBox.shrink() che azzera l'altezza, riserviamo
-    // lo spazio esatto usando SizedBox(height: height).
-    // Questo previene il "salto" di layout della card.
     if (status == FileUploadStatus.transforming ||
         status == FileUploadStatus.waiting) {
       return SizedBox(height: height);
     }
-
-    // Se preferisci che la barra sparisca anche quando l'upload
-    // è terminato (done), decommenta le tre righe seguenti:
-    // if (status == FileUploadStatus.done) {
-    //   return SizedBox(height: height);
-    // }
 
     return _FileCardProgress(
       key: const ValueKey('_file_card_progress'),
@@ -478,14 +454,16 @@ class _FileCardProgressSection extends StatelessWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(EnumProperty<FileUploadStatus>('status', status));
-    properties.add(DoubleProperty('progress', progress));
-    properties.add(DoubleProperty('height', height));
-    properties.add(ColorProperty('uploadColor', uploadColor));
+    properties
+      ..add(EnumProperty<FileUploadStatus>('status', status))
+      ..add(DoubleProperty('progress', progress))
+      ..add(DoubleProperty('height', height))
+      ..add(ColorProperty('uploadColor', uploadColor));
   }
 }
 
-/// A stateful widget that handles the smooth animation of the linear progress bar.
+/// A stateful widget that handles the
+/// smooth animation of the linear progress bar.
 class _FileCardProgress extends StatefulWidget {
   const _FileCardProgress({
     required this.progress,
@@ -510,10 +488,11 @@ class _FileCardProgress extends StatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DoubleProperty('progress', progress));
-    properties.add(DoubleProperty('height', height));
-    properties.add(ColorProperty('color', color));
-    properties.add(ColorProperty('backgroundColor', backgroundColor));
+    properties
+      ..add(DoubleProperty('progress', progress))
+      ..add(DoubleProperty('height', height))
+      ..add(ColorProperty('color', color))
+      ..add(ColorProperty('backgroundColor', backgroundColor));
   }
 }
 
@@ -550,7 +529,6 @@ class _FileCardProgressState extends State<_FileCardProgress> {
           minHeight: widget.height,
           backgroundColor: widget.backgroundColor,
           color: widget.color,
-          // Constrain the progress bar to match the card's bottom borders.
           borderRadius: BorderRadius.only(
             bottomLeft: widget.bottomRadius.bottomLeft,
             bottomRight: widget.bottomRadius.bottomRight,
@@ -590,15 +568,11 @@ class _FileCardButton extends StatelessWidget {
         side: WidgetStatePropertyAll(
           BorderSide(color: color),
         ),
-        // 1. Ripristiniamo un padding uniforme e bilanciato
-        padding: const WidgetStatePropertyAll(EdgeInsets.all(8.0)),
-        // 2. Fissiamo rigorosamente le dimensioni a 44x44 senza stringere il widget da fuori
+        padding: const WidgetStatePropertyAll(EdgeInsets.all(8)),
         fixedSize: const WidgetStatePropertyAll(
           Size(_kActionSize, _kActionSize),
         ),
-        // 3. Disabilitiamo l'ingrandimento invisibile a 48px del Material Design
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        // 4. (Opzionale ma raccomandato) Fissiamo una forma pulita per evitare distorsioni
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
@@ -625,7 +599,8 @@ enum FileUploadStatus {
   /// File is selected, waiting for user or system trigger to begin upload.
   waiting,
 
-  /// File is currently being modified locally (e.g., compressed or resized) before upload.
+  /// File is currently being modified locally
+  /// (e.g., compressed or resized) before upload.
   transforming,
 
   /// File is actively being transferred to the remote server.
