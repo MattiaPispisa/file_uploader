@@ -4,6 +4,7 @@
 
 - Added `headersCallback` to `HttpFileHandler`
 - Added `presentHeadersCallback` to `HttpRestorableChunkedFileHandler`
+- Added `streamedRequest` parameter to `HttpFileHandler` to allow using `Request` instead of `StreamedRequest`
 
 ### Changed
 

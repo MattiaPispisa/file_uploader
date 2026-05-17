@@ -34,6 +34,32 @@ void main() {
         expect(requestCount, 1);
       },
     );
+    test(
+      'should upload file using sendSimpleChunk when streamedRequest is false',
+      () async {
+        var requestCount = 0;
+
+        final robot = HttpRobot((request) {
+          requestCount += 1;
+          return Future.value(Response('', 200));
+        })
+          ..createFile()
+          ..createController(
+            (client, file) => HttpFileHandler(
+              client: client,
+              file: file,
+              path: 'profile/image',
+              streamedRequest: false,
+              headers: {
+                'Authorization': 'Bearer <your_token_here>',
+                'Content-Type': 'application/json; charset=utf-8',
+              },
+            ),
+          );
+        await robot.expectUpload();
+        expect(requestCount, 1);
+      },
+    );
   });
 
   group('chunked file handler', () {

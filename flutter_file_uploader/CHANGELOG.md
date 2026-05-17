@@ -2,7 +2,7 @@
 
 ### Added
 
-- Added support to file transformation on `FileUploader`
+- Added support to file transformation on `FileUploader`. For more info about `FileTransformer` see [en_file_uploader documentation](https://pub.dev/packages/en_file_uploader)
 
 ### Changed
 
