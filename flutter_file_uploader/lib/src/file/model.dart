@@ -1,20 +1,34 @@
-import 'dart:math' as math;
+import 'dart:async';
+
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 
+/// {@template file_upload_controller_model}
 /// The model that manages the upload state of a file. State is composed of:
 ///
 /// - [FileUploadControllerModel.progress], track the file upload progress
+/// - [FileUploadControllerModel.transformationProgress], track the file
+///   transformation progress
 /// - [FileUploadControllerModel.status], file upload status
 ///
 /// Expose [uploadCallback] and [retryCallback] to run the file upload.
 /// [upload] and [retry] run the same functions as
 /// [uploadCallback] and [retryCallback]
+///
+/// This model has everything needed to [FileCard]
+/// to show the file upload state.
+/// {@endtemplate}
 class FileUploadControllerModel with ChangeNotifier {
-  /// The model that manages the upload state of a file
+  /// {@macro file_upload_controller_model}
+  ///
+  /// **Constructor**
   ///
   /// [startOnInit] to run the upload immediately
+  ///
+  /// [progress] to set the initial progress
+  ///
+  /// [status] to set the initial status
   FileUploadControllerModel({
     required FileUploaderRef ref,
     bool startOnInit = true,
@@ -22,7 +36,8 @@ class FileUploadControllerModel with ChangeNotifier {
     FileUploadStatus status = FileUploadStatus.waiting,
   })  : _ref = ref,
         _startOnInit = startOnInit,
-        _progress = math.min(progress, 1),
+        _progress = progress.clamp(0, 1),
+        _transformationProgress = 0,
         _status = status {
     _startup();
   }
@@ -32,8 +47,13 @@ class FileUploadControllerModel with ChangeNotifier {
 
   double _progress;
 
-  /// file upload progress
+  /// file upload progress (0..1)
   double get progress => _progress;
+
+  double _transformationProgress;
+
+  /// file transformation progress (0..1).
+  double get transformationProgress => _transformationProgress;
 
   FileUploadStatus _status;
 
@@ -44,16 +64,16 @@ class FileUploadControllerModel with ChangeNotifier {
 
   /// upload the file
   void upload() {
-    _upload(false);
+    unawaited(_upload(false));
   }
 
   /// retry the file upload
   void retry() {
-    _upload(true);
+    unawaited(_upload(true));
   }
 
   /// return [upload] if is available else null
-  void Function()? uploadCallback() {
+  VoidCallback? uploadCallback() {
     if (!_canUpload()) {
       return null;
     }
@@ -61,7 +81,7 @@ class FileUploadControllerModel with ChangeNotifier {
   }
 
   /// return [retry] if is available else null
-  void Function()? retryCallback() {
+  VoidCallback? retryCallback() {
     if (!_canUpload()) {
       return null;
     }
@@ -69,13 +89,12 @@ class FileUploadControllerModel with ChangeNotifier {
   }
 
   /// callback to remove the file uploaded
-  void Function()? removeCallback() {
+  VoidCallback? removeCallback() {
     if (_result == null) {
       return null;
     }
 
-    // ignore: unnecessary_lambdas
-    return () => _ref.onRemoved();
+    return _ref.onRemoved;
   }
 
   /// upload on init
@@ -86,28 +105,23 @@ class FileUploadControllerModel with ChangeNotifier {
     upload();
   }
 
-  /// notify upload progress changes
-  void _updateProgress(int count, int total) {
-    try {
-      _progress = count / total;
-      notifyListeners();
-    } catch (e) {
-      // prevent division by zero
-    }
-  }
-
   Future<void> _upload(bool retry) async {
     try {
       if (!_canUpload()) {
         return;
       }
 
-      _status = FileUploadStatus.uploading;
-      notifyListeners();
+      _initStatus();
 
       final result = await (retry
-          ? _ref.retry(onProgress: _updateProgress)
-          : _ref.upload(onProgress: _updateProgress));
+          ? _ref.retry(
+              onProgress: _updateProgress,
+              onTransformationProgress: _updateTransformationProgress,
+            )
+          : _ref.upload(
+              onProgress: _updateProgress,
+              onTransformationProgress: _updateTransformationProgress,
+            ));
       _status = FileUploadStatus.done;
       _result = result;
 
@@ -116,6 +130,37 @@ class FileUploadControllerModel with ChangeNotifier {
       _status = FileUploadStatus.failed;
       notifyListeners();
     }
+  }
+
+  void _initStatus() {
+    if (_ref.hasTransformers && !_ref.transformersApplied) {
+      _status = FileUploadStatus.transforming;
+      _transformationProgress = 0;
+    } else {
+      _status = FileUploadStatus.uploading;
+    }
+
+    notifyListeners();
+  }
+
+  /// notify upload progress changes
+  void _updateProgress(int count, int total) {
+    _status = FileUploadStatus.uploading;
+
+    try {
+      _progress = count / total;
+      notifyListeners();
+    } catch (e) {
+      // prevent division by zero
+    }
+  }
+
+  /// Called by the controller during the transformation phase.
+  void _updateTransformationProgress(double value) {
+    _status = FileUploadStatus.transforming;
+    _transformationProgress = value;
+
+    notifyListeners();
   }
 
   bool _canUpload() {

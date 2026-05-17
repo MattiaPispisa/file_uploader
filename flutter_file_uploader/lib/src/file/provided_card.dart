@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 
+/// {@template provided_file_card}
 /// Apply [FileUploadControllerProvider] and [FileUploadControllerConsumer] to
 /// [FileCard].
 ///
@@ -11,22 +12,26 @@ import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 ///
 /// Business logic is controlled out of the box,
 /// remaining parameters are just for style.
+/// {@endtemplate}
 class ProvidedFileCard extends StatelessWidget {
-  /// constructor to create a [FileCard] with
-  /// the business logic already built in
+  /// {@macro provided_file_card}
+  ///
+  /// **Constructor**
   const ProvidedFileCard({
     required this.ref,
     required this.content,
     this.borderRadius,
-    this.padding = const EdgeInsets.all(8),
+    this.padding = const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
     this.elevation,
-    this.progressHeight = 10,
-    this.uploadIcon = Icons.upload,
+    this.progressHeight = 4,
+    this.uploadIcon = Icons.upload_rounded,
     this.uploadColor,
     this.retryColor,
     this.retryIcon = Icons.rotate_left_rounded,
-    this.removeIcon = Icons.delete,
+    this.removeIcon = Icons.delete_outline_rounded,
     this.removeColor,
+    this.uploadProgressColor,
+    this.transformationProgressColor,
     this.startUploadOnInit = true,
     super.key,
   });
@@ -57,7 +62,7 @@ class ProvidedFileCard extends StatelessWidget {
   /// [FileCard] uploadIcon
   final IconData uploadIcon;
 
-  /// [FileCard] uploadColor
+  /// [FileCard] uploadColor (action button)
   final Color? uploadColor;
 
   /// [FileCard] retryIcon
@@ -72,6 +77,16 @@ class ProvidedFileCard extends StatelessWidget {
   /// [FileCard] removeColor
   final Color? removeColor;
 
+  /// Color of the upload progress bar.
+  ///
+  /// Defaults to [ColorScheme.primary].
+  final Color? uploadProgressColor;
+
+  /// Color of the transformation progress bar.
+  ///
+  /// Defaults to [ColorScheme.tertiary].
+  final Color? transformationProgressColor;
+
   @override
   Widget build(BuildContext context) {
     return FileUploadControllerProvider(
@@ -83,6 +98,7 @@ class ProvidedFileCard extends StatelessWidget {
             content: content,
             status: model.status,
             progress: model.progress,
+            transformationProgress: model.transformationProgress,
             borderRadius: borderRadius,
             elevation: elevation,
             onRemove: model.removeCallback(),
@@ -96,6 +112,8 @@ class ProvidedFileCard extends StatelessWidget {
             retryIcon: retryIcon,
             uploadColor: uploadColor,
             uploadIcon: uploadIcon,
+            uploadProgressColor: uploadProgressColor,
+            transformationProgressColor: transformationProgressColor,
           );
         },
       ),

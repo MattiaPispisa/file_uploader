@@ -1,3 +1,14 @@
+## [3.0.0] - 2026-05-14
+
+### Added
+
+- Added support for file transformations before upload. It is now possible to provide a list of `FileTransformer`s that will process the file sequentially, in order. A new `onTransformationProgress` callback has been added to track the progress of file transformations.
+
+### Changed
+
+- `file` in `FileUploadHandler` has been deprecated in favor of `originalFile`, which more clearly indicates that it refers to the unmodified file before transformations.
+- **Breaking**, `FileUploadHandler.upload` and `RestorableChunkedFileUploadHandler.present` now receive the transformed file as input.
+
 ## [2.1.2] - 2025-07-24
 
 ### Changed
@@ -53,7 +64,7 @@
 
 ### Changed
 
-- Breaking, move from `File` to `XFile` for web compatibility
+- **Breaking**, move from `File` to `XFile` for web compatibility
 - Update changelog references
 
 ## [1.1.1] - 2024-06-18

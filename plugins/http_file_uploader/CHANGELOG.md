@@ -1,3 +1,15 @@
+## [4.0.0] - 2026-05-14
+
+### Added
+
+- Added `headersCallback` to `HttpFileHandler`
+- Added `presentHeadersCallback` to `HttpRestorableChunkedFileHandler`
+- Added `streamedRequest` parameter to `HttpFileHandler` to allow using `Request` instead of `StreamedRequest`
+
+### Changed
+
+- **Breaking**, updated to reflect the breaking changes introduced in `en_file_uploader`. For the breaking changes, see the [changelog of `en_file_uploader`](https://pub.dev/packages/en_file_uploader/changelog).
+
 ## [3.1.0] - 2025-07-15
 
 ### Added
@@ -25,7 +37,7 @@
 - Update `README.md`
 
 ## [2.1.3] - 2024-08-19
- 
+
 ### Changed
 
 - Update README.md

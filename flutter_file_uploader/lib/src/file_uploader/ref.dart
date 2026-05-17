@@ -1,6 +1,7 @@
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 
+/// {@template file_uploader_ref}
 /// A reference to [FileUploaderModel] for those who want to manage file uploads
 ///
 /// ## Example
@@ -25,8 +26,11 @@ import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 /// ```
 ///
 /// For an out-of-the-box usage use [ProvidedFileCard]
+/// {@endtemplate}
 class FileUploaderRef {
-  /// constructor
+  /// {@macro file_uploader_ref}
+  ///
+  /// **Constructor**
   FileUploaderRef({
     required FileUploadController controller,
     required void Function(FileUploadResult file) onUpload,
@@ -37,35 +41,39 @@ class FileUploaderRef {
   final FileUploadController _controller;
   final void Function(FileUploadResult file) _onUpload;
 
-  /// controller that handle the file upload and retry
-  @Deprecated(
-    '''
-    do not used, 
-    instead of `controller.upload` and `onUpload` call `upload`
-    instead of `controller.retry` and `onUpload` call `retry`
-    
-    In the future `controller` will be private
-    ''',
-  )
-  FileUploadController get controller => _controller;
-
-  /// callback to fire on file upload
-  @Deprecated('do not use, in the future `onUpload` will be private')
-  void Function(FileUploadResult file) get onUpload => _onUpload;
-
   /// callback to fire on file removed
   final void Function() onRemoved;
 
+  /// Whether the underlying controller has at least one [FileTransformer].
+  ///
+  /// Use this to decide whether to show a transformation progress indicator.
+  bool get hasTransformers => _controller.hasTransformers;
+
+  /// Whether the transformers have already been applied (result is cached).
+  bool get transformersApplied => _controller.transformersApplied;
+
   /// upload file
-  Future<FileUploadResult> upload({ProgressCallback? onProgress}) async {
-    final result = await _controller.upload(onProgress: onProgress);
+  Future<FileUploadResult> upload({
+    ProgressCallback? onProgress,
+    TransformationProgressCallback? onTransformationProgress,
+  }) async {
+    final result = await _controller.upload(
+      onProgress: onProgress,
+      onTransformationProgress: onTransformationProgress,
+    );
     _onUpload(result);
     return result;
   }
 
   /// retry upload file
-  Future<FileUploadResult> retry({ProgressCallback? onProgress}) async {
-    final result = await _controller.retry(onProgress: onProgress);
+  Future<FileUploadResult> retry({
+    ProgressCallback? onProgress,
+    TransformationProgressCallback? onTransformationProgress,
+  }) async {
+    final result = await _controller.retry(
+      onProgress: onProgress,
+      onTransformationProgress: onTransformationProgress,
+    );
     _onUpload(result);
     return result;
   }

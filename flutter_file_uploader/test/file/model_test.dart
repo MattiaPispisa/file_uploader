@@ -1,14 +1,11 @@
+import 'dart:async';
+
+import 'package:en_file_uploader/en_file_uploader.dart';
+import 'package:file_uploader_utils/file_uploader_utils.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
 import 'file_upload_controller_model_robot.dart';
-
-class MockFileUploaderRef extends Mock implements FileUploaderRef {}
-
-class MockCallbackFunction extends Mock {
-  void call();
-}
 
 void main() {
   group(
@@ -26,6 +23,7 @@ void main() {
           robot = FileUploadControllerModelRobot()
             ..expectStatus(FileUploadStatus.waiting)
             ..expectProgress(0)
+            ..expectTransformationProgress(0)
             ..expectUploadCalled(0)
             ..expectRetryCalled(0);
         },
@@ -130,6 +128,48 @@ void main() {
             ..expectCanRemove()
             ..model.removeCallback()?.call()
             ..expectRemoveCalled();
+        },
+      );
+
+      test(
+        'should transition through transforming → uploading → done',
+        () async {
+          final transformationDone = Completer<void>();
+
+          final uploadResult = FileUploadResult(
+            id: 'id',
+            file: createFile(),
+          );
+
+          robot = FileUploadControllerModelRobot(
+            hasTransformers: true,
+            onUpload: (inv) async {
+              final onTp =
+                  inv.namedArguments[const Symbol('onTransformationProgress')]
+                      as void Function(double)?;
+              await Future<void>.delayed(const Duration(milliseconds: 10));
+              onTp?.call(0.5);
+              onTp?.call(1);
+              transformationDone.complete();
+              final onProg = inv.namedArguments[const Symbol('onProgress')]
+                  as void Function(int, int)?;
+              await Future<void>.delayed(const Duration(milliseconds: 10));
+              onProg?.call(100, 100);
+              return uploadResult;
+            },
+          );
+
+          final statuses = <FileUploadStatus>[];
+          robot.model.addListener(() => statuses.add(robot.model.status));
+          robot.model.upload();
+          expect(robot.model.status, FileUploadStatus.transforming);
+
+          await transformationDone.future;
+          await Future<void>.delayed(const Duration(milliseconds: 20));
+
+          expect(statuses, contains(FileUploadStatus.transforming));
+          expect(statuses, contains(FileUploadStatus.uploading));
+          expect(statuses.last, FileUploadStatus.done);
         },
       );
     },

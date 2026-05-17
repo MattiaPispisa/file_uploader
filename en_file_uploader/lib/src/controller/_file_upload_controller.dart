@@ -4,26 +4,32 @@ class _FileUploadController extends FileUploadController {
   _FileUploadController({
     required FileUploadHandler handler,
     FileUploaderLogger? logger,
+    List<FileTransformer> transformers = const [],
   })  : _handler = handler,
-        _logger = logger,
-        super._();
+        super._(transformers, logger);
 
   final FileUploadHandler _handler;
-  final FileUploaderLogger? _logger;
 
   @override
   Future<FileUploadResult> upload({
     ProgressCallback? onProgress,
+    TransformationProgressCallback? onTransformationProgress,
   }) async {
     _ensureNotUploaded();
-    _logger?.info('uploading file ${_handler.file.path}');
-    final size = await _handler.file.length();
+
+    final fileToUpload = await _applyTransformers(
+      handler: _handler,
+      onTransformationProgress: onTransformationProgress,
+    );
+
+    _logger?.info('uploading file ${fileToUpload.path}');
+    final size = await fileToUpload.length();
 
     try {
-      await _handler.upload(onProgress: onProgress);
+      await _handler.upload(fileToUpload, onProgress: onProgress);
     } catch (error, stackTrace) {
       _logger?.error(
-        'error uploading file ${_handler.file.path}',
+        'error uploading file ${fileToUpload.path}',
         error,
         stackTrace,
       );
@@ -33,27 +39,38 @@ class _FileUploadController extends FileUploadController {
     _setUploaded();
     onProgress?.call(size, size);
 
-    _logger?.info('file uploaded ${_handler.file.path}');
+    _logger?.info('file uploaded ${fileToUpload.path}');
 
-    return FileUploadResult(
-      file: _handler.file,
+    final result = FileUploadResult(
+      file: _handler.originalFile,
       id: _generateUniqueId(),
     );
+
+    await _cleanupTransformedFiles();
+
+    return result;
   }
 
   @override
   Future<FileUploadResult> retry({
     ProgressCallback? onProgress,
+    TransformationProgressCallback? onTransformationProgress,
   }) async {
     _ensureNotUploaded();
-    _logger?.info('retry uploading file ${_handler.file.path}');
-    final size = await _handler.file.length();
+
+    final fileToUpload = await _applyTransformers(
+      handler: _handler,
+      onTransformationProgress: onTransformationProgress,
+    );
+
+    _logger?.info('retry uploading file ${fileToUpload.path}');
+    final size = await fileToUpload.length();
 
     try {
-      await _handler.upload();
+      await _handler.upload(fileToUpload);
     } catch (error, stackTrace) {
       _logger?.error(
-        'error retry uploading file ${_handler.file.path}',
+        'error retry uploading file ${fileToUpload.path}',
         error,
         stackTrace,
       );
@@ -63,11 +80,15 @@ class _FileUploadController extends FileUploadController {
     _setUploaded();
     onProgress?.call(size, size);
 
-    _logger?.info('file upload retry completed ${_handler.file.path}');
+    _logger?.info('file upload retry completed ${fileToUpload.path}');
 
-    return FileUploadResult(
-      file: _handler.file,
+    final result = FileUploadResult(
+      file: _handler.originalFile,
       id: _generateUniqueId(),
     );
+
+    await _cleanupTransformedFiles();
+
+    return result;
   }
 }

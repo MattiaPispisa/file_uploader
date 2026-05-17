@@ -3,85 +3,10 @@ import 'package:file_uploader_utils/file_uploader_utils.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
+import 'mocks/logger.dart';
 import 'mocks/mock_chunked_file_upload_handler.dart';
 import 'mocks/mock_file_upload_handler.dart';
 import 'mocks/mock_restorable_chunked_file_upload_handler.dart';
-
-// Mock logger to verify logging calls
-class MockLogger extends Mock implements FileUploaderLogger {}
-
-// Concrete test handlers that guarantee exceptions reach the right catch blocks
-class ThrowingChunkedFileUploadHandler extends ChunkedFileUploadHandler {
-  ThrowingChunkedFileUploadHandler({
-    required super.file,
-    super.chunkSize,
-    this.shouldFailOnUpload = false,
-    this.shouldFailOnRetry = false,
-  });
-
-  final bool shouldFailOnUpload;
-  final bool shouldFailOnRetry;
-  bool _isRetry = false;
-
-  @override
-  Future<void> uploadChunk(
-    FileChunk chunk, {
-    ProgressCallback? onProgress,
-  }) async {
-    if (shouldFailOnUpload && !_isRetry) {
-      throw Exception('Upload chunk failed');
-    }
-    if (shouldFailOnRetry && _isRetry) {
-      throw Exception('Retry chunk failed');
-    }
-  }
-
-  void markAsRetry() => _isRetry = true;
-}
-
-class ThrowingRestorableChunkedFileUploadHandler
-    extends RestorableChunkedFileUploadHandler {
-  ThrowingRestorableChunkedFileUploadHandler({
-    required super.file,
-    super.chunkSize,
-    this.shouldFailOnUpload = false,
-    this.shouldFailOnRetry = false,
-    this.nextChunkOffset = 0,
-  });
-
-  final bool shouldFailOnUpload;
-  final bool shouldFailOnRetry;
-  final int nextChunkOffset;
-  bool _isRetry = false;
-
-  @override
-  Future<FileUploadPresentationResponse> present() async {
-    return const FileUploadPresentationResponse(id: 'test-id');
-  }
-
-  @override
-  Future<FileUploadStatusResponse> status(
-    FileUploadPresentationResponse presentation,
-  ) async {
-    return FileUploadStatusResponse(nextChunkOffset: nextChunkOffset);
-  }
-
-  @override
-  Future<void> uploadChunk(
-    FileUploadPresentationResponse presentation,
-    FileChunk chunk, {
-    ProgressCallback? onProgress,
-  }) async {
-    if (shouldFailOnUpload && !_isRetry) {
-      throw Exception('Upload chunk failed');
-    }
-    if (shouldFailOnRetry && _isRetry) {
-      throw Exception('Retry chunk failed');
-    }
-  }
-
-  void markAsRetry() => _isRetry = true;
-}
 
 void main() {
   group('Error Handling and Logging Tests', () {

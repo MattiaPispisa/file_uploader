@@ -1,3 +1,14 @@
+## [2.0.0] - 2026-05-14
+
+### Added
+
+- `headersCallback` for SocketFileHandler
+- `presentHeadersCallback` for SocketRestorableChunkedFileHandler
+
+### Changed
+
+- **Breaking**, updated to reflect the breaking changes introduced in `en_file_uploader`.
+
 ## [1.3.1] - 2024-08-19
 
 ### Added
@@ -36,7 +47,7 @@
 
 - Added chunk parser
 
-##[1.1.0] - 2024-06-22
+## [1.1.0] - 2024-06-22
 
 ### Added
 

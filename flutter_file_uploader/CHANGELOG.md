@@ -1,3 +1,15 @@
+## [2.0.0] - 2026-05-17
+
+### Added
+
+- Added support to file transformation on `FileUploader`. For more info about `FileTransformer` see [en_file_uploader documentation](https://pub.dev/packages/en_file_uploader)
+
+### Changed
+
+- **Breaking**, updated to reflect the breaking changes introduced in `en_file_uploader`. For the breaking changes, see the [changelog of `en_file_uploader`](https://pub.dev/packages/en_file_uploader/changelog).
+- chore: improved examples to show how to use file upload handlers also with transformation.
+- chore: significantly improved test suite coverage and overall reliability.
+
 ## [1.3.0] - 2024-09-15
 
 ### Added

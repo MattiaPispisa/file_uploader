@@ -1,5 +1,10 @@
 import 'package:en_file_uploader/en_file_uploader.dart';
 
+/// compose request `headers` from [XFile]
+typedef PresentHeadersCallback = Map<String, String> Function(
+  XFile file,
+);
+
 /// compose request upload chunks `headers` from
 /// [FileUploadPresentationResponse] and [FileChunk]
 typedef RestorableChunkHeadersCallback = Map<String, String> Function(

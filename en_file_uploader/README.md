@@ -16,37 +16,39 @@ This library provides the capability to:
 
 - ☑ upload a complete file;
 - ☑ upload a file in chunks;
-- ☑ upload a file in chunks with the ability to pause and resume the upload from where it left off (restorable chunks file upload).
+- ☑ upload a file in chunks with the ability to pause and resume the upload from where it left off (restorable chunks file upload);
+- ☑ apply file transformations (e.g., image compression, format conversion) before uploading via a modular pipeline.
 
-File uploader can be used with various libraries for making HTTP requests, such as http, dio, or others, offering a consistent and straightforward interface for uploading files without needing to change the code based on the underlying library used.
+The `en_file_uploader` package can be used with various libraries for making HTTP requests, such as `http`, `dio`, or others. This provides a consistent and straightforward interface for managing file uploads without needing to change your core logic based on the underlying network client used.
 
 This library also supports the web platform.
 
-## [Plugins](https://github.com/MattiaPispisa/file_uploader/tree/main/plugins)
+## Upload Handlers (Implementations)
 
-- [http_file_uploader](https://pub.dev/packages/http_file_uploader) This plugin allows you to implement file uploads using the http library.
+To use `en_file_uploader`, you need an upload handler that specifies how the files are sent to your server. Depending on your backend implementation, you can choose from three main types:
 
-- [dio_file_uploader](https://pub.dev/packages/dio_file_uploader) This plugin allows you to implement file uploads using the http library.
+- **`FileUploadHandler`**: For uploading the entire file in a single request.
+- **`ChunkedFileUploadHandler`**: For uploading files split into smaller chunks.
+- **`RestorableChunkedFileUploadHandler`**: For chunked uploads with the ability to pause and resume (the client asks the server for the current upload progress offset before starting/resuming).
 
-## [UI](https://pub.dev/packages/flutter_file_uploader)
+### Ready-to-use Plugins
 
-This package uses `en_file_uploader` and provides widgets for displaying and managing file uploads.
+To avoid writing these handlers from scratch, there are official plugins available that support common HTTP libraries. Check if one of these fits your stack first:
 
-## Extensions
+- [**http_file_uploader**](https://pub.dev/packages/http_file_uploader): File uploads using the Dart `http` library.
+- [**dio_file_uploader**](https://pub.dev/packages/dio_file_uploader): File uploads using the `dio` library.
 
-If a plugin is not yet available or the existing plugins do not meet your needs, you can create your own implementation of file upload.
+### Custom Handlers
+
+If the existing plugins do not meet your needs you can build your own custom handler by extending one of the three base classes. See the [How to use](#how-to-use) section below for concrete examples of how to implement them.
+
+## [UI Integration](https://pub.dev/packages/flutter_file_uploader)
+
+If you are using Flutter, this package integrates seamlessly with [flutter_file_uploader](https://pub.dev/packages/flutter_file_uploader), which provides highly customizable widgets for displaying and managing file uploads.
+
+<img width="220" alt="UI Showcase" src="https://raw.githubusercontent.com/MattiaPispisa/file_uploader/main/flutter_file_uploader/assets/show_case/transformers.gif" />
 
 ## File Uploader APIs
-
-### Upload implementations
-
-It is possible to extend:
-
-- `FileUploadHandler` to implement the upload of an entire file;
-- `ChunkedFileUploadHandler` to implement chunked file upload;
-- `RestorableChunkedFileUploadHandler` to implement a restorable chunked upload.
-
-**The plugins already do this, so before creating your own implementation, check if a plugin already meets your needs.**
 
 ### Support restorable chunked file upload
 
@@ -64,7 +66,6 @@ Currently, it is possible to set a default chunk size.
 ```dart
 setDefaultChunkSize(1024)
 ```
-
 
 ### Logger
 
@@ -91,15 +92,43 @@ class PrinterLogger implements FileUploaderLogger {
 }
 ```
 
-**If you're looking for a library to handle logging in your project, you can check out another library I created: [en_logger](https://pub.dev/packages/en_logger).**
+**If you're looking for a package to handle logging in your project, you can check out another package I created: [en_logger](https://pub.dev/packages/en_logger).**
 
 ### File
 
 File are handled with the `XFile` class from the [cross_file](https://pub.dev/packages/cross_file) package. This abstraction allow the library to be used across multiple platforms.
 
+### File Transformers
+
+You can apply a pipeline of `FileTransformer`s to a file before it is uploaded. This is useful for tasks like image compression, video transcoding, or adding metadata.
+
+```dart
+class MyTransformer extends FileTransformer {
+  @override
+  Future<XFile> transform(XFile file, {TransformationProgressCallback? onProgress}) async {
+    // Perform transformation
+    // Use onProgress?.call(value) to report progress (0.0 to 1.0)
+    return transformedFile;
+  }
+}
+```
+
+When creating a `FileUploadController`, you can provide a list of transformers:
+
+```dart
+final controller = FileUploadController(
+  handler,
+  transformers: [MyTransformer()],
+);
+```
+
+Transformers are executed in order. The output of one transformer is passed as the input to the next. The final transformed file is then cached and used for the upload (and any subsequent retries).
+
+**If you're looking for a package to handle image transformations in your project, you can check out another package I created: [image_pipeline](https://pub.dev/packages/image_pipeline).**
+
 ## How to use
 
-Create a `FileUploadController` by passing a concrete implementation of `FileUploadHandler`, `ChunkedFileUploadHandler`, or `RestorableChunkedFileUploadHandler` as the handler. 
+Create a `FileUploadController` by passing a concrete implementation of `FileUploadHandler`, `ChunkedFileUploadHandler`, or `RestorableChunkedFileUploadHandler` as the handler.
 
 ```dart
 class MyFileUploadHandler extends FileUploadHandler {

@@ -1,5 +1,6 @@
 import 'package:en_file_uploader/en_file_uploader.dart';
 
+/// {@template file_upload_handler}
 /// [FileUploadHandler] handle the upload of an entire file
 ///
 /// ## How to use
@@ -16,8 +17,11 @@ import 'package:en_file_uploader/en_file_uploader.dart';
 /// final controller = FileUploadController(MyFileUploadHandler(file: file));
 /// controller.upload();
 /// ```
+/// {@endtemplate}
 abstract class FileUploadHandler extends IFileUploadHandler {
-  /// constructor
+  /// {@macro file_upload_handler}
+  ///
+  /// **Constructor**
   ///
   /// [file] is the file to upload
   const FileUploadHandler({
@@ -36,7 +40,8 @@ abstract class FileUploadHandler extends IFileUploadHandler {
   ///   print('Upload progress: $progress of $total');
   /// });
   /// ```
-  Future<void> upload({
+  Future<void> upload(
+    XFile file, {
     ProgressCallback? onProgress,
   });
 }

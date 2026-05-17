@@ -5,10 +5,14 @@ import 'package:http/http.dart' as http;
 import 'package:http_file_uploader/http_file_uploader.dart';
 import 'package:http_file_uploader/src/http_ext.dart';
 
+/// {@template http_restorable_chunked_file_handler}
 /// [HttpRestorableChunkedFileHandler] handle the file upload in chunk with
 /// the capability to retry the upload from the last chunk sent.
+/// {@endtemplate}
 class HttpRestorableChunkedFileHandler
     extends SocketRestorableChunkedFileHandler<http.Response> {
+  /// {@macro http_restorable_chunked_file_handler}
+  ///
   /// [client] used to upload the file
   ///
   /// set [chunkSize] to choose the size of the chunks else
@@ -21,6 +25,7 @@ class HttpRestorableChunkedFileHandler
     required super.statusPath,
     required super.presentParser,
     required super.statusParser,
+    super.presentHeadersCallback,
     super.presentMethod,
     super.chunkMethod,
     super.statusMethod,
@@ -45,13 +50,15 @@ class HttpRestorableChunkedFileHandler
   final bool streamedRequest;
 
   @override
-  Future<FileUploadPresentationResponse> present() {
+  Future<FileUploadPresentationResponse> present(XFile file) {
     return _client
         .sendUnStream(
           method: presentMethod,
           path: presentPath,
           body: presentBody,
-          headers: presentHeaders,
+          headers: presentHeadersCallback != null
+              ? presentHeadersCallback!(file)
+              : presentHeaders,
         )
         .then(presentParser);
   }

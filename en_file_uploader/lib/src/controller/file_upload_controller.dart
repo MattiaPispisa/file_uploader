@@ -6,6 +6,8 @@ part '_chunked_file_upload_controller.dart';
 part '_file_upload_controller.dart';
 part '_restorable_chunked_file_upload_controller.dart';
 
+/// {@template file_upload_controller}
+///
 /// ## How to use
 /// Create a [FileUploadController] by passing a concrete implementation of
 /// [FileUploadHandler]; [ChunkedFileUploadHandler] or
@@ -55,10 +57,47 @@ part '_restorable_chunked_file_upload_controller.dart';
 ///  }) async {
 ///    return client.sendChunkToBackend(presentation, chunk);
 ///  }
-///}
-///```
-
+/// }
+/// ```
+///
+/// ### File Transformation
+///
+/// You can apply a pipeline of [FileTransformer]s to the file before it is
+/// uploaded. This is useful for tasks such as image compression or
+/// adding metadata.
+///
+/// Transformers are executed in order. The output of one transformer is
+/// passed as the input to the next.
+///
+/// The final transformed file is cached after the first successful
+/// transformation. Subsequent calls to [upload] or [retry] will use the
+/// cached file unless the controller is recreated.
+///
+/// Use [transformersApplied] to check if the transformation phase has
+/// completed.
+///
+/// ```dart
+/// final controller = FileUploadController(
+///   handler,
+///   transformers: [MyTransformer()],
+/// );
+///
+/// await controller.upload(
+///   onTransformationProgress: (progress) {
+///     // Handle transformation progress (0.0 to 1.0)
+///   },
+///   onProgress: (sent, total) {
+///     // Handle upload progress
+///   },
+/// );
+/// ```
+///
+/// {@endtemplate}
 abstract class FileUploadController {
+  /// {@macro file_upload_controller}
+  ///
+  /// **Constructor**
+  ///
   /// [handler] is the handler that will be used to upload the file.
   ///
   /// [handler] must be a concrete implementation of [FileUploadHandler],
@@ -71,26 +110,133 @@ abstract class FileUploadController {
   factory FileUploadController(
     IFileUploadHandler handler, {
     FileUploaderLogger? logger,
+    List<FileTransformer> transformers = const [],
   }) {
     if (handler is FileUploadHandler) {
-      return _FileUploadController(handler: handler, logger: logger);
+      return _FileUploadController(
+        handler: handler,
+        logger: logger,
+        transformers: transformers,
+      );
     }
     if (handler is ChunkedFileUploadHandler) {
-      return _ChunkedFileUploadController(handler: handler, logger: logger);
+      return _ChunkedFileUploadController(
+        handler: handler,
+        logger: logger,
+        transformers: transformers,
+      );
     }
     if (handler is RestorableChunkedFileUploadHandler) {
       return _RestorableChunkedFileUploadController(
         handler: handler,
         logger: logger,
+        transformers: transformers,
       );
     }
 
     throw UnexpectedHandlerException(handler: handler);
   }
 
-  FileUploadController._();
+  FileUploadController._(
+    this._transformers,
+    this._logger,
+  );
+
+  final List<FileTransformer> _transformers;
+  final FileUploaderLogger? _logger;
 
   bool _uploaded = false;
+
+  final List<Future<void> Function()> _cleanupTasks = [];
+  XFile? _transformedFile;
+
+  /// Returns `true` if this controller has at least one [FileTransformer].
+  ///
+  /// Can be used by UI code to decide whether to show a transformation
+  /// progress indicator.
+  bool get hasTransformers => _transformers.isNotEmpty;
+
+  bool _transformersApplied = false;
+
+  /// Returns `true` once the transformers have been applied
+  /// (i.e. the transformed file is cached and ready for upload/retry).
+  bool get transformersApplied => _transformersApplied;
+
+  Future<XFile> _applyTransformers({
+    required IFileUploadHandler handler,
+    TransformationProgressCallback? onTransformationProgress,
+  }) async {
+    if (_transformers.isEmpty) {
+      return handler.originalFile;
+    }
+    if (_transformersApplied && _transformedFile != null) {
+      return _transformedFile!;
+    }
+
+    var currentFile = handler.originalFile;
+    var currentProgress = 0.0;
+
+    _logger?.info('applying transformers to ${currentFile.path}');
+    final totalTransformers = _transformers.length;
+
+    onTransformationProgress?.call(currentProgress);
+
+    for (var i = 0; i < totalTransformers; i++) {
+      final transformer = _transformers[i];
+      try {
+        final transformedFile = await transformer.transform(
+          currentFile,
+          onProgress: (count) {
+            if (onTransformationProgress != null) {
+              currentProgress = _roundTo(
+                (i + count.clamp(0, 1)) / totalTransformers,
+                to: 2,
+              );
+              onTransformationProgress(currentProgress);
+            }
+          },
+        );
+
+        if (transformedFile.path != currentFile.path) {
+          // If the transformer created a new file, we register it for cleanup
+          _cleanupTasks.add(() => transformer.cleanup(transformedFile));
+        }
+
+        currentFile = transformedFile;
+      } catch (e, s) {
+        if (transformer.continueOnFailure) {
+          _logger?.warning(
+            'Transformer ${transformer.runtimeType} failed '
+            'on ${currentFile.path}, continuing with previous file\n$e\n$s',
+          );
+        } else {
+          rethrow;
+        }
+      }
+    }
+
+    if (currentProgress < 1) {
+      // ensure always end at 1
+      onTransformationProgress?.call(1);
+    }
+
+    _transformedFile = currentFile;
+    _transformersApplied = true;
+    return currentFile;
+  }
+
+  /// Clean up the transformed files created during the pipeline.
+  Future<void> _cleanupTransformedFiles() async {
+    for (final cleanupTask in _cleanupTasks) {
+      try {
+        await cleanupTask();
+      } catch (e, s) {
+        _logger?.warning('Something went wrong during files cleanup\n$e\n$s');
+      }
+    }
+    _cleanupTasks.clear();
+    _transformedFile = null;
+  }
 
   /// return `true` if the file has already been uploaded.
   ///
@@ -113,6 +259,8 @@ abstract class FileUploadController {
   ///
   /// use [onProgress] to check the upload progress
   ///
+  /// use [onTransformationProgress] to check the transformation progress
+  ///
   /// if the file has already been uploaded,
   /// an [FileAlreadyUploadedException] is thrown.
   ///
@@ -125,11 +273,14 @@ abstract class FileUploadController {
   /// ```
   Future<FileUploadResult> upload({
     ProgressCallback? onProgress,
+    TransformationProgressCallback? onTransformationProgress,
   });
 
   /// retry the file upload
   ///
   /// use [onProgress] to check the upload progress
+  ///
+  /// use [onTransformationProgress] to check the transformation progress
   ///
   /// if the file has been already uploaded,
   /// an [FileAlreadyUploadedException] is thrown.
@@ -143,6 +294,7 @@ abstract class FileUploadController {
   /// ```
   Future<FileUploadResult> retry({
     ProgressCallback? onProgress,
+    TransformationProgressCallback? onTransformationProgress,
   });
 }
 
@@ -196,4 +348,8 @@ String _generateUniqueId() {
   final timestamp = DateTime.now().millisecondsSinceEpoch;
   final randomValue = random.nextInt(100000);
   return '$timestamp$randomValue';
+}
+
+double _roundTo(double value, {required int to}) {
+  return double.parse(value.toStringAsFixed(2));
 }

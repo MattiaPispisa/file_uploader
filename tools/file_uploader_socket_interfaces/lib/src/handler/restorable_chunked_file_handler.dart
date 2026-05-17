@@ -2,10 +2,14 @@ import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:file_uploader_socket_interfaces/file_uploader_socket_interfaces.dart';
 import 'package:file_uploader_socket_interfaces/src/default.dart';
 
+/// {@template socket_restorable_chunked_file_handler}
 /// A common interface for any plugin that wants to handle
 /// file uploads using a socket client.
+/// {@endtemplate}
 abstract class SocketRestorableChunkedFileHandler<ResponseType>
     extends RestorableChunkedFileUploadHandler {
+  /// {@macro socket_restorable_chunked_file_handler}
+  ///
   /// set [chunkSize] to choose the size of the chunks else
   /// [defaultChunkSize] is used
   const SocketRestorableChunkedFileHandler({
@@ -20,6 +24,7 @@ abstract class SocketRestorableChunkedFileHandler<ResponseType>
     this.chunkMethod = kChunkMethod,
     this.statusMethod = kStatusMethod,
     this.presentHeaders,
+    this.presentHeadersCallback,
     this.chunkHeaders,
     this.statusHeaders,
     this.presentBody,
@@ -29,40 +34,43 @@ abstract class SocketRestorableChunkedFileHandler<ResponseType>
     this.chunkParser = kChunkParser,
   });
 
-  /// [http.Client.send] `method` used on presentation
+  /// `method` used on presentation
   final String presentMethod;
 
-  /// [http.Client.send] `method` used on chunk upload
+  /// `method` used on chunk upload
   final String chunkMethod;
 
-  /// [http.Client.send] `method` used on status
+  /// `method` used on status
   final String statusMethod;
 
-  /// [http.Client.send] `path` used on presentation
+  /// `path` used on presentation
   final String presentPath;
 
-  /// [http.Client.send] `path` used on chunk upload
+  /// `path` used on chunk upload
   final ChunkPathCallback chunkPath;
 
-  /// [http.Client.send] `path` used on status
+  /// `path` used on status
   final StatusPathCallback statusPath;
 
-  /// [http.Client.send] `headers` used on presentation
+  /// `headers` used on presentation
   final Map<String, String>? presentHeaders;
 
-  /// [http.Client.send] `headers` used on chunk upload
+  /// `headers` used on presentation
+  final PresentHeadersCallback? presentHeadersCallback;
+
+  /// `headers` used on chunk upload
   final RestorableChunkHeadersCallback? chunkHeaders;
 
-  /// [http.Client.send] `headers` used on status
+  /// `headers` used on status
   final StatusHeadersCallback? statusHeaders;
 
-  /// [http.Client.send] `body` used on presentation
+  /// `body` used on presentation
   final String? presentBody;
 
-  /// [http.Client.send] `body` used on chunk upload
+  /// `body` used on chunk upload
   final String? chunkBody;
 
-  /// [http.Client.send] `body` used on status
+  /// `body` used on status
   final String? statusBody;
 
   /// callback to convert [ResponseType] into [FileUploadPresentationResponse]

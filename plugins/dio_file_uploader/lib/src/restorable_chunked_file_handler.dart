@@ -33,6 +33,7 @@ class DioRestorableChunkedFileHandler
     super.chunkSize,
     super.fileKey,
     super.chunkParser,
+    super.presentHeadersCallback,
     this.cancelToken,
   }) : _client = client;
 
@@ -42,7 +43,7 @@ class DioRestorableChunkedFileHandler
   final dio.CancelToken? cancelToken;
 
   @override
-  Future<FileUploadPresentationResponse> present() {
+  Future<FileUploadPresentationResponse> present(XFile file) {
     return _client
         .request<dynamic>(
           presentPath,

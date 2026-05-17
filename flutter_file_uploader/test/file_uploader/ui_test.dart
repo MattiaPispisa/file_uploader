@@ -8,8 +8,6 @@ import 'package:mocktail/mocktail.dart';
 
 import 'file_uploader_robot.dart';
 
-class MockFileUploadController extends Mock implements FileUploadController {}
-
 class MockFileUploadHandler extends Mock implements FileUploadHandler {}
 
 void main() {

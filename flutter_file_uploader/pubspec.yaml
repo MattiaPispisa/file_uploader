@@ -10,7 +10,7 @@ environment:
   flutter: ">=3.10.0"
 
 dependencies:
-  en_file_uploader: ^2.0.0
+  en_file_uploader: ^3.0.0
   flutter:
     sdk: flutter
   mobkit_dashed_border: ^0.0.6
@@ -23,4 +23,4 @@ dev_dependencies:
     sdk: flutter
   mocktail: ^1.0.4
   test: ^1.25.5
-  very_good_analysis: ^5.1.0
+  very_good_analysis: ^10.2.0

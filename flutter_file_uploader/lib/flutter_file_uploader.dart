@@ -2,7 +2,7 @@
 /// `en_file_uploader` library.
 ///
 /// They include both the UI and business logic for file upload management.
-library flutter_file_uploader;
+library;
 
 export 'src/file/card.dart';
 export 'src/file/model.dart';

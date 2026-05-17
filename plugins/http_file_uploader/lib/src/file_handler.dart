@@ -3,8 +3,12 @@ import 'package:http/http.dart' as http;
 import 'package:http_file_uploader/http_file_uploader.dart';
 import 'package:http_file_uploader/src/http_ext.dart';
 
+/// {@template http_file_handler}
 /// [HttpFileHandler] handle the file upload using the [http.Client]
+/// {@endtemplate}
 class HttpFileHandler extends SocketFileHandler<http.Response> {
+  /// {@macro http_file_handler}
+  ///
   /// [client] used to upload the file
   ///
   /// [path], [method], [headers], [body] are [http.Client.send] parameters
@@ -16,22 +20,44 @@ class HttpFileHandler extends SocketFileHandler<http.Response> {
     super.headers,
     super.body,
     super.fileKey,
+    super.headersCallback,
+    super.fileParser,
+    this.streamedRequest = true,
   }) : _client = client;
 
   final http.Client _client;
 
+  /// if `true` use a [http.StreamedRequest] to upload the file
+  /// else use a [http.Request].
+  ///
+  /// default is `true`
+  final bool streamedRequest;
+
   @override
-  Future<void> upload({
+  Future<void> upload(
+    XFile file, {
     ProgressCallback? onProgress,
   }) async {
     final chunk = FileChunk(file: file, start: 0, end: await file.length());
 
+    if (streamedRequest) {
+      return _client
+          .sendStreamedChunk(
+            method: method,
+            path: path,
+            chunk: chunk,
+            headers: headersCallback != null ? headersCallback!(file) : headers,
+            fileKey: fileKey,
+            onProgress: onProgress,
+          )
+          .then(fileParser);
+    }
     return _client
-        .sendStreamedChunk(
+        .sendSimpleChunk(
           method: method,
           path: path,
           chunk: chunk,
-          headers: headers,
+          headers: headersCallback != null ? headersCallback!(file) : headers,
           fileKey: fileKey,
           onProgress: onProgress,
         )

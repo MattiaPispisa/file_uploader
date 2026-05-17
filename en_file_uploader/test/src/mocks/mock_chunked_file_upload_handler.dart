@@ -1,12 +1,12 @@
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockFileUploadPresentationResponse extends Mock
+class _MockFileUploadPresentationResponse extends Mock
     implements FileUploadPresentationResponse {}
 
-class MockFileChunk extends Mock implements FileChunk {}
+class _MockFileChunk extends Mock implements FileChunk {}
 
-class MockChunkedFileUploadHandler extends Mock
+class _MockChunkedFileUploadHandler extends Mock
     implements ChunkedFileUploadHandler {}
 
 class MockChunkedFileUploadHandlerBuilder {
@@ -22,10 +22,10 @@ class MockChunkedFileUploadHandlerBuilder {
   bool simulateMultipleProgressCalls = false;
 
   ChunkedFileUploadHandler build() {
-    final handler = MockChunkedFileUploadHandler();
+    final handler = _MockChunkedFileUploadHandler();
 
-    registerFallbackValue(MockFileUploadPresentationResponse());
-    registerFallbackValue(MockFileChunk());
+    registerFallbackValue(_MockFileUploadPresentationResponse());
+    registerFallbackValue(_MockFileChunk());
 
     when(
       () => handler.uploadChunk(
@@ -53,7 +53,7 @@ class MockChunkedFileUploadHandlerBuilder {
       return chunkFn?.call() ?? Future.value();
     });
 
-    when(() => handler.file).thenReturn(file);
+    when(() => handler.originalFile).thenReturn(file);
 
     when(() => handler.chunkSize).thenReturn(chunkSize);
 

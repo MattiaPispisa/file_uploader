@@ -1,0 +1,8 @@
+# melos_managed_dependency_overrides: en_file_uploader,file_uploader_utils,flutter_file_uploader
+dependency_overrides:
+  en_file_uploader:
+    path: ../../en_file_uploader
+  file_uploader_utils:
+    path: ../../tools/file_uploader_utils
+  flutter_file_uploader:
+    path: ..

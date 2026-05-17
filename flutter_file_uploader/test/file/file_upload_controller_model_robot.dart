@@ -17,6 +17,8 @@ class FileUploadControllerModelRobot {
     void Function()? onRemoved,
     bool startOnInit = false,
     bool throwErrorOnUpload = false,
+    bool hasTransformers = false,
+    bool transformersApplied = false,
   }) {
     final file = createFile();
     final result = FileUploadResult(id: 'id', file: file);
@@ -41,37 +43,58 @@ class FileUploadControllerModelRobot {
 
     final ref = MockFileUploaderRef();
     final modelNotifier = MockCallbackFunction();
+    final onRemovedMock = MockCallbackFunction();
 
-    // when
+    when(() => ref.hasTransformers).thenReturn(hasTransformers);
+    when(() => ref.transformersApplied).thenReturn(transformersApplied);
+
     final whenUpload = when(
-      () => ref.upload(onProgress: any(named: 'onProgress')),
+      () => ref.upload(
+        onProgress: any(named: 'onProgress'),
+        onTransformationProgress: any(named: 'onTransformationProgress'),
+      ),
     );
     if (throwErrorOnUpload) {
       whenUpload.thenThrow(Exception());
     } else {
       whenUpload.thenAnswer(onUpload ?? defaultOnUpload);
     }
-    when(() => ref.retry(onProgress: any(named: 'onProgress')))
-        .thenAnswer(onRetry ?? defaultOnRetry);
-    when(() => ref.onRemoved).thenReturn(onRemoved ?? defaultOnRemoved);
+    when(
+      () => ref.retry(
+        onProgress: any(named: 'onProgress'),
+        onTransformationProgress: any(named: 'onTransformationProgress'),
+      ),
+    ).thenAnswer(onRetry ?? defaultOnRetry);
+    when(() => ref.onRemoved).thenReturn(onRemovedMock.call);
+
+    when(onRemovedMock.call).thenAnswer(
+      (_) => onRemoved != null ? onRemoved() : defaultOnRemoved(),
+    );
 
     final model = FileUploadControllerModel(
       ref: ref,
       startOnInit: startOnInit,
     )..addListener(modelNotifier.call);
 
-    return FileUploadControllerModelRobot._(ref, model, modelNotifier);
+    return FileUploadControllerModelRobot._(
+      ref,
+      model,
+      modelNotifier,
+      onRemovedMock,
+    );
   }
 
   const FileUploadControllerModelRobot._(
     this._ref,
     this._model,
     this._modelNotifier,
+    this._onRemovedMock,
   );
 
   final FileUploaderRef _ref;
   final FileUploadControllerModel _model;
   final MockCallbackFunction _modelNotifier;
+  final MockCallbackFunction _onRemovedMock;
 
   FileUploadControllerModel get model => _model;
 
@@ -119,6 +142,10 @@ class FileUploadControllerModelRobot {
     expect(_model.progress, progress);
   }
 
+  void expectTransformationProgress(double progress) {
+    expect(_model.transformationProgress, progress);
+  }
+
   void expectUploadCompleted() {
     expectStatus(FileUploadStatus.done);
     expectProgress(1);
@@ -129,6 +156,7 @@ class FileUploadControllerModelRobot {
       verifyNever(
         () => _ref.upload(
           onProgress: any(named: 'onProgress'),
+          onTransformationProgress: any(named: 'onTransformationProgress'),
         ),
       );
       return;
@@ -136,6 +164,7 @@ class FileUploadControllerModelRobot {
     verify(
       () => _ref.upload(
         onProgress: any(named: 'onProgress'),
+        onTransformationProgress: any(named: 'onTransformationProgress'),
       ),
     ).called(number);
   }
@@ -145,6 +174,7 @@ class FileUploadControllerModelRobot {
       verifyNever(
         () => _ref.retry(
           onProgress: any(named: 'onProgress'),
+          onTransformationProgress: any(named: 'onTransformationProgress'),
         ),
       );
       return;
@@ -152,18 +182,16 @@ class FileUploadControllerModelRobot {
     verify(
       () => _ref.retry(
         onProgress: any(named: 'onProgress'),
+        onTransformationProgress: any(named: 'onTransformationProgress'),
       ),
     ).called(number);
   }
 
   void expectRemoveCalled([int number = 1]) {
     if (number <= 0) {
-      // ignore: unnecessary_lambdas
-      verifyNever(() => _ref.onRemoved());
-
+      verifyNever(_onRemovedMock.call);
       return;
     }
-    // ignore: unnecessary_lambdas
-    verify(() => _ref.onRemoved()).called(number);
+    verify(_onRemovedMock.call).called(number);
   }
 }

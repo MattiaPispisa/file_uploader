@@ -27,8 +27,14 @@ typedef OnFileUploaded = void Function(FileUploadResult file);
 /// on file removed, more on [FileUploader]
 typedef OnFileRemoved = void Function(FileUploadResult file);
 
+/// {@template file_uploader}
 /// A button that handles file uploads.
+/// {@endtemplate}
 class FileUploader extends StatelessWidget {
+  /// {@macro file_uploader}
+  ///
+  /// **Constructor**
+  ///
   /// Upon tapping, the [onPressedAddFiles] function is triggered,
   /// and then [onFileAdded] is called for each file.
   ///
@@ -51,6 +57,9 @@ class FileUploader extends StatelessWidget {
   /// set either [onPressedAddFiles] or [onFileAdded] to disable the `onTap`
   ///
   /// use [color] to customize [border] color and tap effects.
+  ///
+  /// use [transformers] to apply a pipeline of [FileTransformer]s to every
+  /// file before it is uploaded.
   const FileUploader({
     required this.builder,
     super.key,
@@ -70,6 +79,8 @@ class FileUploader extends StatelessWidget {
     this.loadingBuilder,
     this.hideOnLimit,
     this.color,
+    this.loadingColor,
+    this.transformers = const [],
   });
 
   /// height of the button
@@ -115,6 +126,10 @@ class FileUploader extends StatelessWidget {
     BuildContext context,
   )? loadingBuilder;
 
+  /// color of loading progress indicator when [loadingBuilder] is null
+  /// and default loading is used
+  final Color? loadingColor;
+
   /// border radius of [FileUploader]
   final BorderRadiusGeometry? borderRadius;
 
@@ -144,6 +159,11 @@ class FileUploader extends StatelessWidget {
   /// default is [ColorScheme.secondary].
   final Color? color;
 
+  /// transformers applied to every file before upload.
+  ///
+  /// Each [FileTransformer] is applied in order before the upload starts.
+  final List<FileTransformer> transformers;
+
   @override
   Widget build(BuildContext context) {
     return _Provider(
@@ -152,6 +172,7 @@ class FileUploader extends StatelessWidget {
       onFileUploaded: onFileUploaded,
       logger: logger,
       limit: limit,
+      transformers: transformers,
       child: Column(
         children: [
           _builder(context),
@@ -168,6 +189,7 @@ class FileUploader extends StatelessWidget {
             errorBuilder: errorBuilder,
             placeholder: placeholder,
             hideOnLimit: hideOnLimit,
+            loadingColor: loadingColor,
             color: color,
           ),
         ],
@@ -207,6 +229,7 @@ class _Button extends StatelessWidget {
     required this.borderRadius,
     required this.hideOnLimit,
     required this.color,
+    required this.loadingColor,
     super.key,
   });
 
@@ -222,6 +245,7 @@ class _Button extends StatelessWidget {
   final Widget? placeholder;
   final bool? hideOnLimit;
   final Color? color;
+  final Color? loadingColor;
 
   @override
   Widget build(BuildContext context) {
@@ -239,7 +263,7 @@ class _Button extends StatelessWidget {
         final border = this.border ??
             DashedBorder.all(
               dashLength: 10,
-              color: model.reachedLimit ? color.withOpacity(0.3) : color,
+              color: model.reachedLimit ? color.withValues(alpha: 0.3) : color,
             );
         final hide = model.reachedLimit && (hideOnLimit ?? false);
 
@@ -251,10 +275,10 @@ class _Button extends StatelessWidget {
                   key: const ValueKey('file_uploader_button_inkwell'),
                   onTap: onTap,
                   radius: kFileUploaderRadius,
-                  hoverColor: color.withOpacity(0.1),
-                  focusColor: color.withOpacity(0.1),
-                  splashColor: color.withOpacity(0.1),
-                  highlightColor: color.withOpacity(0.2),
+                  hoverColor: color.withValues(alpha: 0.1),
+                  focusColor: color.withValues(alpha: 0.1),
+                  splashColor: color.withValues(alpha: 0.1),
+                  highlightColor: color.withValues(alpha: 0.2),
                   child: Container(
                     width: width,
                     height: height,
@@ -275,6 +299,7 @@ class _Button extends StatelessWidget {
       return _Loading(
         key: const ValueKey('file_uploader_loading'),
         loading: loadingBuilder?.call(context),
+        loadingColor: loadingColor,
       );
     }
 
@@ -300,6 +325,7 @@ class _Provider extends StatelessWidget {
     required this.onFileRemoved,
     required this.onFileUploaded,
     this.limit,
+    this.transformers = const [],
     super.key,
   });
 
@@ -308,6 +334,7 @@ class _Provider extends StatelessWidget {
   final OnFileUploaded? onFileUploaded;
   final OnFileRemoved? onFileRemoved;
   final int? limit;
+  final List<FileTransformer> transformers;
 
   @override
   Widget build(BuildContext context) {
@@ -317,6 +344,7 @@ class _Provider extends StatelessWidget {
         onFileRemoved: onFileRemoved,
         onFileUploaded: onFileUploaded,
         limit: limit,
+        transformers: transformers,
       ),
       child: child,
     );
@@ -358,15 +386,17 @@ class _Error extends StatelessWidget {
 class _Loading extends StatelessWidget {
   const _Loading({
     required this.loading,
+    required this.loadingColor,
     super.key,
   });
 
   final Widget? loading;
+  final Color? loadingColor;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: loading ?? const CircularProgressIndicator(),
+      child: loading ?? CircularProgressIndicator(color: loadingColor),
     );
   }
 }

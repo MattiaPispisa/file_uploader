@@ -1,14 +1,18 @@
 import 'package:en_file_uploader/en_file_uploader.dart';
 
+/// {@template file_upload_result}
 /// the response of a file uploaded
+/// {@endtemplate}
 class FileUploadResult {
-  /// the response of a file uploaded
+  /// {@macro file_upload_result}
   const FileUploadResult({
     required this.file,
     required this.id,
   });
 
-  /// file uploaded
+  /// the original file that was sent.
+  /// It may differ from the file that was actually sent
+  /// if any transformations have been applied.
   final XFile file;
 
   /// In the case of a [RestorableChunkedFileUploadHandler] handler,

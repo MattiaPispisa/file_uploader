@@ -14,3 +14,4 @@ export 'src/entity/entity.dart';
 export 'src/exception/exception.dart';
 export 'src/handler/handler.dart';
 export 'src/logger.dart';
+export 'src/transformer/file_transformer.dart';

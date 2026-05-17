@@ -1,6 +1,8 @@
+/// {@template file_upload_presentation_response}
 /// The response of the file presentation.
+/// {@endtemplate}
 class FileUploadPresentationResponse {
-  /// constructor
+  /// {@macro file_upload_presentation_response}
   const FileUploadPresentationResponse({
     required this.id,
   });
