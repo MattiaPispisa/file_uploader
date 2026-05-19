@@ -1,15 +1,15 @@
 import 'package:en_file_uploader/en_file_uploader.dart';
 
-/// base class for file uploader exceptions
+/// Base class for file uploader exceptions
 ///
-/// currently exceptions are:
+/// Currently exceptions are:
 ///
 /// - [UnexpectedHandlerException]
 /// - [FileAlreadyUploadedException]
 abstract class FileUploaderException implements Exception {}
 
 /// {@template unexpected_handler_exception}
-/// unexpected handler exception
+/// Unexpected handler exception
 ///
 /// [FileUploadController] is not able
 /// to handle the [IFileUploadHandler] passed.
@@ -30,9 +30,9 @@ class UnexpectedHandlerException implements FileUploaderException {
 }
 
 /// {@template file_already_uploaded_exception}
-/// file already uploaded exception
+/// File already uploaded exception
 ///
-/// a file that has been uploaded cannot be uploaded again.
+/// A file that has been uploaded cannot be uploaded again.
 /// {@endtemplate}
 class FileAlreadyUploadedException implements FileUploaderException {
   /// {@macro file_already_uploaded_exception}

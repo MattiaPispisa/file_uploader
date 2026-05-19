@@ -1,6 +1,6 @@
-/// file uploader package used to handle file upload.
+/// File uploader package used to handle file upload.
 ///
-/// follow [README.md](https://pub.dev/packages/en_file_uploader#file-uploader) and [FileUploadController]
+/// Follow [README.md](https://pub.dev/packages/en_file_uploader#file-uploader) and [FileUploadController]
 /// to understand how this library can be used.
 library en_file_uploader;
 

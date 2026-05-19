@@ -20,7 +20,13 @@ void main() async {
     file: sampleFile,
     chunkSize: 1000,
   );
-  controller = FileUploadController(handler);
+  controller = FileUploadController(
+    handler,
+    logger: utils.fileUploaderLogger,
+    transformers: [
+      NoOpTransformer(),
+    ],
+  );
   await controller.upload();
 
   // print(backend);
@@ -66,5 +72,16 @@ class ExampleRestorableChunkedFileUploadHandler
       chunkFile,
     );
     return Future.value();
+  }
+}
+
+/// An example implementation of a [FileTransformer] that does nothing
+class NoOpTransformer extends FileTransformer {
+  @override
+  Future<XFile> transform(
+    XFile file, {
+    TransformationProgressCallback? onProgress,
+  }) {
+    return Future.value(file);
   }
 }

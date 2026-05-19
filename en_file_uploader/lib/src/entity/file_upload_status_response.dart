@@ -7,6 +7,6 @@ class FileUploadStatusResponse {
     required this.nextChunkOffset,
   });
 
-  /// offset of the next chunk to be sent
+  /// The offset of the next chunk to be sent
   final int nextChunkOffset;
 }

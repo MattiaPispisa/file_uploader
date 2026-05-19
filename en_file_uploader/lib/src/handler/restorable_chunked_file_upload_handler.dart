@@ -1,8 +1,11 @@
 import 'package:en_file_uploader/en_file_uploader.dart';
 
+/// {@template restorable_chunked_file_upload_handler}
 /// [RestorableChunkedFileUploadHandler] handle the file upload in chunk with
 /// the capability to retry the upload from the last chunk sent.
-/// Follow the [README.md](https://pub.dev/packages/en_file_uploader#support-restorable-chunked-file-upload) to understand how this can be supported by the server side.
+///
+/// Follow the [README.md](https://pub.dev/packages/en_file_uploader#support-restorable-chunked-file-upload)
+/// to understand how this can be supported by the server side.
 ///
 /// ## How to use
 ///
@@ -24,8 +27,11 @@ import 'package:en_file_uploader/en_file_uploader.dart';
 ///   FileUploadController(MyRestorableChunkedFileUploadHandler(file: file));
 /// controller.upload();
 /// ```
+/// {@endtemplate}
 abstract class RestorableChunkedFileUploadHandler extends IFileUploadHandler {
-  /// constructor
+  /// {@macro restorable_chunked_file_upload_handler}
+  ///
+  /// **Constructor**
   ///
   /// set [chunkSize] to choose the size of the chunks else
   /// [defaultChunkSize] is used (can be changed with [setDefaultChunkSize]).

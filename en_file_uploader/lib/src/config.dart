@@ -3,7 +3,7 @@ import 'package:en_file_uploader/en_file_uploader.dart';
 
 const int _k1MB = 1024 * 1024;
 
-/// contains every global option for file upload
+/// Contains every global option for file upload
 class _FileUploaderConfiguration {
   _FileUploaderConfiguration();
 

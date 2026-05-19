@@ -106,6 +106,8 @@ abstract class FileUploadController {
   ///
   /// [logger] a logger report info/warning/errors about upload behavior.
   ///
+  /// [transformers] an optional list of [FileTransformer] that will be applied
+  /// to the file before it is uploaded.
   ///
   factory FileUploadController(
     IFileUploadHandler handler, {
@@ -151,9 +153,6 @@ abstract class FileUploadController {
   XFile? _transformedFile;
 
   /// Returns `true` if this controller has at least one [FileTransformer].
-  ///
-  /// Can be used by UI code to decide whether to show a transformation
-  /// progress indicator.
   bool get hasTransformers => _transformers.isNotEmpty;
 
   bool _transformersApplied = false;

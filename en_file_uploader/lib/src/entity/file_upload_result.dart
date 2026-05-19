@@ -1,7 +1,7 @@
 import 'package:en_file_uploader/en_file_uploader.dart';
 
 /// {@template file_upload_result}
-/// the response of a file uploaded
+/// The response of a file uploaded
 /// {@endtemplate}
 class FileUploadResult {
   /// {@macro file_upload_result}
@@ -10,7 +10,7 @@ class FileUploadResult {
     required this.id,
   });
 
-  /// the original file that was sent.
+  /// The original file that was sent.
   /// It may differ from the file that was actually sent
   /// if any transformations have been applied.
   final XFile file;

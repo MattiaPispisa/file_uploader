@@ -1,5 +1,6 @@
 import 'package:en_file_uploader/en_file_uploader.dart';
 
+/// {@template chunked_file_upload_handler}
 /// [ChunkedFileUploadHandler] handle the file upload split in chunks
 ///
 /// ## How to use
@@ -19,8 +20,11 @@ import 'package:en_file_uploader/en_file_uploader.dart';
 ///   FileUploadController(MyChunkedFileUploadHandler(file: file));
 /// controller.upload();
 /// ```
+/// {@endtemplate}
 abstract class ChunkedFileUploadHandler extends IFileUploadHandler {
-  /// constructor
+  /// {@macro chunked_file_upload_handler}
+  ///
+  /// **Constructor**
   ///
   /// set [chunkSize] to choose the size of the chunks else
   /// [defaultChunkSize] is used (can be changed with [setDefaultChunkSize]).
