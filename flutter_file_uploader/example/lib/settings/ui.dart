@@ -7,7 +7,6 @@ class SettingsConsumer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Raggruppiamo le impostazioni in una Card per dare ordine visivo
     return Card(
       elevation: 0,
       margin: EdgeInsets.zero,
@@ -57,7 +56,6 @@ class _LimitTile extends StatelessWidget {
         return ListTile(
           title: const Text('File limit'),
           subtitle: const Text('Maximum files allowed'),
-          // Il Trailing ospita i controlli in riga
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -87,7 +85,6 @@ class _LimitTile extends StatelessWidget {
                 color: Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(width: 8),
-              // Bottone di reset separato visivamente
               _ResetToDefaultButton(
                 onPressed: limit != null
                     ? () => context.read<ExampleSettings>().limit = null
@@ -109,7 +106,6 @@ class _HideOnLimitTile extends StatelessWidget {
     return Selector<ExampleSettings, bool?>(
       selector: (_, state) => state.hideOnLimit,
       builder: (context, hideOnLimit, child) {
-        // SwitchListTile è perfetto per i flag booleani
         return SwitchListTile.adaptive(
           title: const Text('Hide on limit'),
           subtitle: const Text('Hide upload button when limit is reached'),

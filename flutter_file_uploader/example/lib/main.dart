@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader_example/examples/examples.dart';
+import 'package:flutter_file_uploader_example/examples/image_picker_transformers.dart';
 import 'package:flutter_file_uploader_example/l10n/arb/app_localizations.dart';
 import 'package:flutter_file_uploader_example/settings/model.dart';
 import 'package:flutter_file_uploader_example/settings/ui.dart';
@@ -16,6 +17,7 @@ final _routes = <String, Widget Function(BuildContext)>{
   '/default_restorable_chunked': (_) => DefaultRestorableChunkedFilesUpload(),
   './self_ref_management': (_) => SelfRefManagementFilesUpload(),
   './transformers': (_) => TransformersFilesUpload(),
+  './complete': (_) => CompleteUploadExample(),
 };
 
 class App extends StatelessWidget {
