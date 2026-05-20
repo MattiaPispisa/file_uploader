@@ -8,6 +8,7 @@ class _ChunkedFileUploadController extends FileUploadController {
   })  : _handler = handler,
         super._(transformers, logger);
 
+  @override
   final ChunkedFileUploadHandler _handler;
 
   @override
