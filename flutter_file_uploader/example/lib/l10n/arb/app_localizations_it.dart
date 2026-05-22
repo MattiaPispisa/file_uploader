@@ -9,17 +9,6 @@ class AppLocalizationsIt extends AppLocalizations {
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override
-  String get imagePickerTitle => 'Image picker';
-
-  @override
-  String get imagePickerBannerTitle =>
-      'FileUploader + Selettore Immagini + Trasformatore Immagini';
-
-  @override
-  String get imagePickerBannerDescription =>
-      'Un FileUploader in cui i file vengono aggiunti prendendoli dal file system dopodiché per ogni file viene applicata una trasformazione che in questo caso ridimensiona l\'immagine. Al termine della trasformazione il file verrà caricato nel backend. L\'interfaccia utente mostra sia il progresso di upload che il progresso di trasformazione';
-
-  @override
   String get filenamePlaceholder => 'nomefile';
 
   @override
@@ -76,6 +65,16 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get transformersBannerDescription =>
       'Mostra come applicare una serie di trasformatori in cascata (in questo caso due trasformatori fittizi no-op) sui file aggiunti prima che vengano effettivamente caricati nel backend.';
+
+  @override
+  String get completeTitle => 'Completo';
+
+  @override
+  String get completeBannerTitle => 'FileUploader + Completo';
+
+  @override
+  String get completeBannerDescription =>
+      'Un FileUploader in cui i file vengono aggiunti prendendoli dal file system dopodiché per ogni file viene applicata una trasformazione che in questo caso ridimensiona l\'immagine. Al termine della trasformazione il file verrà caricato nel backend. L\'interfaccia utente mostra sia il progresso di upload che il progresso di trasformazione. E\' presente anche una zona drag and drop per aggiungere file';
 
   @override
   String get languageTitle => 'Lingua / Language';

@@ -1,8 +1,5 @@
 {
   "@@locale": "it",
-  "imagePickerTitle": "Image picker",
-  "imagePickerBannerTitle": "FileUploader + Selettore Immagini + Trasformatore Immagini",
-  "imagePickerBannerDescription": "Un FileUploader in cui i file vengono aggiunti prendendoli dal file system dopodiché per ogni file viene applicata una trasformazione che in questo caso ridimensiona l'immagine. Al termine della trasformazione il file verrà caricato nel backend. L'interfaccia utente mostra sia il progresso di upload che il progresso di trasformazione",
   "filenamePlaceholder": "nomefile",
   "addFilePlaceholder": "aggiungi un file",
   "defaultTitle": "Default",
@@ -20,9 +17,11 @@
   "transformersTitle": "Transformers",
   "transformersBannerTitle": "FileUploader + Trasformatori Automatici",
   "transformersBannerDescription": "Mostra come applicare una serie di trasformatori in cascata (in questo caso due trasformatori fittizi no-op) sui file aggiunti prima che vengano effettivamente caricati nel backend.",
+  "completeTitle": "Completo",
+  "completeBannerTitle": "FileUploader + Completo",
+  "completeBannerDescription": "Un FileUploader in cui i file vengono aggiunti prendendoli dal file system dopodiché per ogni file viene applicata una trasformazione che in questo caso ridimensiona l'immagine. Al termine della trasformazione il file verrà caricato nel backend. L'interfaccia utente mostra sia il progresso di upload che il progresso di trasformazione. E' presente anche una zona drag and drop per aggiungere file",
   "languageTitle": "Lingua / Language",
   "languageSubtitle": "Seleziona la lingua dell'applicazione",
   "englishOption": "English 🇺🇸",
   "italianOption": "Italiano 🇮🇹"
 }
-

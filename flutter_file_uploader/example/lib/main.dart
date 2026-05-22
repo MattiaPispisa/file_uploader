@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader_example/examples/examples.dart';
-import 'package:flutter_file_uploader_example/examples/image_picker_transformers.dart';
 import 'package:flutter_file_uploader_example/l10n/arb/app_localizations.dart';
 import 'package:flutter_file_uploader_example/settings/model.dart';
 import 'package:flutter_file_uploader_example/settings/ui.dart';

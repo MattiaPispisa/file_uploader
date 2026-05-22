@@ -9,17 +9,6 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get imagePickerTitle => 'Image picker';
-
-  @override
-  String get imagePickerBannerTitle =>
-      'FileUploader + Image Picker + Image Transformer';
-
-  @override
-  String get imagePickerBannerDescription =>
-      'A FileUploader where files are added from the file system, then a transformation resizing the image is applied to each file. After the transformation is complete, the file is uploaded to the backend. The UI shows both upload and transformation progress.';
-
-  @override
   String get filenamePlaceholder => 'filename';
 
   @override
@@ -75,6 +64,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get transformersBannerDescription =>
       'Shows how to apply a cascade of transformers (in this case two dummy no-op transformers) on added files before they are actually uploaded to the backend.';
+
+  @override
+  String get completeTitle => 'Complete';
+
+  @override
+  String get completeBannerTitle => 'FileUploader + Complete';
+
+  @override
+  String get completeBannerDescription =>
+      'A FileUploader where files are added from the file system, then a transformation resizing the image is applied to each file. After the transformation is complete, the file is uploaded to the backend. The UI shows both upload and transformation progress. Also a drag and drop zone is present to add files.';
 
   @override
   String get languageTitle => 'Language / Lingua';

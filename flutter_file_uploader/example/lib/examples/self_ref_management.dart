@@ -6,7 +6,7 @@ import 'package:flutter_file_uploader_example/common/view_layout.dart';
 import 'package:flutter_file_uploader_example/handlers/handlers.dart';
 import 'package:flutter_file_uploader_example/l10n/l10n.dart';
 
-/// The simplest case that uses [FileUploader] and [ProvidedFileCard].
+/// [FileUploader] with custom card for self ref management.
 class SelfRefManagementFilesUpload extends StatelessWidget {
   const SelfRefManagementFilesUpload({super.key});
 

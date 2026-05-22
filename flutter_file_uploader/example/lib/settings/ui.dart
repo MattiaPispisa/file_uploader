@@ -198,27 +198,77 @@ class _LocaleTile extends StatelessWidget {
         return ListTile(
           title: Text(context.t().languageTitle),
           subtitle: Text(context.t().languageSubtitle),
-          trailing: DropdownButton<Locale>(
-            value: currentLocale,
-            underline: const SizedBox(),
-            onChanged: (newLocale) {
-              if (newLocale != null) {
-                context.read<ExampleSettings>().locale = newLocale;
-              }
-            },
-            items: [
-              DropdownMenuItem(
-                value: Locale('en'),
-                child: Text(context.t().englishOption),
-              ),
-              DropdownMenuItem(
-                value: Locale('it'),
-                child: Text(context.t().italianOption),
-              ),
-            ],
+          trailing: _dropdown(
+            context,
+            currentLocale: currentLocale,
           ),
         );
       },
+    );
+  }
+
+  final supportedLocales = const [
+    Locale('en'),
+    Locale('it'),
+  ];
+
+  String _getLocaleName(BuildContext context, Locale locale) {
+    switch (locale.languageCode) {
+      case 'en':
+        return context.t().englishOption;
+      case 'it':
+        return context.t().italianOption;
+      default:
+        return locale.languageCode;
+    }
+  }
+
+  Widget _dropdown(
+    BuildContext context, {
+    required Locale currentLocale,
+  }) {
+    return DropdownButton<Locale>(
+      value: currentLocale,
+      underline: const SizedBox(),
+      focusColor: Colors.transparent,
+      borderRadius: BorderRadius.circular(12),
+      elevation: 4,
+      icon: Icon(
+        Icons.arrow_drop_down_rounded,
+        color: Theme.of(context).colorScheme.primary,
+      ),
+      selectedItemBuilder: (BuildContext context) {
+        return supportedLocales.map<Widget>((Locale locale) {
+          return Container(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              _getLocaleName(context, locale),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          );
+        }).toList();
+      },
+      onChanged: (newLocale) {
+        if (newLocale != null) {
+          context.read<ExampleSettings>().locale = newLocale;
+        }
+      },
+      items: supportedLocales.map<DropdownMenuItem<Locale>>((Locale locale) {
+        final isSelected = currentLocale.languageCode == locale.languageCode;
+
+        return DropdownMenuItem(
+          value: locale,
+          child: Text(
+            _getLocaleName(context, locale),
+            style: TextStyle(
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }

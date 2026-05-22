@@ -98,24 +98,6 @@ abstract class AppLocalizations {
     Locale('it')
   ];
 
-  /// No description provided for @imagePickerTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Image picker'**
-  String get imagePickerTitle;
-
-  /// No description provided for @imagePickerBannerTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'FileUploader + Image Picker + Image Transformer'**
-  String get imagePickerBannerTitle;
-
-  /// No description provided for @imagePickerBannerDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'A FileUploader where files are added from the file system, then a transformation resizing the image is applied to each file. After the transformation is complete, the file is uploaded to the backend. The UI shows both upload and transformation progress.'**
-  String get imagePickerBannerDescription;
-
   /// No description provided for @filenamePlaceholder.
   ///
   /// In en, this message translates to:
@@ -217,6 +199,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Shows how to apply a cascade of transformers (in this case two dummy no-op transformers) on added files before they are actually uploaded to the backend.'**
   String get transformersBannerDescription;
+
+  /// No description provided for @completeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get completeTitle;
+
+  /// No description provided for @completeBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FileUploader + Complete'**
+  String get completeBannerTitle;
+
+  /// No description provided for @completeBannerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A FileUploader where files are added from the file system, then a transformation resizing the image is applied to each file. After the transformation is complete, the file is uploaded to the backend. The UI shows both upload and transformation progress. Also a drag and drop zone is present to add files.'**
+  String get completeBannerDescription;
 
   /// No description provided for @languageTitle.
   ///

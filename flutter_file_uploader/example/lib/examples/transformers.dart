@@ -7,7 +7,7 @@ import 'package:flutter_file_uploader_example/handlers/handlers.dart';
 import 'package:flutter_file_uploader_example/l10n/l10n.dart';
 import 'package:flutter_file_uploader_example/transformers/transformers.dart';
 
-/// The simplest case that uses [FileUploader] and [ProvidedFileCard].
+/// [FileUploader] with multiple transformers.
 class TransformersFilesUpload extends StatelessWidget {
   const TransformersFilesUpload({super.key});
 

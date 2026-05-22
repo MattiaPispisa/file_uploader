@@ -1,8 +1,5 @@
 {
   "@@locale": "en",
-  "imagePickerTitle": "Image picker",
-  "imagePickerBannerTitle": "FileUploader + Image Picker + Image Transformer",
-  "imagePickerBannerDescription": "A FileUploader where files are added from the file system, then a transformation resizing the image is applied to each file. After the transformation is complete, the file is uploaded to the backend. The UI shows both upload and transformation progress.",
   "filenamePlaceholder": "filename",
   "addFilePlaceholder": "add a file",
   "defaultTitle": "Default",
@@ -20,6 +17,9 @@
   "transformersTitle": "Transformers",
   "transformersBannerTitle": "FileUploader + Automated Transformers",
   "transformersBannerDescription": "Shows how to apply a cascade of transformers (in this case two dummy no-op transformers) on added files before they are actually uploaded to the backend.",
+  "completeTitle": "Complete",
+  "completeBannerTitle": "FileUploader + Complete",
+  "completeBannerDescription": "A FileUploader where files are added from the file system, then a transformation resizing the image is applied to each file. After the transformation is complete, the file is uploaded to the backend. The UI shows both upload and transformation progress. Also a drag and drop zone is present to add files.",
   "languageTitle": "Language / Lingua",
   "languageSubtitle": "Select application language",
   "englishOption": "English 🇺🇸",
