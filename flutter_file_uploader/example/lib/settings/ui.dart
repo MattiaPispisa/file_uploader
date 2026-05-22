@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_file_uploader_example/l10n/l10n.dart';
 import 'package:flutter_file_uploader_example/settings/model.dart';
 import 'package:provider/provider.dart';
 
@@ -39,6 +40,8 @@ class SettingsConsumer extends StatelessWidget {
           _HideOnLimitTile(),
           Divider(height: 1),
           _ColorTile(),
+          Divider(height: 1),
+          _LocaleTile(),
         ],
       ),
     );
@@ -178,6 +181,44 @@ class _ResetToDefaultButton extends StatelessWidget {
       onPressed: onPressed,
       icon: const Icon(Icons.restore),
       tooltip: 'Reset to default',
+    );
+  }
+}
+
+class _LocaleTile extends StatelessWidget {
+  const _LocaleTile({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<ExampleSettings, Locale?>(
+      selector: (_, state) => state.locale,
+      builder: (context, locale, child) {
+        final currentLocale = locale ?? const Locale('en');
+
+        return ListTile(
+          title: Text(context.t().languageTitle),
+          subtitle: Text(context.t().languageSubtitle),
+          trailing: DropdownButton<Locale>(
+            value: currentLocale,
+            underline: const SizedBox(),
+            onChanged: (newLocale) {
+              if (newLocale != null) {
+                context.read<ExampleSettings>().locale = newLocale;
+              }
+            },
+            items: [
+              DropdownMenuItem(
+                value: Locale('en'),
+                child: Text(context.t().englishOption),
+              ),
+              DropdownMenuItem(
+                value: Locale('it'),
+                child: Text(context.t().italianOption),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

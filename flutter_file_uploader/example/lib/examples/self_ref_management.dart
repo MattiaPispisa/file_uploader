@@ -1,8 +1,10 @@
 import 'package:file_uploader_utils/file_uploader_utils.dart' as utils;
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
+import 'package:flutter_file_uploader_example/common/banner.dart';
+import 'package:flutter_file_uploader_example/common/view_layout.dart';
 import 'package:flutter_file_uploader_example/handlers/handlers.dart';
-import 'package:flutter_file_uploader_example/settings/read.dart';
+import 'package:flutter_file_uploader_example/l10n/l10n.dart';
 
 /// The simplest case that uses [FileUploader] and [ProvidedFileCard].
 class SelfRefManagementFilesUpload extends StatelessWidget {
@@ -10,55 +12,46 @@ class SelfRefManagementFilesUpload extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final settings = context.watchSettings();
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('SELF REF MANAGEMENT'),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Center(
-                  child: FileUploader(
-                    logger: utils.fileUploaderLogger,
-                    limit: settings.limit,
-                    hideOnLimit: settings.hideOnLimit,
-                    color: settings.color,
-                    builder: (context, ref) {
-                      return CustomFileCardSelfManagement(
-                        ref: ref,
-                      );
-                    },
-                    onPressedAddFiles: () async {
-                      await Future.delayed(const Duration(seconds: 1));
-                      return [utils.createFile()];
-                    },
-                    onFileAdded: (file) async {
-                      await Future.delayed(const Duration(milliseconds: 500));
-                      return FakeFileHandler(
-                        file: file,
-                      );
-                    },
-                    onFileUploaded: (file) {
-                      utils.logger.info("file uploaded ${file.id}");
-                    },
-                    onFileRemoved: (file) {
-                      utils.logger.info("file removed ${file.id}");
-                    },
-                    placeholder: Text("add a file"),
-                  ),
-                ),
-              ],
+    return ViewLayout(
+      title: context.t().selfRefTitle.toUpperCase(),
+      childrenBuilder: (settings) {
+        return [
+          ExampleBanner(
+            title: context.t().selfRefBannerTitle,
+            description: context.t().selfRefBannerDescription,
+          ),
+          Center(
+            child: FileUploader(
+              logger: utils.fileUploaderLogger,
+              limit: settings.limit,
+              hideOnLimit: settings.hideOnLimit,
+              color: settings.color,
+              builder: (context, ref) {
+                return CustomFileCardSelfManagement(
+                  ref: ref,
+                );
+              },
+              onPressedAddFiles: () async {
+                await Future.delayed(const Duration(seconds: 1));
+                return [utils.createFile()];
+              },
+              onFileAdded: (file) async {
+                await Future.delayed(const Duration(milliseconds: 500));
+                return FakeFileHandler(
+                  file: file,
+                );
+              },
+              onFileUploaded: (file) {
+                utils.logger.info("file uploaded ${file.id}");
+              },
+              onFileRemoved: (file) {
+                utils.logger.info("file removed ${file.id}");
+              },
+              placeholder: Text(context.t().addFilePlaceholder),
             ),
           ),
-        ),
-      ),
+        ];
+      },
     );
   }
 }
@@ -96,26 +89,25 @@ class _CustomFileCardSelfManagementState
         uploading = false;
       });
     }
-    ;
   }
 
   @override
   Widget build(BuildContext context) {
     if (widget.ref.uploaded) {
-      return Text("file uploaded");
+      return Text(context.t().fileUploadedText);
     }
 
     if (uploading) {
-      return CircularProgressIndicator();
+      return const CircularProgressIndicator();
     }
 
     if (error) {
-      return Text("error uploading");
+      return Text(context.t().errorUploadingText);
     }
 
     return ElevatedButton(
       onPressed: _upload,
-      child: Text("upload"),
+      child: Text(context.t().uploadButtonText),
     );
   }
 }

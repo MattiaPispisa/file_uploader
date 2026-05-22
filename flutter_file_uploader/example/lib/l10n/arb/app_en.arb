@@ -1,3 +1,27 @@
 {
-    "@@locale": "en"
+  "@@locale": "en",
+  "imagePickerTitle": "Image picker",
+  "imagePickerBannerTitle": "FileUploader + Image Picker + Image Transformer",
+  "imagePickerBannerDescription": "A FileUploader where files are added from the file system, then a transformation resizing the image is applied to each file. After the transformation is complete, the file is uploaded to the backend. The UI shows both upload and transformation progress.",
+  "filenamePlaceholder": "filename",
+  "addFilePlaceholder": "add a file",
+  "defaultTitle": "Default",
+  "defaultBannerTitle": "FileUploader + Default Usage",
+  "defaultBannerDescription": "A basic FileUploader where files are added and uploaded asynchronously. It uses the default ProvidedFileCard to show the upload progress bar.",
+  "restorableTitle": "Default restorable chunked",
+  "restorableBannerTitle": "FileUploader + Restorable Chunked Upload",
+  "restorableBannerDescription": "An example of chunked upload where uploading can be resumed from where it left off (restorable). If the upload fails or is interrupted, the uploader will resume sending only the missing chunks.",
+  "selfRefTitle": "Self ref management",
+  "selfRefBannerTitle": "FileUploader + Custom Card & Self State Management",
+  "selfRefBannerDescription": "This example shows how to create a custom card to manage the upload state independently (self-managed) using the controller provided via FileUploaderRef.",
+  "fileUploadedText": "file uploaded",
+  "errorUploadingText": "error uploading",
+  "uploadButtonText": "upload",
+  "transformersTitle": "Transformers",
+  "transformersBannerTitle": "FileUploader + Automated Transformers",
+  "transformersBannerDescription": "Shows how to apply a cascade of transformers (in this case two dummy no-op transformers) on added files before they are actually uploaded to the backend.",
+  "languageTitle": "Language / Lingua",
+  "languageSubtitle": "Select application language",
+  "englishOption": "English 🇺🇸",
+  "italianOption": "Italiano 🇮🇹"
 }

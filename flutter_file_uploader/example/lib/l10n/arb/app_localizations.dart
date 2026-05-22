@@ -97,6 +97,150 @@ abstract class AppLocalizations {
     Locale('en'),
     Locale('it')
   ];
+
+  /// No description provided for @imagePickerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Image picker'**
+  String get imagePickerTitle;
+
+  /// No description provided for @imagePickerBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FileUploader + Image Picker + Image Transformer'**
+  String get imagePickerBannerTitle;
+
+  /// No description provided for @imagePickerBannerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A FileUploader where files are added from the file system, then a transformation resizing the image is applied to each file. After the transformation is complete, the file is uploaded to the backend. The UI shows both upload and transformation progress.'**
+  String get imagePickerBannerDescription;
+
+  /// No description provided for @filenamePlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'filename'**
+  String get filenamePlaceholder;
+
+  /// No description provided for @addFilePlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'add a file'**
+  String get addFilePlaceholder;
+
+  /// No description provided for @defaultTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get defaultTitle;
+
+  /// No description provided for @defaultBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FileUploader + Default Usage'**
+  String get defaultBannerTitle;
+
+  /// No description provided for @defaultBannerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A basic FileUploader where files are added and uploaded asynchronously. It uses the default ProvidedFileCard to show the upload progress bar.'**
+  String get defaultBannerDescription;
+
+  /// No description provided for @restorableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Default restorable chunked'**
+  String get restorableTitle;
+
+  /// No description provided for @restorableBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FileUploader + Restorable Chunked Upload'**
+  String get restorableBannerTitle;
+
+  /// No description provided for @restorableBannerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'An example of chunked upload where uploading can be resumed from where it left off (restorable). If the upload fails or is interrupted, the uploader will resume sending only the missing chunks.'**
+  String get restorableBannerDescription;
+
+  /// No description provided for @selfRefTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Self ref management'**
+  String get selfRefTitle;
+
+  /// No description provided for @selfRefBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FileUploader + Custom Card & Self State Management'**
+  String get selfRefBannerTitle;
+
+  /// No description provided for @selfRefBannerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This example shows how to create a custom card to manage the upload state independently (self-managed) using the controller provided via FileUploaderRef.'**
+  String get selfRefBannerDescription;
+
+  /// No description provided for @fileUploadedText.
+  ///
+  /// In en, this message translates to:
+  /// **'file uploaded'**
+  String get fileUploadedText;
+
+  /// No description provided for @errorUploadingText.
+  ///
+  /// In en, this message translates to:
+  /// **'error uploading'**
+  String get errorUploadingText;
+
+  /// No description provided for @uploadButtonText.
+  ///
+  /// In en, this message translates to:
+  /// **'upload'**
+  String get uploadButtonText;
+
+  /// No description provided for @transformersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Transformers'**
+  String get transformersTitle;
+
+  /// No description provided for @transformersBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FileUploader + Automated Transformers'**
+  String get transformersBannerTitle;
+
+  /// No description provided for @transformersBannerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows how to apply a cascade of transformers (in this case two dummy no-op transformers) on added files before they are actually uploaded to the backend.'**
+  String get transformersBannerDescription;
+
+  /// No description provided for @languageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Language / Lingua'**
+  String get languageTitle;
+
+  /// No description provided for @languageSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select application language'**
+  String get languageSubtitle;
+
+  /// No description provided for @englishOption.
+  ///
+  /// In en, this message translates to:
+  /// **'English 🇺🇸'**
+  String get englishOption;
+
+  /// No description provided for @italianOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Italiano 🇮🇹'**
+  String get italianOption;
 }
 
 class _AppLocalizationsDelegate

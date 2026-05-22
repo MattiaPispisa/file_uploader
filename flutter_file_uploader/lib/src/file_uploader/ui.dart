@@ -2,7 +2,7 @@ import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 import 'package:flutter_file_uploader/src/_constants.dart';
-import 'package:mobkit_dashed_border/mobkit_dashed_border.dart';
+import 'package:mobkit_dashed_border/mobkit_dashed_border.dart' as mobkit;
 import 'package:provider/provider.dart';
 
 const _kAnimationDuration = Duration(milliseconds: 250);
@@ -81,6 +81,8 @@ class FileUploader extends StatelessWidget {
     this.color,
     this.loadingColor,
     this.transformers = const [],
+    this.isDragging = false,
+    this.dragPosition,
   });
 
   /// height of the button
@@ -164,6 +166,10 @@ class FileUploader extends StatelessWidget {
   /// Each [FileTransformer] is applied in order before the upload starts.
   final List<FileTransformer> transformers;
 
+  final bool isDragging;
+
+  final Offset? dragPosition;
+
   @override
   Widget build(BuildContext context) {
     return _Provider(
@@ -191,6 +197,8 @@ class FileUploader extends StatelessWidget {
             hideOnLimit: hideOnLimit,
             loadingColor: loadingColor,
             color: color,
+            dragPosition: dragPosition,
+            isDragging: isDragging,
           ),
         ],
       ),
@@ -216,7 +224,7 @@ class FileUploader extends StatelessWidget {
   }
 }
 
-class _Button extends StatelessWidget {
+class _Button extends StatefulWidget {
   const _Button({
     required this.onFileAdded,
     required this.onPressedAddFiles,
@@ -230,6 +238,8 @@ class _Button extends StatelessWidget {
     required this.hideOnLimit,
     required this.color,
     required this.loadingColor,
+    this.isDragging = false,
+    this.dragPosition,
     super.key,
   });
 
@@ -246,26 +256,76 @@ class _Button extends StatelessWidget {
   final bool? hideOnLimit;
   final Color? color;
   final Color? loadingColor;
+  final bool isDragging;
+  final Offset? dragPosition;
+
+  @override
+  State<_Button> createState() => _ButtonState();
+}
+
+class _ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    // Configurazione dell'animazione di pulsazione (loop infinito)
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+
+    _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant _Button oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isDragging && !_pulseController.isAnimating) {
+      _pulseController.repeat(reverse: true);
+    } else if (!widget.isDragging && _pulseController.isAnimating) {
+      _pulseController.stop();
+      _pulseController.reset();
+    }
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final borderRadius =
-        this.borderRadius ?? BorderRadius.circular(kFileUploaderRadius);
-    final color = this.color ?? Theme.of(context).colorScheme.secondary;
+        widget.borderRadius ?? BorderRadius.circular(kFileUploaderRadius);
+    final baseColor = widget.color ?? Theme.of(context).colorScheme.secondary;
 
     return FileUploaderConsumer(
       key: const ValueKey('file_uploader_button_builder'),
       builder: (context, model, _) {
         final onTap = model.onPressedAddFiles(
-          onFileAdded: onFileAdded,
-          onPressedAddFiles: onPressedAddFiles,
+          onFileAdded: widget.onFileAdded,
+          onPressedAddFiles: widget.onPressedAddFiles,
         );
-        final border = this.border ??
-            DashedBorder.all(
+
+        // Feedback visivo standard sul bordo
+        final dynamicColor = widget.isDragging
+            ? baseColor
+            : (model.reachedLimit
+                ? baseColor.withValues(alpha: 0.3)
+                : baseColor);
+
+        final border = widget.border ??
+            mobkit.DashedBorder.all(
               dashLength: 10,
-              color: model.reachedLimit ? color.withValues(alpha: 0.3) : color,
+              color: dynamicColor,
             );
-        final hide = model.reachedLimit && (hideOnLimit ?? false);
+
+        final hide = model.reachedLimit && (widget.hideOnLimit ?? false);
 
         return AnimatedSwitcher(
           duration: _kAnimationDuration,
@@ -275,18 +335,69 @@ class _Button extends StatelessWidget {
                   key: const ValueKey('file_uploader_button_inkwell'),
                   onTap: onTap,
                   radius: kFileUploaderRadius,
-                  hoverColor: color.withValues(alpha: 0.1),
-                  focusColor: color.withValues(alpha: 0.1),
-                  splashColor: color.withValues(alpha: 0.1),
-                  highlightColor: color.withValues(alpha: 0.2),
-                  child: Container(
-                    width: width,
-                    height: height,
-                    decoration: BoxDecoration(
-                      border: border,
-                      borderRadius: borderRadius,
+                  hoverColor: baseColor.withValues(alpha: 0.1),
+                  focusColor: baseColor.withValues(alpha: 0.1),
+                  splashColor: baseColor.withValues(alpha: 0.1),
+                  highlightColor: baseColor.withValues(alpha: 0.2),
+                  child: ClipRRect(
+                    borderRadius: borderRadius,
+                    child: Container(
+                      width: widget.width,
+                      height: widget.height,
+                      decoration: BoxDecoration(
+                        border: border,
+                      ),
+                      child: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: _content(context, model),
+                          ),
+                          if (widget.isDragging)
+                            Positioned.fill(
+                              child: Container(
+                                color: baseColor.withValues(alpha: 0.05),
+                              ),
+                            ),
+                          if (widget.isDragging && widget.dragPosition != null)
+                            Positioned(
+                              left: widget.dragPosition!.dx - 50,
+                              top: widget.dragPosition!.dy - 50,
+                              child: IgnorePointer(
+                                child: ScaleTransition(
+                                  scale: _pulseAnimation,
+                                  child: Container(
+                                    width: 100,
+                                    height: 100,
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color:
+                                              baseColor.withValues(alpha: 0.5),
+                                          width: 2,
+                                        ),
+                                        color: baseColor.withValues(alpha: 0.1),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: baseColor.withValues(
+                                                alpha: 0.2),
+                                            blurRadius: 15,
+                                            spreadRadius: 2,
+                                          )
+                                        ]),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.add,
+                                        color: baseColor,
+                                        size: 30,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
-                    child: _content(context, model),
                   ),
                 ),
         );
@@ -298,22 +409,22 @@ class _Button extends StatelessWidget {
     if (model.processingFiles) {
       return _Loading(
         key: const ValueKey('file_uploader_loading'),
-        loading: loadingBuilder?.call(context),
-        loadingColor: loadingColor,
+        loading: widget.loadingBuilder?.call(context),
+        loadingColor: widget.loadingColor,
       );
     }
 
     if (model.errorOnFiles != null) {
       return _Error(
         key: const ValueKey('file_uploader_error'),
-        error:
-            errorBuilder?.call(context, model.errorOnFiles) ?? const SizedBox(),
+        error: widget.errorBuilder?.call(context, model.errorOnFiles) ??
+            const SizedBox(),
       );
     }
 
     return _Placeholder(
       key: const ValueKey('file_uploader_placeholder'),
-      placeholder: placeholder,
+      placeholder: widget.placeholder,
     );
   }
 }

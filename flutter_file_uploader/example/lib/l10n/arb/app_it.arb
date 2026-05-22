@@ -1,3 +1,28 @@
 {
-  "@@locale": "it"
+  "@@locale": "it",
+  "imagePickerTitle": "Image picker",
+  "imagePickerBannerTitle": "FileUploader + Selettore Immagini + Trasformatore Immagini",
+  "imagePickerBannerDescription": "Un FileUploader in cui i file vengono aggiunti prendendoli dal file system dopodiché per ogni file viene applicata una trasformazione che in questo caso ridimensiona l'immagine. Al termine della trasformazione il file verrà caricato nel backend. L'interfaccia utente mostra sia il progresso di upload che il progresso di trasformazione",
+  "filenamePlaceholder": "nomefile",
+  "addFilePlaceholder": "aggiungi un file",
+  "defaultTitle": "Default",
+  "defaultBannerTitle": "FileUploader + Uso Predefinito",
+  "defaultBannerDescription": "Un FileUploader base in cui i file vengono inseriti e caricati in modo asincrono. Utilizza il ProvidedFileCard di default per mostrare la barra di progresso dell'upload.",
+  "restorableTitle": "Default restorable chunked",
+  "restorableBannerTitle": "FileUploader + Caricamento a Pezzi Ripristinabile",
+  "restorableBannerDescription": "Un esempio di caricamento a pezzi (chunked) in cui è possibile riprendere il caricamento da dove si era interrotto (restorable). Se il caricamento fallisce o viene interrotto, l'uploader riprenderà l'invio solo dei chunk mancanti.",
+  "selfRefTitle": "Self ref management",
+  "selfRefBannerTitle": "FileUploader + Card Personalizzata & Gestione Autonoma dello Stato",
+  "selfRefBannerDescription": "In questo esempio viene mostrato come creare una card personalizzata per gestire lo stato di caricamento in modo indipendente (self-managed) utilizzando il controller fornito tramite FileUploaderRef.",
+  "fileUploadedText": "file caricato",
+  "errorUploadingText": "errore durante il caricamento",
+  "uploadButtonText": "carica",
+  "transformersTitle": "Transformers",
+  "transformersBannerTitle": "FileUploader + Trasformatori Automatici",
+  "transformersBannerDescription": "Mostra come applicare una serie di trasformatori in cascata (in questo caso due trasformatori fittizi no-op) sui file aggiunti prima che vengano effettivamente caricati nel backend.",
+  "languageTitle": "Lingua / Language",
+  "languageSubtitle": "Seleziona la lingua dell'applicazione",
+  "englishOption": "English 🇺🇸",
+  "italianOption": "Italiano 🇮🇹"
 }
+

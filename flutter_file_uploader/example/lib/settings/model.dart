@@ -9,9 +9,18 @@ class ExampleSettings extends ChangeNotifier {
     bool? hideOnLimit,
     int? limit,
     Color? color,
+    Locale? locale,
   })  : _limit = limit,
         _hideOnLimit = hideOnLimit,
-        _color = color;
+        _color = color,
+        _locale = locale;
+
+  Locale? _locale;
+  Locale? get locale => _locale;
+  set locale(Locale? locale) {
+    _locale = locale;
+    notifyListeners();
+  }
 
   int? _limit;
   int? get limit => _limit;
