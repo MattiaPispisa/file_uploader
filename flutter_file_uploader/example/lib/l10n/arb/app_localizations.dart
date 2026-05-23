@@ -107,7 +107,7 @@ abstract class AppLocalizations {
   /// No description provided for @addFilePlaceholder.
   ///
   /// In en, this message translates to:
-  /// **'add a file'**
+  /// **'Tap to add a file'**
   String get addFilePlaceholder;
 
   /// No description provided for @defaultTitle.
@@ -119,67 +119,67 @@ abstract class AppLocalizations {
   /// No description provided for @defaultBannerTitle.
   ///
   /// In en, this message translates to:
-  /// **'FileUploader + Default Usage'**
+  /// **'FileUploader — Basic Usage'**
   String get defaultBannerTitle;
 
   /// No description provided for @defaultBannerDescription.
   ///
   /// In en, this message translates to:
-  /// **'A basic FileUploader where files are added and uploaded asynchronously. It uses the default ProvidedFileCard to show the upload progress bar.'**
+  /// **'The simplest way to use FileUploader. Files are added by tapping the button and uploaded asynchronously in the background. The built-in ProvidedFileCard displays a real-time upload progress bar for each file.'**
   String get defaultBannerDescription;
 
   /// No description provided for @restorableTitle.
   ///
   /// In en, this message translates to:
-  /// **'Default restorable chunked'**
+  /// **'Restorable chunked'**
   String get restorableTitle;
 
   /// No description provided for @restorableBannerTitle.
   ///
   /// In en, this message translates to:
-  /// **'FileUploader + Restorable Chunked Upload'**
+  /// **'FileUploader — Restorable Chunked Upload'**
   String get restorableBannerTitle;
 
   /// No description provided for @restorableBannerDescription.
   ///
   /// In en, this message translates to:
-  /// **'An example of chunked upload where uploading can be resumed from where it left off (restorable). If the upload fails or is interrupted, the uploader will resume sending only the missing chunks.'**
+  /// **'Demonstrates chunked upload with resume support. The file is split into smaller chunks and sent one at a time. If the upload is interrupted (e.g. network loss or app crash), it automatically resumes from the last successfully uploaded chunk — no need to restart from scratch.'**
   String get restorableBannerDescription;
 
   /// No description provided for @selfRefTitle.
   ///
   /// In en, this message translates to:
-  /// **'Self ref management'**
+  /// **'Self-managed card'**
   String get selfRefTitle;
 
   /// No description provided for @selfRefBannerTitle.
   ///
   /// In en, this message translates to:
-  /// **'FileUploader + Custom Card & Self State Management'**
+  /// **'FileUploader — Custom Card with Self-Managed State'**
   String get selfRefBannerTitle;
 
   /// No description provided for @selfRefBannerDescription.
   ///
   /// In en, this message translates to:
-  /// **'This example shows how to create a custom card to manage the upload state independently (self-managed) using the controller provided via FileUploaderRef.'**
+  /// **'Shows how to build a fully custom file card that manages its own upload state, without relying on ProvidedFileCard. The card receives a FileUploaderRef, which exposes the upload controller. It manually triggers the upload and reacts to its outcome (success or error) by updating its own local state.'**
   String get selfRefBannerDescription;
 
   /// No description provided for @fileUploadedText.
   ///
   /// In en, this message translates to:
-  /// **'file uploaded'**
+  /// **'File uploaded successfully'**
   String get fileUploadedText;
 
   /// No description provided for @errorUploadingText.
   ///
   /// In en, this message translates to:
-  /// **'error uploading'**
+  /// **'Upload failed — please try again'**
   String get errorUploadingText;
 
   /// No description provided for @uploadButtonText.
   ///
   /// In en, this message translates to:
-  /// **'upload'**
+  /// **'Upload'**
   String get uploadButtonText;
 
   /// No description provided for @transformersTitle.
@@ -191,13 +191,13 @@ abstract class AppLocalizations {
   /// No description provided for @transformersBannerTitle.
   ///
   /// In en, this message translates to:
-  /// **'FileUploader + Automated Transformers'**
+  /// **'FileUploader — File Transformers Pipeline'**
   String get transformersBannerTitle;
 
   /// No description provided for @transformersBannerDescription.
   ///
   /// In en, this message translates to:
-  /// **'Shows how to apply a cascade of transformers (in this case two dummy no-op transformers) on added files before they are actually uploaded to the backend.'**
+  /// **'Shows how to apply a sequential pipeline of transformers to each file before it is uploaded. Transformers run in order: each one receives the output of the previous. In this example, two no-op transformers are used as placeholders — replace them with real logic such as compression, format conversion or metadata injection.'**
   String get transformersBannerDescription;
 
   /// No description provided for @completeTitle.
@@ -209,13 +209,13 @@ abstract class AppLocalizations {
   /// No description provided for @completeBannerTitle.
   ///
   /// In en, this message translates to:
-  /// **'FileUploader + Complete'**
+  /// **'FileUploader — Full-Featured Example'**
   String get completeBannerTitle;
 
   /// No description provided for @completeBannerDescription.
   ///
   /// In en, this message translates to:
-  /// **'A FileUploader where files are added from the file system, then a transformation resizing the image is applied to each file. After the transformation is complete, the file is uploaded to the backend. The UI shows both upload and transformation progress. Also a drag and drop zone is present to add files.'**
+  /// **'A comprehensive example combining multiple features: files are selected from the file system or dropped via drag-and-drop. Each file goes through a transformer that resizes the image before uploading. The custom card shows both the transformation progress and the upload progress in real time. This example is the best starting point for production-like integrations.'**
   String get completeBannerDescription;
 
   /// No description provided for @languageTitle.

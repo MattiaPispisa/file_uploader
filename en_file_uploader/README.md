@@ -220,6 +220,39 @@ In the [example](https://github.com/MattiaPispisa/file_uploader/blob/main/file_u
 
 Other examples are provided in the [tests](https://github.com/MattiaPispisa/file_uploader/tree/main/en_file_uploader/test/src) to ensure the correct functionality of the library.
 
+## Running the example
+
+### 1. Bootstrap the workspace
+
+This project uses [Melos](https://melos.invertase.dev) to manage the monorepo.
+If you don't have it installed yet:
+
+```bash
+dart pub global activate melos
+```
+
+Then bootstrap all packages from the **repository root**:
+
+```bash
+dart run melos bs
+```
+
+> `melos bs` runs `pub get` across all packages and links local dependencies together.
+
+### 2. Run the Flutter example app
+
+**VS Code (recommended)**
+
+The repository ships with a pre-configured launch configuration.
+Open the project in VS Code, go to **Run and Debug** (`⇧⌘D`), select **`flutter_file_uploader_example`** and press **▶ Start Debugging**.
+
+**Command line**
+
+```bash
+cd flutter_file_uploader/example
+flutter run
+```
+
 [license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [license_link]: https://opensource.org/licenses/MIT
 [pub_likes]: https://img.shields.io/pub/likes/en_file_uploader

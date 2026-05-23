@@ -6,6 +6,28 @@
   </a>
 </p>
 
+## Getting Started
+
+This repository is a [Melos](https://melos.invertase.dev) monorepo.
+
+### 1. Install Melos (if needed)
+
+```bash
+dart pub global activate melos
+```
+
+### 2. Bootstrap all packages
+
+Run the following command from the **repository root**:
+
+```bash
+dart run melos bs
+```
+
+> `melos bs` runs `pub get` across all packages and links local dependencies together.
+
+---
+
 ## Core
 
 - [en_file_uploader](https://github.com/MattiaPispisa/file_uploader/tree/main/en_file_uploader): core library that handle file upload.
@@ -16,6 +38,7 @@
 - [dio_file_uploader](https://github.com/MattiaPispisa/file_uploader/tree/main/plugins/dio_file_uploader): plugin that handle file upload via `dio` package.
 
 ## UI
+
 - [flutter_file_uploader](https://github.com/MattiaPispisa/file_uploader/tree/main/flutter_file_uploader): Flutter widgets that simplify the creation and use of the `en_file_uploader` library
 
 ## [Tools](https://github.com/MattiaPispisa/file_uploader/tree/main/tools)
