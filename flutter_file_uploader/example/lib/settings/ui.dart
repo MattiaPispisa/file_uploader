@@ -194,7 +194,6 @@ class _LocaleTile extends StatelessWidget {
     return Selector<ExampleSettings, Locale?>(
       selector: (_, state) => state.locale,
       builder: (context, locale, child) {
-        // locale is guaranteed non-null after ExampleSettings.fromPlatform()
         final currentLocale = locale ?? AppLocalizations.supportedLocales.first;
 
         return ListTile(
@@ -209,7 +208,6 @@ class _LocaleTile extends StatelessWidget {
     );
   }
 
-  // Single source of truth: keeps the dropdown in sync with the ARB files.
   List<Locale> get supportedLocales => AppLocalizations.supportedLocales;
 
   String _getLocaleName(BuildContext context, Locale locale) {

@@ -1,3 +1,9 @@
+## [4.0.1] - 2026-05-23
+
+### Fixed
+
+- fixed `StreamedRequest` close with `ignore()`
+
 ## [4.0.0] - 2026-05-19
 
 ### Added

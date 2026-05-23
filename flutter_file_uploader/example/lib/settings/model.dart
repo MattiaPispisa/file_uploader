@@ -17,15 +17,10 @@ class ExampleSettings extends ChangeNotifier {
         _color = color,
         _locale = locale;
 
-  /// Creates [ExampleSettings] with the locale initialised from the device
-  /// locale, clamped to the supported locales. This ensures the model always
-  /// reflects the language that [MaterialApp] will actually render at startup.
   factory ExampleSettings.fromPlatform() {
     final deviceLocale = PlatformDispatcher.instance.locale;
     final supported = AppLocalizations.supportedLocales;
 
-    // Try exact match first, then language-only match, then fall back to the
-    // first supported locale.
     final resolved = supported.firstWhere(
       (l) =>
           l.languageCode == deviceLocale.languageCode &&

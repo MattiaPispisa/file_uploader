@@ -65,7 +65,7 @@ extension HttpExtension on http.Client {
         completer.completeError(error, stackTrace);
       },
       onDone: () {
-        unawaited(request.sink.close());
+        request.sink.close().ignore();
         completer.complete();
       },
       cancelOnError: true,
