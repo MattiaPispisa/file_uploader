@@ -2,8 +2,10 @@ import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:file_uploader_utils/file_uploader_utils.dart';
 import 'package:test/test.dart';
 
+import 'mocks/mock_chunked_file_upload_handler.dart';
 import 'mocks/mock_file_transformer.dart';
 import 'mocks/mock_file_upload_handler.dart';
+import 'mocks/mock_restorable_chunked_file_upload_handler.dart';
 
 void main() {
   group(
@@ -37,6 +39,36 @@ void main() {
         );
 
         expect(controller.hasTransformers, false);
+      });
+
+      test('should expose originalFile for _FileUploadController', () async {
+        final file = createFile();
+        final controller = FileUploadController(
+          MockFileUploadHandlerBuilder(file).build(),
+        );
+
+        expect(controller.originalFile, file);
+      });
+
+      test('should expose originalFile for _ChunkedFileUploadController',
+          () async {
+        final file = createFile();
+        final controller = FileUploadController(
+          MockChunkedFileUploadHandlerBuilder(file).build(),
+        );
+
+        expect(controller.originalFile, file);
+      });
+
+      test(
+          'should expose originalFile for'
+          ' _RestorableChunkedFileUploadController', () async {
+        final file = createFile();
+        final controller = FileUploadController(
+          MockRestorableChunkedFileUploadHandlerBuilder(file).build(),
+        );
+
+        expect(controller.originalFile, file);
       });
     },
   );

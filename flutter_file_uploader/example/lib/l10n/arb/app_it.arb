@@ -1,3 +1,27 @@
 {
-  "@@locale": "it"
+  "@@locale": "it",
+  "filenamePlaceholder": "nomefile",
+  "addFilePlaceholder": "Tocca per aggiungere un file",
+  "defaultTitle": "Default",
+  "defaultBannerTitle": "FileUploader — Utilizzo Base",
+  "defaultBannerDescription": "Il modo più semplice per usare FileUploader. I file vengono aggiunti toccando il pulsante e caricati in modo asincrono in background. La ProvidedFileCard integrata mostra una barra di avanzamento in tempo reale per ogni file in fase di caricamento.",
+  "restorableTitle": "Chunked ripristinabile",
+  "restorableBannerTitle": "FileUploader — Caricamento a Blocchi Ripristinabile",
+  "restorableBannerDescription": "Dimostra il caricamento a blocchi (chunked) con supporto alla ripresa. Il file viene suddiviso in blocchi più piccoli e inviato un blocco alla volta. Se il caricamento viene interrotto (ad es. per perdita di rete o chiusura dell'app), riprende automaticamente dall'ultimo blocco caricato con successo — senza ricominciare da capo.",
+  "selfRefTitle": "Card autonoma",
+  "selfRefBannerTitle": "FileUploader — Card Personalizzata con Stato Autonomo",
+  "selfRefBannerDescription": "Mostra come costruire una card completamente personalizzata che gestisce autonomamente il proprio stato di caricamento, senza dipendere da ProvidedFileCard. La card riceve un FileUploaderRef, che espone il controller di upload. Avvia il caricamento manualmente e reagisce al risultato (successo o errore) aggiornando il proprio stato locale.",
+  "fileUploadedText": "File caricato con successo",
+  "errorUploadingText": "Caricamento fallito — riprova",
+  "uploadButtonText": "Carica",
+  "transformersTitle": "Transformer",
+  "transformersBannerTitle": "FileUploader — Pipeline di Transformer",
+  "transformersBannerDescription": "Mostra come applicare una pipeline sequenziale di transformer a ogni file prima che venga caricato. I transformer vengono eseguiti in ordine: ciascuno riceve l'output del precedente. In questo esempio vengono usati due transformer no-op come segnaposto — sostituiscili con logica reale come compressione, conversione di formato o aggiunta di metadati.",
+  "completeTitle": "Completo",
+  "completeBannerTitle": "FileUploader — Esempio Completo",
+  "completeBannerDescription": "Un esempio esaustivo che combina più funzionalità: i file vengono selezionati dal file system oppure trascinati tramite drag-and-drop. Ogni file passa attraverso un transformer che ridimensiona l'immagine prima del caricamento. La card personalizzata mostra in tempo reale sia il progresso della trasformazione che quello del caricamento. Questo esempio è il punto di partenza ideale per integrazioni simili alla produzione.",
+  "languageTitle": "Lingua / Language",
+  "languageSubtitle": "Seleziona la lingua dell'applicazione",
+  "englishOption": "English 🇺🇸",
+  "italianOption": "Italiano 🇮🇹"
 }

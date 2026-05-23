@@ -1,3 +1,13 @@
+## [3.1.0] - 2026-05-23
+
+### Added
+
+- `FileUploadController` expose the file
+
+### Changed
+
+- chore: more logs during transformations
+
 ## [3.0.0] - 2026-05-19
 
 ### Added

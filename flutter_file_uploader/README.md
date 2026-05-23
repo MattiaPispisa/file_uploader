@@ -115,9 +115,50 @@ simulating file uploads.
 In the [examples](./example/lib/examples/) folder, you can find practical uses:
 
 - **default**: The simplest case that uses `FileUploader` and `ProvidedFileCard`;
-- **default_restorable_chunked**: Same as **default** but using a different
-  handler: `InMemoryRestorableChunkedFileUploadHandler`;
-- **self_ref_management**: Custom file upload state management (no `ProvidedFileCard`).
+- **default_restorable_chunked**: Same as **default** but using a restorable chunked handler
+  (`InMemoryRestorableChunkedFileUploadHandler`). If the upload is interrupted, it resumes
+  automatically from the last successfully uploaded chunk;
+- **self_ref_management**: Shows how to build a fully custom file card that manages its own upload
+  state using `FileUploaderRef`, without relying on `ProvidedFileCard`;
+- **transformers**: Demonstrates how to apply a sequential pipeline of `FileTransformer`s to each
+  file before it is uploaded;
+- **complete**: A full-featured demo combining file-system picker, drag-and-drop, image resizing
+  transformer, and a custom card showing both transformation and upload progress in real time.
+
+## Running the example
+
+### 1. Bootstrap the workspace
+
+This project uses [Melos](https://melos.invertase.dev) to manage the monorepo.
+If you don't have it installed yet:
+
+```bash
+dart pub global activate melos
+```
+
+Then bootstrap all packages from the **repository root**:
+
+```bash
+dart run melos bs
+```
+
+> `melos bs` runs `pub get` across all packages and links local dependencies together.
+
+### 2. Run the app
+
+**VS Code (recommended)**
+
+The repository ships with a pre-configured launch configuration.
+Open the project in VS Code, go to **Run and Debug** (`⇧⌘D`), select **`flutter_file_uploader_example`** and press **▶ Start Debugging**.
+
+**Command line**
+
+```bash
+cd flutter_file_uploader/example
+flutter run
+```
+
+---
 
 ## Widgets
 
@@ -147,9 +188,9 @@ A card that displays the progress of a file upload.
 
 ## Screenshot
 
-|                                                                                                                                                             |                                                                                                                                                                  |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <img width="300" alt="image" src="https://raw.githubusercontent.com/MattiaPispisa/file_uploader/main/flutter_file_uploader/assets/show_case/default.gif" /> | <img width="300" alt="video" src="https://raw.githubusercontent.com/MattiaPispisa/file_uploader/main/flutter_file_uploader/assets/show_case/transformers.gif" /> |
+|                                                                                                                                                              |                                                                                                                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <img width="300" alt="image" src="https://raw.githubusercontent.com/MattiaPispisa/file_uploader/main/flutter_file_uploader/assets/show_case/complete.gif" /> | <img width="300" alt="video" src="https://raw.githubusercontent.com/MattiaPispisa/file_uploader/main/flutter_file_uploader/assets/show_case/default.gif" /> |
 
 [license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [license_link]: https://opensource.org/licenses/MIT

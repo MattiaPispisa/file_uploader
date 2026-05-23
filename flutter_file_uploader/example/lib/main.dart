@@ -16,6 +16,7 @@ final _routes = <String, Widget Function(BuildContext)>{
   '/default_restorable_chunked': (_) => DefaultRestorableChunkedFilesUpload(),
   './self_ref_management': (_) => SelfRefManagementFilesUpload(),
   './transformers': (_) => TransformersFilesUpload(),
+  './complete': (_) => CompleteUploadExample(),
 };
 
 class App extends StatelessWidget {
@@ -24,18 +25,23 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => ExampleSettings(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          appBarTheme: AppBarTheme(
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          ),
-          useMaterial3: true,
-        ),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        routes: {'/': (_) => ShowCase(), ..._routes},
+      create: (_) => ExampleSettings.fromPlatform(),
+      child: Consumer<ExampleSettings>(
+        builder: (context, settings, _) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            locale: settings.locale,
+            theme: ThemeData(
+              appBarTheme: AppBarTheme(
+                backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+              ),
+              useMaterial3: true,
+            ),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routes: {'/': (_) => ShowCase(), ..._routes},
+          );
+        },
       ),
     );
   }

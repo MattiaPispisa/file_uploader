@@ -8,7 +8,9 @@ class _RestorableChunkedFileUploadController extends FileUploadController {
   })  : _handler = handler,
         super._(transformers, logger);
 
+  @override
   final RestorableChunkedFileUploadHandler _handler;
+
   FileUploadPresentationResponse? _presentationResponse;
 
   @override

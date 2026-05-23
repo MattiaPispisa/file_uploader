@@ -1,6 +1,8 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
+import 'package:flutter_file_uploader_example/l10n/arb/app_localizations.dart';
 
 int _minLimit = 1;
 
@@ -9,9 +11,35 @@ class ExampleSettings extends ChangeNotifier {
     bool? hideOnLimit,
     int? limit,
     Color? color,
+    Locale? locale,
   })  : _limit = limit,
         _hideOnLimit = hideOnLimit,
-        _color = color;
+        _color = color,
+        _locale = locale;
+
+  factory ExampleSettings.fromPlatform() {
+    final deviceLocale = PlatformDispatcher.instance.locale;
+    final supported = AppLocalizations.supportedLocales;
+
+    final resolved = supported.firstWhere(
+      (l) =>
+          l.languageCode == deviceLocale.languageCode &&
+          l.countryCode == deviceLocale.countryCode,
+      orElse: () => supported.firstWhere(
+        (l) => l.languageCode == deviceLocale.languageCode,
+        orElse: () => supported.first,
+      ),
+    );
+
+    return ExampleSettings(locale: resolved);
+  }
+
+  Locale? _locale;
+  Locale? get locale => _locale;
+  set locale(Locale? locale) {
+    _locale = locale;
+    notifyListeners();
+  }
 
   int? _limit;
   int? get limit => _limit;

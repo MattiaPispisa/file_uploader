@@ -8,6 +8,7 @@ class _FileUploadController extends FileUploadController {
   })  : _handler = handler,
         super._(transformers, logger);
 
+  @override
   final FileUploadHandler _handler;
 
   @override

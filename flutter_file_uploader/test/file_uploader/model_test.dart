@@ -61,6 +61,8 @@ void main() {
           final file = utils.createFile();
           final handler = MockFileUploadHandler();
 
+          when(() => handler.originalFile).thenReturn(file);
+
           final callback = model.onPressedAddFiles(
             onFileAdded: (file) async {
               return handler;
@@ -80,7 +82,12 @@ void main() {
           expect(
             model.refs.first,
             isA<FileUploaderRef>()
-                .having((ref) => ref.uploaded, 'uploaded', false),
+                .having((ref) => ref.uploaded, 'uploaded', false)
+                .having(
+                  (ref) => ref.originalFile,
+                  'originalFile',
+                  file,
+                ),
           );
         },
       );

@@ -1,3 +1,14 @@
+## [2.1.0] - 2026-05-23
+
+### Added
+
+- `FileUploaderRef` expose the handler original file
+- added drag effect to `FileUploader` UI by adding `isDragging` and `dragPosition` parameters
+
+### Changed
+
+- chore: examples are more exhaustive and complete
+
 ## [2.0.0] - 2026-05-19
 
 ### Added

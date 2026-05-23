@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_file_uploader_example/l10n/arb/app_localizations.dart';
+import 'package:flutter_file_uploader_example/l10n/l10n.dart';
 import 'package:flutter_file_uploader_example/settings/model.dart';
 import 'package:provider/provider.dart';
 
@@ -7,7 +9,6 @@ class SettingsConsumer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Raggruppiamo le impostazioni in una Card per dare ordine visivo
     return Card(
       elevation: 0,
       margin: EdgeInsets.zero,
@@ -40,6 +41,8 @@ class SettingsConsumer extends StatelessWidget {
           _HideOnLimitTile(),
           Divider(height: 1),
           _ColorTile(),
+          Divider(height: 1),
+          _LocaleTile(),
         ],
       ),
     );
@@ -57,7 +60,6 @@ class _LimitTile extends StatelessWidget {
         return ListTile(
           title: const Text('File limit'),
           subtitle: const Text('Maximum files allowed'),
-          // Il Trailing ospita i controlli in riga
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -87,7 +89,6 @@ class _LimitTile extends StatelessWidget {
                 color: Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(width: 8),
-              // Bottone di reset separato visivamente
               _ResetToDefaultButton(
                 onPressed: limit != null
                     ? () => context.read<ExampleSettings>().limit = null
@@ -109,7 +110,6 @@ class _HideOnLimitTile extends StatelessWidget {
     return Selector<ExampleSettings, bool?>(
       selector: (_, state) => state.hideOnLimit,
       builder: (context, hideOnLimit, child) {
-        // SwitchListTile è perfetto per i flag booleani
         return SwitchListTile.adaptive(
           title: const Text('Hide on limit'),
           subtitle: const Text('Hide upload button when limit is reached'),
@@ -182,6 +182,91 @@ class _ResetToDefaultButton extends StatelessWidget {
       onPressed: onPressed,
       icon: const Icon(Icons.restore),
       tooltip: 'Reset to default',
+    );
+  }
+}
+
+class _LocaleTile extends StatelessWidget {
+  const _LocaleTile({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<ExampleSettings, Locale?>(
+      selector: (_, state) => state.locale,
+      builder: (context, locale, child) {
+        final currentLocale = locale ?? AppLocalizations.supportedLocales.first;
+
+        return ListTile(
+          title: Text(context.t().languageTitle),
+          subtitle: Text(context.t().languageSubtitle),
+          trailing: _dropdown(
+            context,
+            currentLocale: currentLocale,
+          ),
+        );
+      },
+    );
+  }
+
+  List<Locale> get supportedLocales => AppLocalizations.supportedLocales;
+
+  String _getLocaleName(BuildContext context, Locale locale) {
+    switch (locale.languageCode) {
+      case 'en':
+        return context.t().englishOption;
+      case 'it':
+        return context.t().italianOption;
+      default:
+        return locale.languageCode;
+    }
+  }
+
+  Widget _dropdown(
+    BuildContext context, {
+    required Locale currentLocale,
+  }) {
+    return DropdownButton<Locale>(
+      value: currentLocale,
+      underline: const SizedBox(),
+      focusColor: Colors.transparent,
+      borderRadius: BorderRadius.circular(12),
+      elevation: 4,
+      icon: Icon(
+        Icons.arrow_drop_down_rounded,
+        color: Theme.of(context).colorScheme.primary,
+      ),
+      selectedItemBuilder: (BuildContext context) {
+        return supportedLocales.map<Widget>((Locale locale) {
+          return Container(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              _getLocaleName(context, locale),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          );
+        }).toList();
+      },
+      onChanged: (newLocale) {
+        if (newLocale != null) {
+          context.read<ExampleSettings>().locale = newLocale;
+        }
+      },
+      items: supportedLocales.map<DropdownMenuItem<Locale>>((Locale locale) {
+        final isSelected = currentLocale.languageCode == locale.languageCode;
+
+        return DropdownMenuItem(
+          value: locale,
+          child: Text(
+            _getLocaleName(context, locale),
+            style: TextStyle(
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }

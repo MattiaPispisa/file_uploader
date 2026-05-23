@@ -1,3 +1,27 @@
 {
-    "@@locale": "en"
+  "@@locale": "en",
+  "filenamePlaceholder": "filename",
+  "addFilePlaceholder": "Tap to add a file",
+  "defaultTitle": "Default",
+  "defaultBannerTitle": "FileUploader — Basic Usage",
+  "defaultBannerDescription": "The simplest way to use FileUploader. Files are added by tapping the button and uploaded asynchronously in the background. The built-in ProvidedFileCard displays a real-time upload progress bar for each file.",
+  "restorableTitle": "Restorable chunked",
+  "restorableBannerTitle": "FileUploader — Restorable Chunked Upload",
+  "restorableBannerDescription": "Demonstrates chunked upload with resume support. The file is split into smaller chunks and sent one at a time. If the upload is interrupted (e.g. network loss or app crash), it automatically resumes from the last successfully uploaded chunk — no need to restart from scratch.",
+  "selfRefTitle": "Self-managed card",
+  "selfRefBannerTitle": "FileUploader — Custom Card with Self-Managed State",
+  "selfRefBannerDescription": "Shows how to build a fully custom file card that manages its own upload state, without relying on ProvidedFileCard. The card receives a FileUploaderRef, which exposes the upload controller. It manually triggers the upload and reacts to its outcome (success or error) by updating its own local state.",
+  "fileUploadedText": "File uploaded successfully",
+  "errorUploadingText": "Upload failed — please try again",
+  "uploadButtonText": "Upload",
+  "transformersTitle": "Transformers",
+  "transformersBannerTitle": "FileUploader — File Transformers Pipeline",
+  "transformersBannerDescription": "Shows how to apply a sequential pipeline of transformers to each file before it is uploaded. Transformers run in order: each one receives the output of the previous. In this example, two no-op transformers are used as placeholders — replace them with real logic such as compression, format conversion or metadata injection.",
+  "completeTitle": "Complete",
+  "completeBannerTitle": "FileUploader — Full-Featured Example",
+  "completeBannerDescription": "A comprehensive example combining multiple features: files are selected from the file system or dropped via drag-and-drop. Each file goes through a transformer that resizes the image before uploading. The custom card shows both the transformation progress and the upload progress in real time. This example is the best starting point for production-like integrations.",
+  "languageTitle": "Language / Lingua",
+  "languageSubtitle": "Select application language",
+  "englishOption": "English 🇺🇸",
+  "italianOption": "Italiano 🇮🇹"
 }

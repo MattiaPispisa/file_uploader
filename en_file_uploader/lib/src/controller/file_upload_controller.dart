@@ -161,6 +161,12 @@ abstract class FileUploadController {
   /// (i.e. the transformed file is cached and ready for upload/retry).
   bool get transformersApplied => _transformersApplied;
 
+  /// The handler used by this controller.
+  IFileUploadHandler get _handler;
+
+  /// The original file that is being uploaded.
+  XFile get originalFile => _handler.originalFile;
+
   Future<XFile> _applyTransformers({
     required IFileUploadHandler handler,
     TransformationProgressCallback? onTransformationProgress,
@@ -202,13 +208,20 @@ abstract class FileUploadController {
         }
 
         currentFile = transformedFile;
-      } catch (e, s) {
+      } catch (error, stackTrace) {
         if (transformer.continueOnFailure) {
           _logger?.warning(
             'Transformer ${transformer.runtimeType} failed '
-            'on ${currentFile.path}, continuing with previous file\n$e\n$s',
+            'on ${currentFile.path}, continuing with previous file'
+            '\n$error\n$stackTrace',
           );
         } else {
+          _logger?.error(
+            'Transformer ${transformer.runtimeType} failed '
+            'on ${currentFile.path}, process is interrupted',
+            error,
+            stackTrace,
+          );
           rethrow;
         }
       }

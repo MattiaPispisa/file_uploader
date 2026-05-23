@@ -151,6 +151,82 @@ void main() {
             ..expectErrorOnFilesWidget();
         },
       );
+
+      testWidgets(
+        'should create drag effect',
+        (tester) async {
+          final handler = MockFileUploadHandler();
+          final file = utils.createFile();
+
+          final robot = FileUploaderRobot(tester: tester);
+          await robot.pumpFileUploader(
+            builder: (_, __) => const SizedBox(),
+            onFileAdded: (file) async => handler,
+            onPressedAddFiles: () async {
+              return [file];
+            },
+            isDragging: true,
+            dragPosition: Offset.zero,
+          );
+
+          await robot.pump();
+          robot.expectDraggedItemWidget();
+        },
+      );
+
+      testWidgets(
+        'should change drag effect',
+        (tester) async {
+          final handler = MockFileUploadHandler();
+          final file = utils.createFile();
+
+          final robot = FileUploaderRobot(tester: tester);
+          await robot.pumpFileUploader(
+            builder: (_, __) => const SizedBox(),
+            onFileAdded: (file) async => handler,
+            onPressedAddFiles: () async {
+              return [file];
+            },
+          );
+
+          await robot.pump();
+          robot.expectNoDraggedItemWidget();
+
+          await robot.pumpFileUploader(
+            builder: (_, __) => const SizedBox(),
+            onFileAdded: (file) async => handler,
+            onPressedAddFiles: () async {
+              return [file];
+            },
+            isDragging: true,
+            dragPosition: Offset.zero,
+          );
+
+          robot.expectDraggedItemWidget();
+
+          await robot.pumpFileUploader(
+            builder: (_, __) => const SizedBox(),
+            onFileAdded: (file) async => handler,
+            onPressedAddFiles: () async {
+              return [file];
+            },
+            isDragging: true,
+            dragPosition: const Offset(50, 50),
+          );
+
+          robot.expectDraggedItemWidget(left: 0, top: 0);
+
+          await robot.pumpFileUploader(
+            builder: (_, __) => const SizedBox(),
+            onFileAdded: (file) async => handler,
+            onPressedAddFiles: () async {
+              return [file];
+            },
+          );
+
+          robot.expectNoDraggedItemWidget();
+        },
+      );
     },
   );
 }

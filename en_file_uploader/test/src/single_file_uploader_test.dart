@@ -370,7 +370,9 @@ void main() {
         ).called(1);
       });
 
-      test('should log info about transformation fails', () async {
+      test(
+          'should warn about transformation fails'
+          ' when continueOnFailure is true', () async {
         final logger = MockLogger();
         r = Robot()
           ..createFile()
@@ -400,6 +402,45 @@ void main() {
             any<String>(
               that: contains('Transformer _MockFileTransformer failed on'),
             ),
+          ),
+        ).called(1);
+      });
+
+      test(
+          'should log error about transformation fails'
+          ' when continueOnFailure is false', () async {
+        final logger = MockLogger();
+        r = Robot()
+          ..createFile()
+          ..logger = logger
+          ..addTransformer(() {
+            final transformerBuilder = MockFileTransformerBuilder()
+              ..fail = true
+              ..continueOnFailure = false;
+            return transformerBuilder.build();
+          })
+          ..createController((file) {
+            final builder = MockFileUploadHandlerBuilder(file);
+
+            return handler = builder.build();
+          });
+
+        await r.expectUploadError<Exception>();
+
+        verify(
+          () => logger.info(
+            any<String>(
+              that: contains('applying transformers to '),
+            ),
+          ),
+        ).called(1);
+        verify(
+          () => logger.error(
+            any<String>(
+              that: contains('process is interrupted'),
+            ),
+            any<dynamic>(),
+            any<dynamic>(),
           ),
         ).called(1);
       });

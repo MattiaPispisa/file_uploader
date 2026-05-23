@@ -52,6 +52,9 @@ class FileUploaderRef {
   /// Whether the transformers have already been applied (result is cached).
   bool get transformersApplied => _controller.transformersApplied;
 
+  /// get the [FileUploadController.originalFile]
+  XFile get originalFile => _controller.originalFile;
+
   /// upload file
   Future<FileUploadResult> upload({
     ProgressCallback? onProgress,
