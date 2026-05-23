@@ -188,9 +188,9 @@ A card that displays the progress of a file upload.
 
 ## Screenshot
 
-|                                                                                                                                                             |                                                                                                                                                                  |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <img width="300" alt="image" src="https://raw.githubusercontent.com/MattiaPispisa/file_uploader/main/flutter_file_uploader/assets/show_case/default.gif" /> | <img width="300" alt="video" src="https://raw.githubusercontent.com/MattiaPispisa/file_uploader/main/flutter_file_uploader/assets/show_case/transformers.gif" /> |
+|                                                                                                                                                              |                                                                                                                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <img width="300" alt="image" src="https://raw.githubusercontent.com/MattiaPispisa/file_uploader/main/flutter_file_uploader/assets/show_case/complete.gif" /> | <img width="300" alt="video" src="https://raw.githubusercontent.com/MattiaPispisa/file_uploader/main/flutter_file_uploader/assets/show_case/default.gif" /> |
 
 [license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [license_link]: https://opensource.org/licenses/MIT

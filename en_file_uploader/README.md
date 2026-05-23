@@ -46,7 +46,7 @@ If the existing plugins do not meet your needs you can build your own custom han
 
 If you are using Flutter, this package integrates seamlessly with [flutter_file_uploader](https://pub.dev/packages/flutter_file_uploader), which provides highly customizable widgets for displaying and managing file uploads.
 
-<img width="220" alt="UI Showcase" src="https://raw.githubusercontent.com/MattiaPispisa/file_uploader/main/flutter_file_uploader/assets/show_case/transformers.gif" />
+<img width="220" alt="UI Showcase" src="https://raw.githubusercontent.com/MattiaPispisa/file_uploader/main/flutter_file_uploader/assets/show_case/complete.gif" />
 
 ## File Uploader APIs
 

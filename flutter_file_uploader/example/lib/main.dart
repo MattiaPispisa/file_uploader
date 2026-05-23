@@ -25,7 +25,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => ExampleSettings(),
+      create: (_) => ExampleSettings.fromPlatform(),
       child: Consumer<ExampleSettings>(
         builder: (context, settings, _) {
           return MaterialApp(

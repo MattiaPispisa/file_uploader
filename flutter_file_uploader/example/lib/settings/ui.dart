@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_file_uploader_example/l10n/arb/app_localizations.dart';
 import 'package:flutter_file_uploader_example/l10n/l10n.dart';
 import 'package:flutter_file_uploader_example/settings/model.dart';
 import 'package:provider/provider.dart';
@@ -193,7 +194,8 @@ class _LocaleTile extends StatelessWidget {
     return Selector<ExampleSettings, Locale?>(
       selector: (_, state) => state.locale,
       builder: (context, locale, child) {
-        final currentLocale = locale ?? const Locale('en');
+        // locale is guaranteed non-null after ExampleSettings.fromPlatform()
+        final currentLocale = locale ?? AppLocalizations.supportedLocales.first;
 
         return ListTile(
           title: Text(context.t().languageTitle),
@@ -207,10 +209,8 @@ class _LocaleTile extends StatelessWidget {
     );
   }
 
-  final supportedLocales = const [
-    Locale('en'),
-    Locale('it'),
-  ];
+  // Single source of truth: keeps the dropdown in sync with the ARB files.
+  List<Locale> get supportedLocales => AppLocalizations.supportedLocales;
 
   String _getLocaleName(BuildContext context, Locale locale) {
     switch (locale.languageCode) {
