@@ -16,6 +16,8 @@ class FileUploaderRobot {
     Future<IFileUploadHandler> Function(XFile)? onFileAdded,
     int? limit,
     bool? hideOnLimit,
+    bool isDragging = false,
+    Offset? dragPosition,
   }) {
     return _tester.pumpWidget(
       Material(
@@ -27,6 +29,8 @@ class FileUploaderRobot {
             onFileAdded: onFileAdded,
             limit: limit,
             hideOnLimit: hideOnLimit,
+            isDragging: isDragging,
+            dragPosition: dragPosition,
           ),
         ),
       ),
@@ -122,6 +126,29 @@ class FileUploaderRobot {
   void expectNoAddingFilesWidget() {
     expect(
       find.byKey(const ValueKey('file_uploader_placeholder')),
+      findsNothing,
+    );
+  }
+
+  void expectDraggedItemWidget({
+    double? left,
+    double? top,
+  }) {
+    expect(
+      _tester.widget(
+        find.byKey(
+          const ValueKey('file_uploader_dragged_item_positioned'),
+        ),
+      ),
+      isA<Positioned>()
+          .having((positioned) => positioned.left, 'left', left ?? -50)
+          .having((positioned) => positioned.top, 'top', top ?? -50),
+    );
+  }
+
+  void expectNoDraggedItemWidget() {
+    expect(
+      find.byKey(const ValueKey('file_uploader_dragged_item_positioned')),
       findsNothing,
     );
   }

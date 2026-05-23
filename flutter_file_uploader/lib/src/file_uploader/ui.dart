@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_uploader/flutter_file_uploader.dart';
@@ -6,6 +8,10 @@ import 'package:mobkit_dashed_border/mobkit_dashed_border.dart' as mobkit;
 import 'package:provider/provider.dart';
 
 const _kAnimationDuration = Duration(milliseconds: 250);
+const _kDragCircleSize = 100.0;
+const _kAddDraggedItemIconSize = 30.0;
+const _kDragPulseDuration = Duration(milliseconds: 1500);
+final _kDragPulseTween = Tween<double>(begin: 0.8, end: 1.2);
 const _kButtonHeight = 100.0;
 const _kBuilderGap = 4.0;
 
@@ -166,8 +172,12 @@ class FileUploader extends StatelessWidget {
   /// Each [FileTransformer] is applied in order before the upload starts.
   final List<FileTransformer> transformers;
 
+  /// Set to `true` to show the drag effect
   final bool isDragging;
 
+  /// [dragPosition] position of the drag
+  ///
+  /// this is only used if [isDragging] is true
   final Offset? dragPosition;
 
   @override
@@ -270,13 +280,12 @@ class _ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    // Configurazione dell'animazione di pulsazione (loop infinito)
     _pulseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
+      duration: _kDragPulseDuration,
     );
 
-    _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
+    _pulseAnimation = _kDragPulseTween.animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
   }
@@ -284,11 +293,16 @@ class _ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
   @override
   void didUpdateWidget(covariant _Button oldWidget) {
     super.didUpdateWidget(oldWidget);
+    unawaited(_handleDragEffect(oldWidget));
+  }
+
+  Future<void> _handleDragEffect(covariant _Button oldWidget) async {
     if (widget.isDragging && !_pulseController.isAnimating) {
-      _pulseController.repeat(reverse: true);
+      await _pulseController.repeat(reverse: true);
     } else if (!widget.isDragging && _pulseController.isAnimating) {
-      _pulseController.stop();
-      _pulseController.reset();
+      _pulseController
+        ..stop()
+        ..reset();
     }
   }
 
@@ -312,7 +326,6 @@ class _ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
           onPressedAddFiles: widget.onPressedAddFiles,
         );
 
-        // Feedback visivo standard sul bordo
         final dynamicColor = widget.isDragging
             ? baseColor
             : (model.reachedLimit
@@ -359,41 +372,10 @@ class _ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
                               ),
                             ),
                           if (widget.isDragging && widget.dragPosition != null)
-                            Positioned(
-                              left: widget.dragPosition!.dx - 50,
-                              top: widget.dragPosition!.dy - 50,
-                              child: IgnorePointer(
-                                child: ScaleTransition(
-                                  scale: _pulseAnimation,
-                                  child: Container(
-                                    width: 100,
-                                    height: 100,
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color:
-                                              baseColor.withValues(alpha: 0.5),
-                                          width: 2,
-                                        ),
-                                        color: baseColor.withValues(alpha: 0.1),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: baseColor.withValues(
-                                                alpha: 0.2),
-                                            blurRadius: 15,
-                                            spreadRadius: 2,
-                                          )
-                                        ]),
-                                    child: Center(
-                                      child: Icon(
-                                        Icons.add,
-                                        color: baseColor,
-                                        size: 30,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                            _draggedItemWidget(
+                              context,
+                              dragPosition: widget.dragPosition!,
+                              baseColor: baseColor,
                             ),
                         ],
                       ),
@@ -402,6 +384,50 @@ class _ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
                 ),
         );
       },
+    );
+  }
+
+  Widget _draggedItemWidget(
+    BuildContext context, {
+    required Offset dragPosition,
+    required Color baseColor,
+  }) {
+    return Positioned(
+      key: const ValueKey('file_uploader_dragged_item_positioned'),
+      left: dragPosition.dx - _kDragCircleSize / 2,
+      top: dragPosition.dy - _kDragCircleSize / 2,
+      child: IgnorePointer(
+        child: ScaleTransition(
+          scale: _pulseAnimation,
+          child: Container(
+            key: const ValueKey('file_uploader_dragged_item_container'),
+            width: _kDragCircleSize,
+            height: _kDragCircleSize,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: baseColor.withValues(alpha: 0.5),
+                width: 2,
+              ),
+              color: baseColor.withValues(alpha: 0.1),
+              boxShadow: [
+                BoxShadow(
+                  color: baseColor.withValues(alpha: 0.2),
+                  blurRadius: 15,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Center(
+              child: Icon(
+                Icons.add,
+                color: baseColor,
+                size: _kAddDraggedItemIconSize,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
