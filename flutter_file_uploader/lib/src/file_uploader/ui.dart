@@ -231,8 +231,6 @@ class FileUploader extends StatelessWidget {
           const SizedBox(height: _kSpaceBetweenButtonAndFiles),
           _Button(
             key: const ValueKey('file_uploader_button'),
-            onFileAdded: onFileAdded,
-            onPressedAddFiles: onPressedAddFiles,
             border: border,
             width: width,
             height: height,
@@ -272,8 +270,6 @@ class FileUploader extends StatelessWidget {
 
 class _Button extends StatefulWidget {
   const _Button({
-    required this.onFileAdded,
-    required this.onPressedAddFiles,
     required this.border,
     required this.width,
     required this.height,
@@ -289,8 +285,6 @@ class _Button extends StatefulWidget {
     super.key,
   });
 
-  final OnFileAdded? onFileAdded;
-  final OnPressedAddFilesCallback? onPressedAddFiles;
   final BoxBorder? border;
   final double width;
   final double height;

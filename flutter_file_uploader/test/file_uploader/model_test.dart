@@ -31,26 +31,33 @@ void main() {
       test(
         'onPressedAddFiles should return correctly',
         () {
-          final model = FileUploaderModel(
-            onFileAdded: (file) async => MockFileUploadHandler(),
+          var model = FileUploaderModel(
             onPressedAddFiles: () async => [utils.createFile()],
           );
 
           var callback = model.onPressedAddFiles();
           expect(callback, isNull);
 
-          callback = model.onPressedAddFiles();
-          expect(callback, isNull);
+          model = FileUploaderModel(
+            onFileAdded: (file) async => MockFileUploadHandler(),
+          );
 
           callback = model.onPressedAddFiles();
           expect(callback, isNull);
+
+          model = FileUploaderModel(
+            onFileAdded: (file) async => MockFileUploadHandler(),
+            onPressedAddFiles: () async => [utils.createFile()],
+          );
+
+          callback = model.onPressedAddFiles();
 
           expect(callback, isNotNull);
         },
       );
 
       test(
-        'should add file',
+        'should add file on onPressedAddFiles',
         () async {
           final file = utils.createFile();
           final handler = MockFileUploadHandler();
@@ -88,6 +95,21 @@ void main() {
         },
       );
 
+      test('should add file on addFiles', () async {
+        final file = utils.createFile();
+        final handler = MockFileUploadHandler();
+
+        final model = FileUploaderModel(
+          onFileAdded: (file) async {
+            return handler;
+          },
+        );
+
+        await model.addFiles([file]);
+
+        expect(model.refs.length, 1);
+      });
+
       test(
         'should handle errors on add file',
         () async {
@@ -98,6 +120,27 @@ void main() {
             },
             onPressedAddFiles: () async {
               throw Error();
+            },
+          );
+
+          final callback = model.onPressedAddFiles();
+          await callback?.call();
+
+          expect(model.refs, isEmpty);
+          expect(model.processingFiles, false);
+          expect(model.errorOnFiles, isNotNull);
+        },
+      );
+
+      test(
+        'should handle errors on pressed add files',
+        () async {
+          final model = FileUploaderModel(
+            onFileAdded: (file) async {
+              throw Error();
+            },
+            onPressedAddFiles: () async {
+              return [utils.createFile()];
             },
           );
 

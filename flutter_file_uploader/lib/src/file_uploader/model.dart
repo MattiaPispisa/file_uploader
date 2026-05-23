@@ -79,26 +79,15 @@ class FileUploaderModel with ChangeNotifier {
   ///
   /// [files] the files to be uploaded
   Future<void> addFiles(List<XFile> files) async {
-    if (files.isEmpty || _processingFiles || reachedLimit) {
+    if (files.isEmpty ||
+        _processingFiles ||
+        reachedLimit ||
+        _onFileAdded == null) {
       return;
     }
 
-    try {
-      _setProcessing();
-
-      final controllers = <FileUploadController>[];
-
-      await Future.forEach(files, (file) async {
-        final result = await _onFileAdded?.call(file);
-        if (result != null) {
-          controllers.add(_controllerBuilder(result));
-        }
-      });
-
-      _setStopProcessing(controllers);
-    } catch (e, stackTrace) {
-      _setErrorOnProcessing(e, stackTrace);
-    }
+    _setProcessing();
+    await _processFiles(files);
   }
 
   /// Returns the callback to execute when you want to handle a set of files.
@@ -112,12 +101,32 @@ class FileUploaderModel with ChangeNotifier {
 
     return () async {
       try {
-        final files = await _onPressedAddFiles?.call();
-        await addFiles(files ?? []);
+        _setProcessing();
+
+        final files = await _onPressedAddFiles!();
+
+        await _processFiles(files);
       } catch (e, stackTrace) {
         _setErrorOnProcessing(e, stackTrace);
       }
     };
+  }
+
+  Future<void> _processFiles(List<XFile> files) async {
+    try {
+      final controllers = <FileUploadController>[];
+
+      await Future.forEach(files, (file) async {
+        final result = await _onFileAdded?.call(file);
+        if (result != null) {
+          controllers.add(_controllerBuilder(result));
+        }
+      });
+
+      _setStopProcessing(controllers);
+    } catch (e, stackTrace) {
+      _setErrorOnProcessing(e, stackTrace);
+    }
   }
 
   /// remove [FileUploadController] from [_controllers] and

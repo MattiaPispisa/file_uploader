@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:en_file_uploader/en_file_uploader.dart';
 import 'package:file_uploader_utils/file_uploader_utils.dart' as utils;
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_file_uploader/flutter_file_uploader.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -171,6 +172,126 @@ void main() {
 
           await robot.pump();
           robot.expectDraggedItemWidget();
+        },
+      );
+
+      testWidgets(
+        'should didUpdate model',
+        (tester) async {
+          final handler = MockFileUploadHandler();
+          final file = utils.createFile();
+          var completer = Completer<bool>();
+
+          final robot = FileUploaderRobot(tester: tester);
+          await robot.pumpFileUploader(
+            builder: (_, __) => const SizedBox(),
+            model: FileUploaderModel(
+              onFileAdded: (file) async => handler,
+              onPressedAddFiles: () async {
+                await completer.future;
+                return [file];
+              },
+            ),
+          );
+
+          await robot.tapAddFiles();
+          await robot.pump();
+
+          robot
+            ..expectProcessingFilesWidget()
+            ..expectNoAddingFilesWidget()
+            ..expectNoErrorOnFilesWidget();
+
+          completer.complete(true);
+          await robot.pump();
+
+          robot
+            ..expectNoProcessingFilesWidget()
+            ..expectAddingFilesWidget()
+            ..expectNoErrorOnFilesWidget();
+
+          completer = Completer<bool>();
+
+          await robot.pumpFileUploader(
+            builder: (_, __) => const SizedBox(),
+            model: FileUploaderModel(
+              onFileAdded: (file) async => handler,
+              onPressedAddFiles: () async {
+                await completer.future;
+                throw Error();
+              },
+            ),
+          );
+
+          await robot.tapAddFiles();
+          await robot.pump();
+
+          robot
+            ..expectProcessingFilesWidget()
+            ..expectNoAddingFilesWidget()
+            ..expectNoErrorOnFilesWidget();
+
+          completer.complete(true);
+          await robot.pump();
+
+          robot
+            ..expectNoProcessingFilesWidget()
+            ..expectNoAddingFilesWidget()
+            ..expectErrorOnFilesWidget();
+
+          completer = Completer<bool>();
+
+          await robot.pumpFileUploader(
+            builder: (_, __) => const SizedBox(),
+            onFileAdded: (file) async => handler,
+            onPressedAddFiles: () async {
+              await completer.future;
+              return [file];
+            },
+          );
+
+          await robot.tapAddFiles();
+          await robot.pump();
+          robot
+            ..expectProcessingFilesWidget()
+            ..expectNoAddingFilesWidget()
+            ..expectNoErrorOnFilesWidget();
+
+          completer.complete(true);
+          await robot.pump();
+          robot
+            ..expectNoProcessingFilesWidget()
+            ..expectAddingFilesWidget()
+            ..expectNoErrorOnFilesWidget();
+
+          completer = Completer<bool>();
+
+          await robot.pumpFileUploader(
+            builder: (_, __) => const SizedBox(),
+            model: FileUploaderModel(
+              onFileAdded: (file) async => handler,
+              onPressedAddFiles: () async {
+                await completer.future;
+                throw Error();
+              },
+            ),
+          );
+
+          await robot.tapAddFiles();
+          await robot.pump();
+
+          robot
+            ..expectProcessingFilesWidget()
+            ..expectNoAddingFilesWidget()
+            ..expectNoErrorOnFilesWidget();
+
+          completer.complete(true);
+          await robot.pump();
+
+          robot
+            ..expectNoProcessingFilesWidget()
+            ..expectNoAddingFilesWidget()
+            ..expectErrorOnFilesWidget();
         },
       );
 

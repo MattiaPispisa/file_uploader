@@ -18,6 +18,7 @@ class FileUploaderRobot {
     bool? hideOnLimit,
     bool isDragging = false,
     Offset? dragPosition,
+    FileUploaderModel? model,
   }) {
     return _tester.pumpWidget(
       Material(
@@ -31,6 +32,7 @@ class FileUploaderRobot {
             hideOnLimit: hideOnLimit,
             isDragging: isDragging,
             dragPosition: dragPosition,
+            model: model,
           ),
         ),
       ),
