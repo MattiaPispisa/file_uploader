@@ -24,6 +24,26 @@ class _CompleteUploadExampleState extends State<CompleteUploadExample> {
   bool _dragActive = false;
   Offset? _cursorOffset;
 
+  late FileUploaderModel model;
+
+  initState() {
+    super.initState();
+    model = FileUploaderModel(
+      logger: utils.fileUploaderLogger,
+      transformers: [
+        utils.FileImageTransformer(),
+      ],
+      onPressedAddFiles: _pickFiles,
+      onFileAdded: _onFileAdded,
+      onFileUploaded: (file) {
+        utils.logger.info("file uploaded ${file.id}");
+      },
+      onFileRemoved: (file) {
+        utils.logger.info("file removed ${file.id}");
+      },
+    );
+  }
+
   Future<List<XFile>> _pickFiles() async {
     final result = await fp.FilePicker.platform.pickFiles(
       type: fp.FileType.any,
@@ -62,22 +82,21 @@ class _CompleteUploadExampleState extends State<CompleteUploadExample> {
                 return DropOperation.copy;
               },
               onPerformDrop: (event) async {
+                model.addFiles([utils.createFile()]);
+
                 setState(() {
                   _dragActive = false;
                   _cursorOffset = null;
                 });
               },
               child: FileUploader(
-                logger: utils.fileUploaderLogger,
+                model: model,
                 limit: settings.limit,
                 hideOnLimit: settings.hideOnLimit,
                 color: settings.color,
                 loadingColor: settings.color,
                 isDragging: _dragActive,
                 dragPosition: _cursorOffset,
-                transformers: [
-                  utils.FileImageTransformer(),
-                ],
                 builder: (context, ref) {
                   return ProvidedFileCard(
                     ref: ref,
@@ -87,14 +106,6 @@ class _CompleteUploadExampleState extends State<CompleteUploadExample> {
                     uploadProgressColor: settings.color,
                     transformationProgressColor: settings.color,
                   );
-                },
-                onPressedAddFiles: _pickFiles,
-                onFileAdded: _onFileAdded,
-                onFileUploaded: (file) {
-                  utils.logger.info("file uploaded ${file.id}");
-                },
-                onFileRemoved: (file) {
-                  utils.logger.info("file removed ${file.id}");
                 },
                 placeholder: Text(context.t().addFilePlaceholder),
               ),
