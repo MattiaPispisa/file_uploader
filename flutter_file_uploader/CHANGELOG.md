@@ -1,3 +1,10 @@
+## [2.2.0] - 2026-05-23
+
+### Added
+
+- Added external model support to `FileUploader`: Introduced the model parameter (accepting a `FileUploaderModel`). This enables external state management to programmatically trigger file additions from outside. 
+- Added a constructor `assert` to enforce mutual exclusion. You can now use either the model OR the individual widget properties (such as `onFileAdded`, `limit`, `transformers`, etc.), but not both simultaneously. This prevents state conflicts and ensures a single source of truth.
+
 ## [2.1.0] - 2026-05-23
 
 ### Added
