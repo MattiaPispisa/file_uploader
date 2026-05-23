@@ -167,7 +167,6 @@ abstract class FileUploadController {
   /// The original file that is being uploaded.
   XFile get originalFile => _handler.originalFile;
 
-
   Future<XFile> _applyTransformers({
     required IFileUploadHandler handler,
     TransformationProgressCallback? onTransformationProgress,

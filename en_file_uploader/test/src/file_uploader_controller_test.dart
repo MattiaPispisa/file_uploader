@@ -50,7 +50,8 @@ void main() {
         expect(controller.originalFile, file);
       });
 
-      test('should expose originalFile for _ChunkedFileUploadController', () async {
+      test('should expose originalFile for _ChunkedFileUploadController',
+          () async {
         final file = createFile();
         final controller = FileUploadController(
           MockChunkedFileUploadHandlerBuilder(file).build(),
@@ -59,7 +60,9 @@ void main() {
         expect(controller.originalFile, file);
       });
 
-      test('should expose originalFile for _RestorableChunkedFileUploadController', () async {
+      test(
+          'should expose originalFile for'
+          ' _RestorableChunkedFileUploadController', () async {
         final file = createFile();
         final controller = FileUploadController(
           MockRestorableChunkedFileUploadHandlerBuilder(file).build(),
@@ -74,4 +77,3 @@ void main() {
 class UnknownHandler extends IFileUploadHandler {
   const UnknownHandler({required super.file});
 }
-
