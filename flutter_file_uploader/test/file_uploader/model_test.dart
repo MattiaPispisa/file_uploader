@@ -31,25 +31,20 @@ void main() {
       test(
         'onPressedAddFiles should return correctly',
         () {
-          final model = FileUploaderModel();
-
-          var callback = model.onPressedAddFiles(
+          final model = FileUploaderModel(
+            onFileAdded: (file) async => MockFileUploadHandler(),
             onPressedAddFiles: () async => [utils.createFile()],
           );
-          expect(callback, isNull);
 
-          callback = model.onPressedAddFiles(
-            onFileAdded: (file) async => MockFileUploadHandler(),
-          );
+          var callback = model.onPressedAddFiles();
           expect(callback, isNull);
 
           callback = model.onPressedAddFiles();
           expect(callback, isNull);
 
-          callback = model.onPressedAddFiles(
-            onFileAdded: (file) async => MockFileUploadHandler(),
-            onPressedAddFiles: () async => [utils.createFile()],
-          );
+          callback = model.onPressedAddFiles();
+          expect(callback, isNull);
+
           expect(callback, isNotNull);
         },
       );
@@ -57,13 +52,10 @@ void main() {
       test(
         'should add file',
         () async {
-          final model = FileUploaderModel();
           final file = utils.createFile();
           final handler = MockFileUploadHandler();
 
-          when(() => handler.originalFile).thenReturn(file);
-
-          final callback = model.onPressedAddFiles(
+          final model = FileUploaderModel(
             onFileAdded: (file) async {
               return handler;
             },
@@ -72,6 +64,10 @@ void main() {
               return [file];
             },
           );
+
+          when(() => handler.originalFile).thenReturn(file);
+
+          final callback = model.onPressedAddFiles();
           unawaited(callback?.call());
           await Future<void>.delayed(const Duration(milliseconds: 2));
           expect(model.processingFiles, true);
@@ -95,10 +91,8 @@ void main() {
       test(
         'should handle errors on add file',
         () async {
-          final model = FileUploaderModel();
           final handler = MockFileUploadHandler();
-
-          final callback = model.onPressedAddFiles(
+          final model = FileUploaderModel(
             onFileAdded: (file) async {
               return handler;
             },
@@ -106,6 +100,8 @@ void main() {
               throw Error();
             },
           );
+
+          final callback = model.onPressedAddFiles();
           await callback?.call();
 
           expect(model.refs, isEmpty);
@@ -117,9 +113,17 @@ void main() {
       test(
         'should upload file',
         () async {
-          final model = FileUploaderModel();
           final handler = MockFileUploadHandler();
           final file = utils.createFile();
+
+          final model = FileUploaderModel(
+            onFileAdded: (file) async {
+              return handler;
+            },
+            onPressedAddFiles: () async {
+              return [file];
+            },
+          );
 
           when(
             () => handler.upload(
@@ -129,14 +133,7 @@ void main() {
           ).thenAnswer((_) async => {});
           when(() => handler.originalFile).thenReturn(file);
 
-          final callback = model.onPressedAddFiles(
-            onFileAdded: (file) async {
-              return handler;
-            },
-            onPressedAddFiles: () async {
-              return [file];
-            },
-          );
+          final callback = model.onPressedAddFiles();
           await callback?.call();
 
           final first = model.refs.first;
@@ -148,16 +145,10 @@ void main() {
       test(
         'should retry file',
         () async {
-          final model = FileUploaderModel();
           final handler = MockFileUploadHandler();
           final file = utils.createFile();
 
-          when(
-            () => handler.upload(any(), onProgress: any(named: 'onProgress')),
-          ).thenAnswer((_) async => {});
-          when(() => handler.originalFile).thenReturn(file);
-
-          final callback = model.onPressedAddFiles(
+          final model = FileUploaderModel(
             onFileAdded: (file) async {
               return handler;
             },
@@ -165,6 +156,13 @@ void main() {
               return [file];
             },
           );
+
+          when(
+            () => handler.upload(any(), onProgress: any(named: 'onProgress')),
+          ).thenAnswer((_) async => {});
+          when(() => handler.originalFile).thenReturn(file);
+
+          final callback = model.onPressedAddFiles();
           await callback?.call();
 
           final first = model.refs.first;
@@ -176,16 +174,10 @@ void main() {
       test(
         'should upload and remove file',
         () async {
-          final model = FileUploaderModel();
           final handler = MockFileUploadHandler();
           final file = utils.createFile();
 
-          when(
-            () => handler.upload(any(), onProgress: any(named: 'onProgress')),
-          ).thenAnswer((_) async => {});
-          when(() => handler.originalFile).thenReturn(file);
-
-          final callback = model.onPressedAddFiles(
+          final model = FileUploaderModel(
             onFileAdded: (file) async {
               return handler;
             },
@@ -193,6 +185,13 @@ void main() {
               return [file];
             },
           );
+
+          when(
+            () => handler.upload(any(), onProgress: any(named: 'onProgress')),
+          ).thenAnswer((_) async => {});
+          when(() => handler.originalFile).thenReturn(file);
+
+          final callback = model.onPressedAddFiles();
           await callback?.call();
 
           final first = model.refs.first;
@@ -206,11 +205,14 @@ void main() {
       test(
         'should apply transformers',
         () async {
-          final model = FileUploaderModel(
-            transformers: [_NoOpTransformer()],
-          );
           final handler = MockFileUploadHandler();
           final file = utils.createFile();
+
+          final model = FileUploaderModel(
+            onFileAdded: (_) async => handler,
+            onPressedAddFiles: () async => [file],
+            transformers: [_NoOpTransformer()],
+          );
 
           when(
             () => handler.upload(
@@ -220,10 +222,7 @@ void main() {
           ).thenAnswer((_) async => {});
           when(() => handler.originalFile).thenReturn(file);
 
-          final callback = model.onPressedAddFiles(
-            onFileAdded: (_) async => handler,
-            onPressedAddFiles: () async => [file],
-          );
+          final callback = model.onPressedAddFiles();
           await callback?.call();
 
           final first = model.refs.first;

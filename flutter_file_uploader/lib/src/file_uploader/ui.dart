@@ -14,6 +14,7 @@ const _kDragPulseDuration = Duration(milliseconds: 1500);
 final _kDragPulseTween = Tween<double>(begin: 0.8, end: 1.2);
 const _kButtonHeight = 100.0;
 const _kBuilderGap = 4.0;
+const _kSpaceBetweenButtonAndFiles = 12.0;
 
 /// on pressed add files, more on [FileUploader]
 typedef OnPressedAddFilesCallback = Future<List<XFile>> Function();
@@ -66,13 +67,26 @@ class FileUploader extends StatelessWidget {
   ///
   /// use [transformers] to apply a pipeline of [FileTransformer]s to every
   /// file before it is uploaded.
+  ///
+  /// ---
+  /// **Controller & External State Management**
+  ///
+  /// You can provide a [model] (an instance of [FileUploaderModel])
+  /// to manage the state externally. This is highly recommended for advanced
+  /// use cases like programmatic file additions.
+  ///
+  /// **Assertion Warning:** You cannot use both a [model] and individual
+  /// model properties simultaneously.
+  /// If a [model] is provided,
+  /// you **must not** pass [onFileAdded], [onPressedAddFiles],
+  /// [onFileUploaded], [onFileRemoved], [logger], [limit],
+  /// or [transformers] to this widget. Those properties must
+  /// be passed directly to the [FileUploaderModel] constructor instead.
   const FileUploader({
     required this.builder,
     super.key,
     this.height = _kButtonHeight,
     this.width = double.maxFinite,
-    this.onFileAdded,
-    this.onPressedAddFiles,
     this.placeholder,
     this.border,
     this.borderRadius,
@@ -86,10 +100,26 @@ class FileUploader extends StatelessWidget {
     this.hideOnLimit,
     this.color,
     this.loadingColor,
-    this.transformers = const [],
+    this.transformers,
     this.isDragging = false,
     this.dragPosition,
-  });
+    this.onFileAdded,
+    this.onPressedAddFiles,
+    this.model,
+  }) : assert(
+          model == null ||
+              (onFileAdded == null &&
+                  onPressedAddFiles == null &&
+                  onFileUploaded == null &&
+                  onFileRemoved == null &&
+                  logger == null &&
+                  limit == null &&
+                  transformers == null),
+          'FileUploader: You cannot provide both a `model` and individual '
+          'model properties (limit, logger, callbacks, etc.).\n'
+          'If you are providing a model, you must pass these properties '
+          'directly to the FileUploaderModel (model) constructor instead.',
+        );
 
   /// height of the button
   final double height;
@@ -170,7 +200,7 @@ class FileUploader extends StatelessWidget {
   /// transformers applied to every file before upload.
   ///
   /// Each [FileTransformer] is applied in order before the upload starts.
-  final List<FileTransformer> transformers;
+  final List<FileTransformer>? transformers;
 
   /// Set to `true` to show the drag effect
   final bool isDragging;
@@ -179,6 +209,9 @@ class FileUploader extends StatelessWidget {
   ///
   /// this is only used if [isDragging] is true
   final Offset? dragPosition;
+
+  /// external controller, if you want to manage the state outside of the widget
+  final FileUploaderModel? model;
 
   @override
   Widget build(BuildContext context) {
@@ -189,10 +222,13 @@ class FileUploader extends StatelessWidget {
       logger: logger,
       limit: limit,
       transformers: transformers,
+      onFileAdded: onFileAdded,
+      onPressedAddFiles: onPressedAddFiles,
+      model: model,
       child: Column(
         children: [
           _builder(context),
-          const SizedBox(height: 12),
+          const SizedBox(height: _kSpaceBetweenButtonAndFiles),
           _Button(
             key: const ValueKey('file_uploader_button'),
             onFileAdded: onFileAdded,
@@ -321,10 +357,7 @@ class _ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
     return FileUploaderConsumer(
       key: const ValueKey('file_uploader_button_builder'),
       builder: (context, model, _) {
-        final onTap = model.onPressedAddFiles(
-          onFileAdded: widget.onFileAdded,
-          onPressedAddFiles: widget.onPressedAddFiles,
-        );
+        final onTap = model.onPressedAddFiles();
 
         final dynamicColor = widget.isDragging
             ? baseColor
@@ -455,14 +488,17 @@ class _ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
   }
 }
 
-class _Provider extends StatelessWidget {
+class _Provider extends StatefulWidget {
   const _Provider({
     required this.logger,
     required this.child,
     required this.onFileRemoved,
     required this.onFileUploaded,
+    required this.onFileAdded,
+    required this.onPressedAddFiles,
     this.limit,
-    this.transformers = const [],
+    this.transformers,
+    this.model,
     super.key,
   });
 
@@ -470,20 +506,72 @@ class _Provider extends StatelessWidget {
   final Widget child;
   final OnFileUploaded? onFileUploaded;
   final OnFileRemoved? onFileRemoved;
+  final OnFileAdded? onFileAdded;
+  final OnPressedAddFilesCallback? onPressedAddFiles;
   final int? limit;
-  final List<FileTransformer> transformers;
+  final List<FileTransformer>? transformers;
+  final FileUploaderModel? model;
+
+  @override
+  State<_Provider> createState() => _ProviderState();
+}
+
+class _ProviderState extends State<_Provider> {
+  FileUploaderModel? _internalModel;
+
+  FileUploaderModel get _model => widget.model ?? _internalModel!;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.model == null) {
+      _internalModel = FileUploaderModel(
+        logger: widget.logger,
+        onFileRemoved: widget.onFileRemoved,
+        onFileUploaded: widget.onFileUploaded,
+        onFileAdded: widget.onFileAdded,
+        onPressedAddFiles: widget.onPressedAddFiles,
+        limit: widget.limit,
+        transformers: widget.transformers,
+      );
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _Provider oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.model == oldWidget.model) {
+      return;
+    }
+
+    if (widget.model != null && _internalModel != null) {
+      _internalModel!.dispose();
+      _internalModel = null;
+    } else if (widget.model == null && oldWidget.model != null) {
+      _internalModel = FileUploaderModel(
+        logger: widget.logger,
+        onFileRemoved: widget.onFileRemoved,
+        onFileUploaded: widget.onFileUploaded,
+        onFileAdded: widget.onFileAdded,
+        onPressedAddFiles: widget.onPressedAddFiles,
+        limit: widget.limit,
+        transformers: widget.transformers,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _internalModel?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => FileUploaderModel(
-        logger: logger,
-        onFileRemoved: onFileRemoved,
-        onFileUploaded: onFileUploaded,
-        limit: limit,
-        transformers: transformers,
-      ),
-      child: child,
+    return ChangeNotifierProvider.value(
+      value: _model,
+      child: widget.child,
     );
   }
 }

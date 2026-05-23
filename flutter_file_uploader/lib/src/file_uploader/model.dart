@@ -13,8 +13,10 @@ class FileUploaderModel with ChangeNotifier {
     FileUploaderLogger? logger,
     OnFileUploaded? onFileUploaded,
     OnFileRemoved? onFileRemoved,
+    OnFileAdded? onFileAdded,
+    OnPressedAddFilesCallback? onPressedAddFiles,
     this.limit,
-    List<FileTransformer> transformers = const [],
+    List<FileTransformer>? transformers,
   })  : _processingFiles = false,
         _controllers = List<FileUploadController>.unmodifiable([]),
         _logger = logger,
@@ -22,7 +24,9 @@ class FileUploaderModel with ChangeNotifier {
         _errorOnFiles = null,
         _onFileUploaded = onFileUploaded,
         _onFileRemoved = onFileRemoved,
-        _transformers = transformers;
+        _transformers = transformers,
+        _onFileAdded = onFileAdded,
+        _onPressedAddFiles = onPressedAddFiles;
 
   bool _processingFiles;
 
@@ -57,7 +61,10 @@ class FileUploaderModel with ChangeNotifier {
   final int? limit;
 
   /// transformers applied to each file before upload
-  final List<FileTransformer> _transformers;
+  final List<FileTransformer>? _transformers;
+
+  final OnFileAdded? _onFileAdded;
+  final OnPressedAddFilesCallback? _onPressedAddFiles;
 
   /// files uploaded reach the available limit
   bool get reachedLimit {
@@ -68,39 +75,45 @@ class FileUploaderModel with ChangeNotifier {
     return _controllers.length >= limit!;
   }
 
-  /// Returns the callback to execute when you want to handle a set of files.
+  /// add files to be uploaded
   ///
-  /// If either [onPressedAddFiles] or [onFileAdded] is provided, no callback
-  /// is returned (which is useful to disable button callbacks)
-  ///
-  /// Executing the callback will:
-  ///
-  /// 1. call [onPressedAddFiles].
-  /// 2. after files are added, call [onFileAdded] for each file;
-  Future<void> Function()? onPressedAddFiles({
-    OnPressedAddFilesCallback? onPressedAddFiles,
-    OnFileAdded? onFileAdded,
-  }) {
-    if (_processingFiles || reachedLimit) {
-      return null;
+  /// [files] the files to be uploaded
+  Future<void> addFiles(List<XFile> files) async {
+    if (files.isEmpty || _processingFiles || reachedLimit) {
+      return;
     }
 
-    if (onPressedAddFiles == null || onFileAdded == null) {
+    try {
+      _setProcessing();
+
+      final controllers = <FileUploadController>[];
+
+      await Future.forEach(files, (file) async {
+        final result = await _onFileAdded?.call(file);
+        if (result != null) {
+          controllers.add(_controllerBuilder(result));
+        }
+      });
+
+      _setStopProcessing(controllers);
+    } catch (e, stackTrace) {
+      _setErrorOnProcessing(e, stackTrace);
+    }
+  }
+
+  /// Returns the callback to execute when you want to handle a set of files.
+  Future<void> Function()? onPressedAddFiles() {
+    if (_processingFiles ||
+        reachedLimit ||
+        _onPressedAddFiles == null ||
+        _onFileAdded == null) {
       return null;
     }
 
     return () async {
       try {
-        _setProcessing();
-
-        final files = await onPressedAddFiles();
-        final controllers = <FileUploadController>[];
-
-        await Future.forEach(files, (file) async {
-          controllers.add(_controllerBuilder(await onFileAdded(file)));
-        });
-
-        _setStopProcessing(controllers);
+        final files = await _onPressedAddFiles?.call();
+        await addFiles(files ?? []);
       } catch (e, stackTrace) {
         _setErrorOnProcessing(e, stackTrace);
       }
@@ -138,7 +151,7 @@ class FileUploaderModel with ChangeNotifier {
     return FileUploadController(
       handler,
       logger: _logger,
-      transformers: _transformers,
+      transformers: _transformers ?? [],
     );
   }
 
